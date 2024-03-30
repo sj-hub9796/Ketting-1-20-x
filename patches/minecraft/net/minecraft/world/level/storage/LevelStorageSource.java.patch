@@ -181,10 +181,10 @@
 +
 +            try {
 +               Files.walkFileTree(this.levelDirectory.path(), new SimpleFileVisitor<Path>() {
-+                  public FileVisitResult visitFile(Path p_78323_, BasicFileAttributes p_78324_) throws IOException {
-+                     if (!p_78323_.equals(path)) {
-+                        LevelStorageSource.LOGGER.debug("Deleting {}", (Object)p_78323_);
-+                        Files.delete(p_78323_);
++                  public FileVisitResult visitFile(Path p_78339_, BasicFileAttributes p_78340_) throws IOException {
++                     if (!p_78339_.equals(path)) {
++                        LevelStorageSource.LOGGER.debug("Deleting {}", (Object)p_78339_);
++                        Files.delete(p_78339_);
 +                     }
 +
 +                     return FileVisitResult.CONTINUE;
