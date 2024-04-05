@@ -518,6 +518,25 @@
     }
  
     public void hideTooltipPart(ItemStack.TooltipPart p_41655_) {
+@@ -786,7 +_,18 @@
+       }
+    }
+ 
++   //Ketting start
++   public boolean blockEnchant = false;
++   public void blockEnchant() {
++      blockEnchant = true;
++   }
++
+    public void enchant(Enchantment p_41664_, int p_41665_) {
++      if (blockEnchant) {
++         blockEnchant = false;
++         return;
++      }
++      //Ketting end
+       this.getOrCreateTag();
+       if (!this.tag.contains("Enchantments", 9)) {
+          this.tag.put("Enchantments", new ListTag());
 @@ -853,9 +_,10 @@
              }
           }

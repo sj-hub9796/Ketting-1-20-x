@@ -143,7 +143,20 @@
                 this.broadcastChanges();
              });
           } else {
-@@ -142,8 +_,26 @@
+@@ -129,6 +_,12 @@
+ 
+    }
+ 
++   //Ketting start - mixin error
++   private @org.jetbrains.annotations.Nullable org.bukkit.event.enchantment.EnchantItemEvent clickMenuButton$event;
++   private @org.jetbrains.annotations.Nullable org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack clickMenuButton$item;
++   private @org.jetbrains.annotations.Nullable org.bukkit.enchantments.Enchantment clickMenuButton$key;
++   private @org.jetbrains.annotations.Nullable Integer clickMenuButton$value;
++   private @org.jetbrains.annotations.Nullable net.minecraft.world.item.enchantment.Enchantment clickMenuButton$nms;
+    public boolean clickMenuButton(Player p_39465_, int p_39466_) {
+       if (p_39466_ >= 0 && p_39466_ < this.costs.length) {
+          ItemStack itemstack = this.enchantSlots.getItem(0);
+@@ -142,8 +_,16 @@
              this.access.execute((p_39481_, p_39482_) -> {
                 ItemStack itemstack2 = itemstack;
                 List<EnchantmentInstance> list = this.getEnchantmentList(itemstack, p_39466_, this.costs[p_39466_]);
@@ -153,26 +166,16 @@
 +               // CraftBukkit start
 +               if (true || !list.isEmpty()) {
 +                  // p_39465_.onEnchantmentPerformed(itemstack, i); // Moved down
-+                  java.util.Map<org.bukkit.enchantments.Enchantment, Integer> enchants = new java.util.HashMap<org.bukkit.enchantments.Enchantment, Integer>();
-+                  for (EnchantmentInstance instance : list) {
-+                     enchants.put(org.bukkit.enchantments.Enchantment.getByKey(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(BuiltInRegistries.ENCHANTMENT.getKey(instance.enchantment))), instance.level);
-+                  }
-+                  org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack item = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(itemstack2);
-+
-+                  org.bukkit.enchantments.Enchantment hintedEnchantment = org.bukkit.enchantments.Enchantment.getByKey(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(BuiltInRegistries.ENCHANTMENT.getKey(net.minecraft.world.item.enchantment.Enchantment.byId(enchantClue[p_39466_]))));
-+                  int hintedEnchantmentLevel = levelClue[p_39466_];
-+                  org.bukkit.event.enchantment.EnchantItemEvent event = new org.bukkit.event.enchantment.EnchantItemEvent((org.bukkit.entity.Player) p_39465_.getBukkitEntity(), this.getBukkitView(), access.getLocation().getBlock(), item, this.costs[p_39466_], enchants, hintedEnchantment, hintedEnchantmentLevel, p_39466_);
-+                  p_39481_.getCraftServer().getPluginManager().callEvent(event);
-+
-+                  int level = event.getExpLevelCost();
-+                  if (event.isCancelled() || (level > p_39465_.experienceLevel && !p_39465_.getAbilities().instabuild) || event.getEnchantsToAdd().isEmpty()) {
-+                     return;
-+                  }
 +                  // CraftBukkit end
++                  clickMenuButton$event = null;
++                  clickMenuButton$item = null;
++                  if (!bukkitEnchant(list, itemstack2, p_39466_, p_39465_, p_39481_))
++                     return;
++
                    boolean flag = itemstack.is(Items.BOOK);
                    if (flag) {
                       itemstack2 = new ItemStack(Items.ENCHANTED_BOOK);
-@@ -155,15 +_,30 @@
+@@ -155,15 +_,42 @@
                       this.enchantSlots.setItem(0, itemstack2);
                    }
  
@@ -182,33 +185,76 @@
 -                        EnchantedBookItem.addEnchantment(itemstack2, enchantmentinstance);
 -                     } else {
 -                        itemstack2.enchant(enchantmentinstance.enchantment, enchantmentinstance.level);
-+                  // CraftBukkit start
-+                  for(java.util.Map.Entry<org.bukkit.enchantments.Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
++                  for (int j = 0; j < clickMenuButton$event.getEnchantsToAdd().entrySet().size(); ++j) {
 +                     try {
-+                        if (flag) {
-+                           org.bukkit.NamespacedKey enchantId = entry.getKey().getKey();
-+                           net.minecraft.world.item.enchantment.Enchantment nms = BuiltInRegistries.ENCHANTMENT.get(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.toMinecraft(enchantId));
-+                           if (nms == null) {
-+                              continue;
-+                           }
++                        clickMenuButton$key = (org.bukkit.enchantments.Enchantment) clickMenuButton$event.getEnchantsToAdd().keySet().toArray()[j];
++                        clickMenuButton$value = clickMenuButton$event.getEnchantsToAdd().get(clickMenuButton$key);
 +
-+                           EnchantmentInstance enchantmentinstance = new EnchantmentInstance(nms, entry.getValue());
++                        clickMenuButton$nms = BuiltInRegistries.ENCHANTMENT.get(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.toMinecraft(clickMenuButton$key.getKey()));
++
++                        if (clickMenuButton$nms == null) {
++                           continue;
++                        }
++
++                        EnchantmentInstance enchantmentinstance = new EnchantmentInstance(clickMenuButton$nms, clickMenuButton$value);
++
++                        if (flag) {
 +                           EnchantedBookItem.addEnchantment(itemstack2, enchantmentinstance);
 +                        } else {
-+                           item.addUnsafeEnchantment(entry.getKey(), entry.getValue());
++                           //Ketting start - this part is not getting used, its only here to satisfy the mixin
++                           itemstack2.blockEnchant();
++                           itemstack2.enchant(clickMenuButton$nms, clickMenuButton$value);
++                           //Ketting end
++
++                           clickMenuButton$item.addUnsafeEnchantment(clickMenuButton$key, clickMenuButton$value);
 +                        }
-+                     } catch (IllegalArgumentException e) {
++                     } catch (IllegalArgumentException ignored) {
 +                        /* Just swallow invalid enchantments */
                       }
                    }
  
++                  clickMenuButton$key = null;
++                  clickMenuButton$value = null;
++                  clickMenuButton$nms = null;
++
 +                  p_39465_.onEnchantmentPerformed(itemstack, i);
-+                  // CraftBukkit end
++                  //Ketting end
 +
 +                  // CraftBukkit - TODO: let plugins change this
                    if (!p_39465_.getAbilities().instabuild) {
                       itemstack1.shrink(i);
                       if (itemstack1.isEmpty()) {
+@@ -191,6 +_,30 @@
+       }
+    }
+ 
++   //Ketting start - move to own method
++   private boolean bukkitEnchant(List<EnchantmentInstance> list, ItemStack itemstack2, int p_39466_, Player p_39465_, net.minecraft.world.level.Level p_39481_) {
++      java.util.Map<org.bukkit.enchantments.Enchantment, Integer> enchants = new java.util.HashMap<org.bukkit.enchantments.Enchantment, Integer>();
++      for (EnchantmentInstance instance : list) {
++         enchants.put(org.bukkit.enchantments.Enchantment.getByKey(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(BuiltInRegistries.ENCHANTMENT.getKey(instance.enchantment))), instance.level);
++      }
++      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack item = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(itemstack2);
++
++      org.bukkit.enchantments.Enchantment hintedEnchantment = org.bukkit.enchantments.Enchantment.getByKey(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(BuiltInRegistries.ENCHANTMENT.getKey(net.minecraft.world.item.enchantment.Enchantment.byId(enchantClue[p_39466_]))));
++      int hintedEnchantmentLevel = levelClue[p_39466_];
++      org.bukkit.event.enchantment.EnchantItemEvent event = new org.bukkit.event.enchantment.EnchantItemEvent((org.bukkit.entity.Player) p_39465_.getBukkitEntity(), this.getBukkitView(), access.getLocation().getBlock(), item, this.costs[p_39466_], enchants, hintedEnchantment, hintedEnchantmentLevel, p_39466_);
++      p_39481_.getCraftServer().getPluginManager().callEvent(event);
++
++      int level = event.getExpLevelCost();
++      if (event.isCancelled() || (level > p_39465_.experienceLevel && !p_39465_.getAbilities().instabuild) || event.getEnchantsToAdd().isEmpty()) {
++         return false;
++      }
++
++      clickMenuButton$event = event;
++      clickMenuButton$item = item;
++      return true;
++   }
++   //Ketting end
++
+    private List<EnchantmentInstance> getEnchantmentList(ItemStack p_39472_, int p_39473_, int p_39474_) {
+       this.random.setSeed((long)(this.enchantmentSeed.get() + p_39473_));
+       List<EnchantmentInstance> list = EnchantmentHelper.selectEnchantment(this.random, p_39472_, p_39474_, false);
 @@ -218,6 +_,7 @@
     }
  
