@@ -42,7 +42,7 @@
     public ItemStack(ItemLike p_41599_) {
        this(p_41599_, 1);
     }
-@@ -137,30 +_,67 @@
+@@ -137,30 +_,68 @@
     }
  
     public ItemStack(ItemLike p_41601_, int p_41602_) {
@@ -117,6 +117,7 @@
 +   private ItemStack(CompoundTag p_41608_) {
 +      super(ItemStack.class, true);
 +      this.load(p_41608_);
++      this.count = tag.getByte("Count"); //Ketting - read count again to allow mixins to overwrite this
 +      // CraftBukkit end
     }
  
