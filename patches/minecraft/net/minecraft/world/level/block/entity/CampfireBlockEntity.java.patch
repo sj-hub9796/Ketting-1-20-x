@@ -1,26 +1,46 @@
 --- a/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/CampfireBlockEntity.java
-@@ -51,6 +_,20 @@
+@@ -51,7 +_,10 @@
                    return p_270054_.assemble(container, p_155307_.registryAccess());
                 }).orElse(itemstack);
                 if (itemstack1.isItemEnabled(p_155307_.enabledFeatures())) {
-+                  // CraftBukkit start - fire BlockCookEvent
-+                  org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack source = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(itemstack);
-+                  org.bukkit.inventory.ItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(itemstack1);
-+
-+                  org.bukkit.event.block.BlockCookEvent blockCookEvent = new org.bukkit.event.block.BlockCookEvent(org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock.at(p_155307_, p_155308_), source, result);
-+                  p_155307_.getCraftServer().getPluginManager().callEvent(blockCookEvent);
-+
-+                  if (blockCookEvent.isCancelled()) {
-+                     return;
-+                  }
-+
-+                  result = blockCookEvent.getResult();
-+                  itemstack1 = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asNMSCopy(result);
-+                  // CraftBukkit end
-                   Containers.dropItemStack(p_155307_, (double)p_155308_.getX(), (double)p_155308_.getY(), (double)p_155308_.getZ(), itemstack1);
+-                  Containers.dropItemStack(p_155307_, (double)p_155308_.getX(), (double)p_155308_.getY(), (double)p_155308_.getZ(), itemstack1);
++                  //Ketting start - split bukkit event into own function
++                  if (!bukkitEvent(itemstack, itemstack1, p_155307_, p_155308_)) return;
++                  Containers.dropItemStack(p_155307_, (double)p_155308_.getX(), (double)p_155308_.getY(), (double)p_155308_.getZ(), bukkitEvent$newStack);
++                  //Ketting end
                    p_155310_.items.set(i, ItemStack.EMPTY);
                    p_155307_.sendBlockUpdated(p_155308_, p_155309_, p_155309_, 3);
+                   p_155307_.gameEvent(GameEvent.BLOCK_CHANGE, p_155308_, GameEvent.Context.of(p_155309_));
+@@ -66,6 +_,28 @@
+ 
+    }
+ 
++   //Ketting start - split bukkit event into own function
++   private static ItemStack bukkitEvent$newStack = null;
++   private static boolean bukkitEvent(ItemStack itemstack, ItemStack itemstack1, Level p_155307_, BlockPos p_155308_) {
++      bukkitEvent$newStack = null;
++      // CraftBukkit start - fire BlockCookEvent
++      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack source = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(itemstack);
++      org.bukkit.inventory.ItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(itemstack1);
++
++      org.bukkit.event.block.BlockCookEvent blockCookEvent = new org.bukkit.event.block.BlockCookEvent(org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock.at(p_155307_, p_155308_), source, result);
++      p_155307_.getCraftServer().getPluginManager().callEvent(blockCookEvent);
++
++      if (blockCookEvent.isCancelled()) {
++         return false;
++      }
++
++      result = blockCookEvent.getResult();
++      bukkitEvent$newStack = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asNMSCopy(result);
++      // CraftBukkit end
++      return true;
++   }
++   //Ketting end
++
+    public static void cooldownTick(Level p_155314_, BlockPos p_155315_, BlockState p_155316_, CampfireBlockEntity p_155317_) {
+       boolean flag = false;
+ 
 @@ -153,7 +_,12 @@
        for(int i = 0; i < this.items.size(); ++i) {
           ItemStack itemstack = this.items.get(i);
