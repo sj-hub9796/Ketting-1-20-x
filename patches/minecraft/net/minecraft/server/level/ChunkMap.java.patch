@@ -254,7 +254,7 @@
           if (this.seenBy.remove(p_140486_.connection)) {
              this.serverEntity.removePairing(p_140486_);
           }
-@@ -1372,12 +_,20 @@
+@@ -1372,17 +_,34 @@
        }
  
        public void updatePlayer(ServerPlayer p_140498_) {
@@ -274,4 +274,19 @@
 +
              if (flag) {
                 if (this.seenBy.add(p_140498_.connection)) {
-                   this.serverEntity.addPairing(p_140498_);
+-                  this.serverEntity.addPairing(p_140498_);
++                  // Paper start - entity tracking events
++                  if (io.papermc.paper.event.player.PlayerTrackEntityEvent.getHandlerList().getRegisteredListeners().length == 0 || new io.papermc.paper.event.player.PlayerTrackEntityEvent(player.getBukkitEntity(), this.entity.getBukkitEntity()).callEvent()) {
++                     this.serverEntity.addPairing(p_140498_);
++                  }
++                  // Paper end
+                }
+             } else if (this.seenBy.remove(p_140498_.connection)) {
++               // Paper start - entity tracking events
++               if (io.papermc.paper.event.player.PlayerUntrackEntityEvent.getHandlerList().getRegisteredListeners().length > 0) {
++                  new io.papermc.paper.event.player.PlayerUntrackEntityEvent(p_140498_.getBukkitEntity(), this.entity.getBukkitEntity()).callEvent();
++               }
++               // Paper end
+                this.serverEntity.removePairing(p_140498_);
+             }
+ 
