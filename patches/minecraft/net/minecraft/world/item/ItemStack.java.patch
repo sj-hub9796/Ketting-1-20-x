@@ -483,8 +483,29 @@
     public CompoundTag getOrCreateTag() {
        if (this.tag == null) {
           this.setTag(new CompoundTag());
-@@ -522,7 +_,7 @@
+@@ -520,9 +_,28 @@
+       return this.tag != null ? this.tag.getList("Enchantments", 10) : new ListTag();
+    }
  
++   // Paper start
++   public org.bukkit.inventory.ItemStack asBukkitMirror() {
++      return org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this);
++   }
++   public org.bukkit.inventory.ItemStack asBukkitCopy() {
++      return org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this.copy());
++   }
++   public static net.minecraft.world.item.ItemStack fromBukkitCopy(org.bukkit.inventory.ItemStack itemstack) {
++      return org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asNMSCopy(itemstack);
++   }
++   private org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack bukkitStack;
++   public org.bukkit.inventory.ItemStack getBukkitStack() {
++      if (bukkitStack == null || bukkitStack.getHandle() != this) {
++         bukkitStack = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this);
++      }
++      return bukkitStack;
++   }
++   // Paper end
++
     public void setTag(@Nullable CompoundTag p_41752_) {
        this.tag = p_41752_;
 -      if (this.getItem().canBeDepleted()) {
@@ -549,13 +570,14 @@
        return multimap;
     }
  
-@@ -875,6 +_,14 @@
+@@ -875,6 +_,15 @@
        listtag.add(compoundtag);
     }
  
 +   // CraftBukkit start
 +   @Deprecated
 +   public void setItem(Item item) {
++      this.bukkitStack = null; // Paper
 +      this.item = item;
 +      this.delegate = net.minecraftforge.registries.ForgeRegistries.ITEMS.getDelegateOrThrow(item); //Ketting
 +   }
