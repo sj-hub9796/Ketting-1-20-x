@@ -276,7 +276,7 @@
                 if (this.seenBy.add(p_140498_.connection)) {
 -                  this.serverEntity.addPairing(p_140498_);
 +                  // Paper start - entity tracking events
-+                  if (io.papermc.paper.event.player.PlayerTrackEntityEvent.getHandlerList().getRegisteredListeners().length == 0 || new io.papermc.paper.event.player.PlayerTrackEntityEvent(player.getBukkitEntity(), this.entity.getBukkitEntity()).callEvent()) {
++                  if (io.papermc.paper.event.player.PlayerTrackEntityEvent.getHandlerList().getRegisteredListeners().length == 0 || new io.papermc.paper.event.player.PlayerTrackEntityEvent(p_140498_.getBukkitEntity(), this.entity.getBukkitEntity()).callEvent()) {
 +                     this.serverEntity.addPairing(p_140498_);
 +                  }
 +                  // Paper end
