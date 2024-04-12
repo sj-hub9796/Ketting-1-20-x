@@ -31,7 +31,7 @@ public class CraftInventoryView extends InventoryView {
         this.player = (CraftHumanEntity) player;
         this.viewing = (CraftInventory) viewing;
         this.container = container;
-        this.originalTitle = CraftChatMessage.fromComponent(container.getTitle());
+        this.originalTitle = CraftChatMessage.fromComponent(container.getCBTitle());
         this.title = originalTitle;
     }
 

@@ -810,7 +810,7 @@
 +
 +         // CraftBukkit start - Inventory open hook
 +         if (abstractcontainermenu != null) {
-+            abstractcontainermenu.setTitle(p_9033_.getDisplayName());
++            abstractcontainermenu.setCBTitle(p_9033_.getDisplayName());
 +
 +            boolean cancelled = false;
 +            //Ketting start
@@ -841,7 +841,7 @@
 -            this.initMenu(abstractcontainermenu);
 +            // CraftBukkit start
              this.containerMenu = abstractcontainermenu;
-+            this.connection.send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), abstractcontainermenu.getTitle()));
++            this.connection.send(new ClientboundOpenScreenPacket(abstractcontainermenu.containerId, abstractcontainermenu.getType(), abstractcontainermenu.getCBTitle()));
 +            // CraftBukkit end
 +
 +            this.initMenu(abstractcontainermenu);
@@ -861,7 +861,7 @@
 +      // CraftBukkit start - Inventory open hook
        this.nextContainerCounter();
 +      AbstractContainerMenu container = new HorseInventoryMenu(this.containerCounter, this.getInventory(), p_9060_, p_9059_);
-+      container.setTitle(p_9059_.getDisplayName());
++      container.setCBTitle(p_9059_.getDisplayName());
 +      container = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callInventoryOpenEvent(this, container);
 +
 +      if (container == null) {

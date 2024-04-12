@@ -17,7 +17,7 @@
 +      ((TransientCraftingContainer) this.craftSlots).setOwner(p_39708_); // CraftBukkit - pass player
 +      ((TransientCraftingContainer) this.craftSlots).resultInventory = this.resultSlots; // CraftBukkit - let InventoryCrafting know about its result slot
 +      this.player = p_39706_; // CraftBukkit - save player
-+      setTitle(net.minecraft.network.chat.Component.translatable("container.crafting")); // SPIGOT-4722: Allocate title for player inventory
++      setCBTitle(net.minecraft.network.chat.Component.translatable("container.crafting")); // SPIGOT-4722: Allocate title for player inventory
 +      // CraftBukkit end
        this.addSlot(new ResultSlot(p_39706_.player, this.craftSlots, this.resultSlots, 0, 154, 28));
  
