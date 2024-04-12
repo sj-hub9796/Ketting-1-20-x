@@ -22,14 +22,14 @@
 +      ((org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory) destination.getTopInventory()).getInventory().onOpen(player);
 +      ((org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory) destination.getBottomInventory()).getInventory().onOpen(player);
 +   }
-+   private net.minecraft.network.chat.Component title;
-+   public final net.minecraft.network.chat.Component getTitle() {
++   private @Nullable net.minecraft.network.chat.Component title;
++   public final net.minecraft.network.chat.Component getCBTitle() { //Ketting - getTitle -> getCBTitle
 +      // Ketting start
 +      //com.google.common.base.Preconditions.checkState(this.title != null, "Title not set");
 +      return this.title == null ? net.minecraft.network.chat.Component.empty() : this.title;
 +      // Ketting end
 +   }
-+   public final void setTitle(net.minecraft.network.chat.Component title) {
++   public final void setCBTitle(net.minecraft.network.chat.Component title) { //Ketting - setTitle -> setCBTitle
 +      com.google.common.base.Preconditions.checkState(this.title == null, "Title already set");
 +      this.title = title;
 +   }
