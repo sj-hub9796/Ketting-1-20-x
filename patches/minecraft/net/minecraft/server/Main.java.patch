@@ -158,7 +158,7 @@
                    Registry<LevelStem> registry = p_248079_.datapackDimensions().registryOrThrow(Registries.LEVEL_STEM);
                    DynamicOps<Tag> dynamicops = RegistryOps.create(NbtOps.INSTANCE, p_248079_.datapackWorldgen());
                    Pair<WorldData, WorldDimensions.Complete> pair = levelstoragesource$levelstorageaccess.getDataTag(dynamicops, p_248079_.dataConfiguration(), registry, p_248079_.datapackWorldgen().allRegistriesLifecycle());
-@@ -170,12 +_,18 @@
+@@ -170,12 +_,19 @@
                          worlddimensions = dedicatedserverproperties.createDimensions(p_248079_.datapackWorldgen());
                       }
  
@@ -173,6 +173,7 @@
 +         //Ketting start - InjectProtect
 +         } catch (org.spongepowered.asm.mixin.throwables.MixinError mixin) {
 +            org.kettingpowered.ketting.core.injectprotect.InjectProtect.onBootErrorCaught(mixin);
++            return;
 +            //Ketting end
           } catch (Exception exception) {
              LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)exception);
