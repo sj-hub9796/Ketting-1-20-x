@@ -172,7 +172,7 @@
           }
  
        }
-@@ -219,40 +_,144 @@
+@@ -219,40 +_,143 @@
  
     }
  
@@ -186,11 +186,11 @@
 +      destroyBlock$bblock = org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock.at(level, p_9281_);
 +      destroyBlock$event = callBukkitBlockBreakEvent(p_9281_, blockstate, destroyBlock$bblock);
 +
-+      if (destroyBlock$event.isEmpty()) {
++      if (destroyBlock$event.isEmpty())
 +         return false;
-+      }
 +
-+      if (false && !this.player.getMainHandItem().getItem().canAttackBlock(blockstate, this.level, p_9281_, this.player)) { // CraftBukkit - false
++      int exp = destroyBlock$event.get().getExpToDrop(); //Ketting - forge event moved to callBukkitBlockBreakEvent
++      if (false && exp == -1) { // CraftBukkit - false
           return false;
        } else {
 +         blockstate = this.level.getBlockState(p_9281_); // CraftBukkit - update state from plugins
@@ -248,9 +248,8 @@
 +            level.captureDrops = null;
 +
 +            // Drop event experience
-+            if (flag && !destroyBlock$event.isEmpty()) {
-+               blockstate.getBlock().popExperience(this.level, p_9281_, destroyBlock$event.get().getExpToDrop());
-+            }
++            if (flag && exp > 0) //Ketting
++               blockstate.getBlock().popExperience(this.level, p_9281_, exp);
 +
 +            return true;
 +            // CraftBukkit end
