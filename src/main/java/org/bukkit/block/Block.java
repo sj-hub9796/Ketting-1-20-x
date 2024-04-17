@@ -521,4 +521,13 @@ public interface Block extends Metadatable, Translatable {
      * @return <code>true</code> if the block data can be placed here
      */
     boolean canPlace(@NotNull BlockData data);
+
+    // Paper start
+    /**
+     * @deprecated use {@link #translationKey()}
+     */
+    @NotNull
+    @Deprecated(forRemoval = true)
+    String getTranslationKey();
+    // Paper end
 }
