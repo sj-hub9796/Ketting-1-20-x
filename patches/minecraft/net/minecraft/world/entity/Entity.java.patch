@@ -687,7 +687,7 @@
           return null;
        } else {
 +         // CraftBukkit start - Capture drops for death event
-+         if (this instanceof LivingEntity && !((LivingEntity) this).forceDrops) {
++         if (this instanceof LivingEntity && !((LivingEntity) this).forceDrops && captureDrops() == null) { //Ketting - check if we currently are capturing drops
 +            ((LivingEntity) this).drops.add(org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(p_19985_));
 +            return null;
 +         }
