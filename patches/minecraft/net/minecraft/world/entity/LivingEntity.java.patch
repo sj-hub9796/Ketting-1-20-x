@@ -757,7 +757,7 @@
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
 +
-+      if (this instanceof ServerPlayer player) {
++      if (this instanceof ServerPlayer player && !(this instanceof net.minecraftforge.common.util.FakePlayer)) {
 +         forgeCaptures = new net.minecraft.world.entity.player.Inventory(player);
 +         forgeCaptures.replaceWith(player.getInventory());
 +         player.getInventory().clearContent();
@@ -765,11 +765,11 @@
 +
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0)) {
 +         drops.forEach(e -> this.drops.add(org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(e.getItem())));
-+         if (!(this instanceof ServerPlayer))
++         if (!(this instanceof ServerPlayer) || this instanceof net.minecraftforge.common.util.FakePlayer)
 +            org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callEntityDeathEvent(this, this.drops);
 +      }
 +
-+      if (this instanceof ServerPlayer player) {
++      if (this instanceof ServerPlayer player && !(this instanceof net.minecraftforge.common.util.FakePlayer)) {
 +         // grab potential items added to the inventory after the death event was called
 +         net.minecraft.world.entity.player.Inventory captured = new net.minecraft.world.entity.player.Inventory(player);
 +         captured.replaceWith(player.getInventory());
