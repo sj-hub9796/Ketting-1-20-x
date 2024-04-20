@@ -28,7 +28,7 @@
              if (p_155111_.checkingBeamSections.size() <= 1) {
                 beaconblockentity$beaconbeamsection = new BeaconBlockEntity.BeaconBeamSection(afloat);
                 p_155111_.checkingBeamSections.add(beaconblockentity$beaconbeamsection);
-@@ -216,30 +_,72 @@
+@@ -216,30 +_,82 @@
        super.setRemoved();
     }
  
@@ -100,21 +100,28 @@
 -
 -         if (p_155100_ >= 4 && p_155101_ != p_155102_ && p_155102_ != null) {
 -            for(Player player1 : list) {
--               player1.addEffect(new MobEffectInstance(p_155102_, j, 0, true, true));
--            }
--         }
--
 +         double d0 = (double) (p_155100_ * 10 + 10);
 +         byte b0 = getAmplification(p_155100_, p_155101_, p_155102_);
 +
 +         int j = getLevel(p_155100_);
-+         List list = getHumansInRange(p_155098_, p_155099_, p_155100_);
++         List<Player> list = getHumansInRange(p_155098_, p_155099_, p_155100_);
 +
-+         applyEffect(list, p_155101_, j, b0);
++         //Ketting start - revert to vanilla implementation - fixes mixin inject error
++         //applyEffect(list, p_155101_, j, b0);
++         for (Player player : list) {
++            player.prepareAddEffect(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.BEACON); //Ketting
++            player.addEffect(new MobEffectInstance(p_155101_, j, b0, true, true));
++         }
 +
 +         if (hasSecondaryEffect(p_155100_, p_155101_, p_155102_)) {
-+            applyEffect(list, p_155102_, j, 0);
-+         }
++            //applyEffect(list, p_155102_, j, 0);
++            for (Player player1 : list) {
++               player1.prepareAddEffect(org.bukkit.event.entity.EntityPotionEffectEvent.Cause.BEACON); //Ketting
+                player1.addEffect(new MobEffectInstance(p_155102_, j, 0, true, true));
+             }
+          }
+-
++         //Ketting end
        }
     }
 +   // CraftBukkit end
