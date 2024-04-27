@@ -639,4 +639,11 @@ public class CraftBlock implements Block {
     public String getTranslationKey() {
         return getNMS().getBlock().getDescriptionId();
     }
+
+    // Paper start
+    @Override
+    public String translationKey() {
+        return this.getNMS().getBlock().getDescriptionId();
+    }
+    // Paper end
 }
