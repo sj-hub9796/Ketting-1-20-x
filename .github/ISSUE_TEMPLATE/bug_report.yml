@@ -4,6 +4,16 @@ description: Create a report to help us improve
 labels: 'T-bug'
 #assignees: ''
 body:
+  - type: checkboxes
+    attributes:
+      label: Basic questions:
+      options:
+        - label: I am actually using ketting, and not any other software (e.g. magma)
+        - label: I am using the latest Ketting version at the time of writing for the Minecraft version, that I am using
+        - label: I have provided full server logs and not a crash-report
+        - label: I have checked all items without reading. 
+        - label: I have provided proper reproduction steps
+        - label: I have ticked all boxes
   - type: dropdown
     attributes:
       label: What Minecraft Version is your Server on?
