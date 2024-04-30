@@ -6,7 +6,7 @@ labels: 'T-bug'
 body:
   - type: checkboxes
     attributes:
-      label: Basic questions:
+      label: "Basic questions:"
       options:
         - label: I am actually using ketting, and not any other software (e.g. magma)
         - label: I am using the latest Ketting version at the time of writing for the Minecraft version, that I am using
