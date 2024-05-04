@@ -107,12 +107,13 @@
              p_35409_.addFreshEntityWithPassengers(witch);
              this.releaseAllPois();
              this.discard();
-@@ -816,7 +_,7 @@
+@@ -816,7 +_,8 @@
              return p_186293_.wantsToSpawnGolem(p_35399_);
           }).limit(5L).collect(Collectors.toList());
           if (list1.size() >= p_35400_) {
 -            if (SpawnUtil.trySpawnMob(EntityType.IRON_GOLEM, MobSpawnType.MOB_SUMMONED, p_35398_, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM).isPresent()) {
-+            if (!SpawnUtil.trySpawnMob(EntityType.IRON_GOLEM, MobSpawnType.MOB_SUMMONED, p_35398_, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE).isEmpty()) { // CraftBukkit
++            SpawnUtil.prepareTrySpawnMob(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.VILLAGE_DEFENSE);
++            if (!SpawnUtil.trySpawnMob(EntityType.IRON_GOLEM, MobSpawnType.MOB_SUMMONED, p_35398_, this.blockPosition(), 10, 8, 6, SpawnUtil.Strategy.LEGACY_IRON_GOLEM).isEmpty()) { // CraftBukkit
                 list.forEach(GolemSensor::golemDetected);
              }
           }

@@ -815,16 +815,14 @@
     protected boolean couldAcceptPassenger() {
        return true;
     }
-@@ -2024,13 +_,20 @@
+@@ -2024,13 +_,19 @@
           ServerLevel serverlevel = (ServerLevel)this.level();
           if (this.isInsidePortal) {
              MinecraftServer minecraftserver = serverlevel.getServer();
 -            ResourceKey<Level> resourcekey = this.level().dimension() == Level.NETHER ? Level.OVERWORLD : Level.NETHER;
 +            ResourceKey<Level> resourcekey = this.level().getTypeKey() == net.minecraft.world.level.dimension.LevelStem.NETHER ? Level.OVERWORLD : Level.NETHER; // CraftBukkit
              ServerLevel serverlevel1 = minecraftserver.getLevel(resourcekey);
--            if (serverlevel1 != null && minecraftserver.isNetherEnabled() && !this.isPassenger() && this.portalTime++ >= i) {
-+
-+            if (!this.isPassenger() && this.portalTime++ >= i) { // CraftBukkit
+             if (serverlevel1 != null && minecraftserver.isNetherEnabled() && !this.isPassenger() && this.portalTime++ >= i) {
                 this.level().getProfiler().push("portal");
                 this.portalTime = i;
                 this.setPortalCooldown();

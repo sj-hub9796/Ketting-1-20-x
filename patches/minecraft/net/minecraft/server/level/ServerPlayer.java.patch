@@ -394,7 +394,7 @@
        } else {
           return portalinfo;
        }
-@@ -717,10 +_,31 @@
+@@ -717,10 +_,21 @@
  
     @Nullable
     public Entity changeDimension(ServerLevel p_9180_) {
@@ -405,16 +405,6 @@
 +
 +   @Nullable
 +   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter) {
-+      return changeDimension(p_9180_, teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN);
-+   }
-+
-+   @Nullable
-+   public Entity changeDimension(ServerLevel p_9180_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
-+      return changeDimension(p_9180_, p_9180_.getPortalForcer(), cause);
-+   }
-+
-+   @Nullable
-+   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +      // CraftBukkit end
 +      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.dimension())) return null;
 +      if (this.isSleeping()) return this; // CraftBukkit - SPIGOT-3154
@@ -428,7 +418,7 @@
           this.unRide();
           this.serverLevel().removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
           if (!this.wonGame) {
-@@ -731,71 +_,155 @@
+@@ -731,71 +_,167 @@
  
           return this;
        } else {
@@ -480,7 +470,7 @@
 +               // CraftBukkit start
 +               org.bukkit.Location enter = this.getBukkitEntity().getLocation();
 +               org.bukkit.Location exit = (levelRef.get() == null) ? null : org.bukkit.craftbukkit.v1_20_R1.util.CraftLocation.toBukkit(portalinfo.pos, p_9180_.getWorld(), portalinfo.yRot, portalinfo.xRot);
-+               org.bukkit.event.player.PlayerTeleportEvent tpEvent = new org.bukkit.event.player.PlayerTeleportEvent(this.getBukkitEntity(), enter, exit, cause);
++               org.bukkit.event.player.PlayerTeleportEvent tpEvent = new org.bukkit.event.player.PlayerTeleportEvent(this.getBukkitEntity(), enter, exit, ketting$ServerPlayer$teleportTo$cause.getAndSet(org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN));
 +               org.bukkit.Bukkit.getServer().getPluginManager().callEvent(tpEvent);
 +               if (tpEvent.isCancelled() || tpEvent.getTo() == null) {
 +                  return null;
@@ -538,8 +528,20 @@
           }
  
           return this;
-       }
-    }
++      }   
++   }
++
++   private java.util.concurrent.atomic.AtomicReference<org.bukkit.event.player.PlayerTeleportEvent.TeleportCause> ketting$changeDimension$cause = new java.util.concurrent.atomic.AtomicReference<>(org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.UNKNOWN);
++   @Nullable
++   public Entity changeDimension(ServerLevel p_9180_, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
++      return changeDimension(p_9180_, p_9180_.getPortalForcer(), cause);
++   }
++
++   @Nullable
++   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
++      ketting$changeDimension$cause.set(cause);
++      return changeDimension(p_9180_, teleporter);
++   }
 +
 +   // CraftBukkit start
 +   @Override
@@ -550,9 +552,9 @@
 +      org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
 +      if (event.isCancelled() || event.getTo() == null || event.getTo().getWorld() == null) {
 +         return null;
-+      }
+       }
 +      return new org.bukkit.craftbukkit.v1_20_R1.event.CraftPortalEvent(event);
-+   }
+    }
 +   // CraftBukkit end
  
     private void createEndPlatform(ServerLevel p_9007_, BlockPos p_9008_) {

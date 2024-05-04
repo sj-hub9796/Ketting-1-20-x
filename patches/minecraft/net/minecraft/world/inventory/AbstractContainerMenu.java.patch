@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
-@@ -60,6 +_,37 @@
+@@ -60,6 +_,47 @@
     private ContainerSynchronizer synchronizer;
     private boolean suppressRemoteUpdates;
  
@@ -34,6 +34,16 @@
 +      this.title = title;
 +   }
 +   // CraftBukkit end
++
++   //Ketting start - overrideable methods
++   public net.minecraft.network.chat.Component getTitle() {
++      return getCBTitle();
++   }
++
++   public void setTitle(net.minecraft.network.chat.Component title) {
++      setCBTitle(title);
++   }
++   //Ketting end
 +
     protected AbstractContainerMenu(@Nullable MenuType<?> p_38851_, int p_38852_) {
        this.menuType = p_38851_;
