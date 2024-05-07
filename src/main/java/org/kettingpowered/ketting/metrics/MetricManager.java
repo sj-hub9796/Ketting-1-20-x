@@ -22,14 +22,22 @@ public final class MetricManager {
     private static MetricsConfig config;
 
     public static void init(DedicatedServer server) {
-        if (configFile == null) {
-            File pluginsDir = (File) server.options.valueOf("plugins");
+        File pluginsDir = (File) server.options.valueOf("plugins");
+
+        if (configFile == null)
             configFile = new File(pluginsDir, "bstats" + File.separator + "config-server.yml");
-        }
 
         reload();
 
-        if (config != null && config.isEnabled()) {
+        if (config != null) {
+            if (!config.didExistBefore()) {
+                //Attempt to delete the old config file, so plugins won't error out
+                File oldFile = new File(pluginsDir, "bstats" + File.separator + "config.yml");
+                if (oldFile.exists())
+                    oldFile.delete();
+            }
+
+            if (!config.isEnabled()) return;
             metrics = new Metrics(KettingConstants.NAME.toLowerCase(), config.getServerUUID(), config.isLogErrorsEnabled());
             addCharts();
         }
