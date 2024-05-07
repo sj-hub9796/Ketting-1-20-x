@@ -24,7 +24,7 @@ public final class MetricManager {
     public static void init(DedicatedServer server) {
         if (configFile == null) {
             File pluginsDir = (File) server.options.valueOf("plugins");
-            configFile = new File(pluginsDir, "bstats" + File.separator + "config.yml");
+            configFile = new File(pluginsDir, "bstats" + File.separator + "config-server.yml");
         }
 
         reload();
