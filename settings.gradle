@@ -198,13 +198,6 @@ dependencyResolutionManagement {
                     'log4j-core',
                     'log4j-slf4j2-impl',
                     'joml',
-                    'lwjgl-glfw',
-                    'lwjgl-jemalloc',
-                    'lwjgl-openal',
-                    'lwjgl-opengl',
-                    'lwjgl-stb',
-                    'lwjgl-tinyfd',
-                    'lwjgl',
                     'slf4j-api'
             ])
 
