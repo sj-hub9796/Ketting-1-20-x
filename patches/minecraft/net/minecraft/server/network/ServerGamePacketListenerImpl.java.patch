@@ -1787,29 +1787,35 @@
                 for(Int2ObjectMap.Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(p_9856_.getChangedSlots())) {
                    this.player.containerMenu.setRemoteSlotNoCopy(entry.getIntKey(), entry.getValue());
                 }
-@@ -1558,21 +_,35 @@
+@@ -1558,21 +_,41 @@
           if (!this.player.containerMenu.stillValid(this.player)) {
              LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.containerMenu);
           } else {
 -            this.server.getRecipeManager().byKey(p_9882_.getRecipe()).ifPresent((p_287379_) -> {
 -               ((RecipeBookMenu)this.player.containerMenu).handlePlacement(p_9882_.isShiftDown(), p_287379_, this.player);
-+            // CraftBukkit start - implement PlayerRecipeBookClickEvent
-+            org.bukkit.inventory.Recipe recipe = this.cserver.getRecipe(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(p_9882_.getRecipe()));
-+            if (recipe == null) {
-+               return;
-+            }
++            // CraftBukkit start - implement PlayerRecipeBookClickEvent //Ketting start - rewrite
 +            org.kettingpowered.ketting.utils.InventoryViewHelper.setContainerOwner(player); //Ketting
-+            org.bukkit.event.player.PlayerRecipeBookClickEvent event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callRecipeBookClickEvent(this.player, recipe, p_9882_.isShiftDown());
 +
-+            // Cast to keyed should be safe as the recipe will never be a MerchantRecipe.
-+            this.server.getRecipeManager().byKey(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.toMinecraft(((org.bukkit.Keyed) event.getRecipe()).getKey())).ifPresent((p_296595_) -> {
-+               ((RecipeBookMenu)this.player.containerMenu).handlePlacement(event.isShiftClick(), p_296595_, this.player);
++            ResourceLocation recipe = p_9882_.getRecipe();
++            org.bukkit.event.player.PlayerRecipeBookClickEvent event = handleBukkitRecipe(recipe, p_9882_.isShiftDown());
++            if (event != null && event.getRecipe() instanceof org.bukkit.Keyed keyed)
++               recipe = org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.toMinecraft(keyed.getKey());
++
++            this.server.getRecipeManager().byKey(recipe).ifPresent((p_296595_) -> {
++               ((RecipeBookMenu)this.player.containerMenu).handlePlacement(event != null ? event.isShiftClick() : p_9882_.isShiftDown(), p_296595_, this.player);
              });
 +            org.kettingpowered.ketting.utils.InventoryViewHelper.clearContainerOwner(); //Ketting
 +            // CraftBukkit end
           }
        }
     }
++
++   private @Nullable org.bukkit.event.player.PlayerRecipeBookClickEvent handleBukkitRecipe(ResourceLocation recipeLoc, boolean shift) {
++      org.bukkit.inventory.Recipe recipe = this.cserver.getRecipe(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(recipeLoc));
++      if (recipe == null) return null;
++      return org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callRecipeBookClickEvent(this.player, recipe, shift);
++   }
++   //Ketting end
  
     public void handleContainerButtonClick(ServerboundContainerButtonClickPacket p_9854_) {
        PacketUtils.ensureRunningOnSameThread(p_9854_, this, this.player.serverLevel());
