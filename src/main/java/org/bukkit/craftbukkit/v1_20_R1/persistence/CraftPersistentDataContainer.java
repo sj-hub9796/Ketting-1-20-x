@@ -156,4 +156,23 @@ public class CraftPersistentDataContainer implements PersistentDataContainer {
     public Map<String, Object> serialize() {
         return (Map<String, Object>) CraftNBTTagConfigSerializer.serialize(toTagCompound());
     }
+
+    // Paper start
+    public void clear() {
+        this.customDataTags.clear();
+    }
+
+    @Override
+    public boolean has(NamespacedKey key) {
+        Preconditions.checkArgument(key != null, "The provided key for the custom value was null");
+
+        return this.customDataTags.containsKey(key.toString());
+    }
+
+    public Map<String, Tag> getTagsCloned() {
+        final Map<String, Tag> tags = new HashMap<>();
+        this.customDataTags.forEach((key, tag) -> tags.put(key, tag.copy()));
+        return tags;
+    }
+    // Paper end
 }
