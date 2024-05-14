@@ -297,7 +297,10 @@ public class CustomChunkGenerator extends InternalChunkGenerator {
         int z = ichunkaccess.getPos().z;
 
         random.setSeed(Mth.getSeed(x, "should-decoration".hashCode(), z) ^ generatoraccessseed.getSeed());
-        super.applyBiomeDecoration(generatoraccessseed, ichunkaccess, structuremanager, generator.shouldGenerateDecorations(this.world.getWorld(), new RandomSourceWrapper.RandomWrapper(random), x, z));
+        //Ketting start - fix infinite loop
+        super.ketting$vanilla.getAndSet(generator.shouldGenerateDecorations(this.world.getWorld(), new RandomSourceWrapper.RandomWrapper(random), x, z));
+        super.applyBiomeDecoration(generatoraccessseed, ichunkaccess, structuremanager);
+        //Ketting end
     }
 
     @Override
