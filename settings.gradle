@@ -212,7 +212,19 @@ dependencyResolutionManagement {
                     'log4j-core',
                     'log4j-slf4j2-impl',
                     'joml',
-                    'slf4j-api'
+                    'slf4j-api',
+                    'adventure-api',
+                    'adventure-key',
+                    'adventure-text-minimessage',
+                    'adventure-text-serializer-gson',
+                    'adventure-text-serializer-json',
+                    'adventure-text-serializer-legacy',
+                    'adventure-text-serializer-plain',
+                    'adventure-text-serializer-ansi',
+                    'ansi',
+                    'examination-api',
+                    'examination-string',
+                    'option'
             ])
 
             bundle('lwjgl', ['lwjgl', 'lwjgl-glfw', 'lwjgl-opengl', 'lwjgl-stb', 'lwjgl-tinyfd'])
