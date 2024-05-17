@@ -1,12 +1,20 @@
 --- a/net/minecraft/world/level/block/BedBlock.java
 +++ b/net/minecraft/world/level/block/BedBlock.java
+@@ -69,6 +_,7 @@
+       return blockstate.getBlock() instanceof BedBlock ? blockstate.getValue(FACING) : null;
+    }
+ 
++   private boolean ketting$use$override$can_set_spawn = true;
+    public InteractionResult use(BlockState p_49515_, Level p_49516_, BlockPos p_49517_, Player p_49518_, InteractionHand p_49519_, BlockHitResult p_49520_) {
+       if (p_49516_.isClientSide) {
+          return InteractionResult.CONSUME;
 @@ -81,7 +_,8 @@
              }
           }
  
 -         if (!canSetSpawn(p_49516_)) {
 +         // CraftBukkit - moved world and biome check into EntityHuman
-+         if (false && !canSetSpawn(p_49516_)) {
++         if (!ketting$use$override$can_set_spawn && !canSetSpawn(p_49516_)) {
              p_49516_.removeBlock(p_49517_, false);
              BlockPos blockpos = p_49517_.relative(p_49515_.getValue(FACING).getOpposite());
              if (p_49516_.getBlockState(blockpos).is(this)) {
