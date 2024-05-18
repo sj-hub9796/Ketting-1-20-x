@@ -14,7 +14,8 @@ import java.util.Collections;
 public class RoutableCommandDispatcher extends CommandDispatcher<CommandSourceStack> {
 
     public static final String[] REDIRECTIONS = {
-            "org.valkyrienskies.mod.forge.common.ValkyrienSkiesModForge"
+            "org.valkyrienskies.mod.forge.common.ValkyrienSkiesModForge",
+            "io.github.marcus8448.gamemodeoverhaul.GamemodeOverhaulForge"
     };
 
     public static boolean needsRedirect() {
