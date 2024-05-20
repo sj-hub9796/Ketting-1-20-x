@@ -429,21 +429,22 @@
        MobEffectInstance mobeffectinstance = this.removeEffectNoUpdate(p_21196_);
        if (mobeffectinstance != null) {
           this.onEffectRemoved(mobeffectinstance);
-@@ -1015,19 +_,63 @@
+@@ -1015,19 +_,66 @@
  
     }
  
 +   // CraftBukkit start - Delegate so we can handle providing a reason for health being regained
-+   // Ketting - reverse that delegation, because mixins 
-+   public @Nullable org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason ketting$heal$regainReason = null;
-+   public void heal(float p_21116_, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason regainReason){
-+      try{
-+         ketting$heal$regainReason = regainReason;
-+         heal(p_21116_);
-+      }finally {
-+         ketting$heal$regainReason = null;
-+      }
++   // Ketting start - mixin
++   private @Nullable org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason ketting$heal$regainReason = null;
++   public void setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason reason) {
++      ketting$heal$regainReason = reason;
 +   }
++
++   public void heal(float p_21116_, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason regainReason){
++      setRegainReason(regainReason);
++      heal(p_21116_);
++   }
++
     public void heal(float p_21116_) {
 +      p_21116_ = net.minecraftforge.event.ForgeEventFactory.onLivingHeal(this, p_21116_);
 +      if (p_21116_ <= 0) return;
@@ -452,6 +453,8 @@
        if (f > 0.0F) {
 -         this.setHealth(f + p_21116_);
 +         org.bukkit.event.entity.EntityRegainHealthEvent event = new org.bukkit.event.entity.EntityRegainHealthEvent(this.getBukkitEntity(), p_21116_, ketting$heal$regainReason);
++         ketting$heal$regainReason = null;
++         //Ketting end
 +         // Suppress during worldgen
 +         if (this.valid) {
 +            this.level().getCraftServer().getPluginManager().callEvent(event);
@@ -1503,13 +1506,14 @@
           this.level().addParticle(new ItemParticleOption(ParticleTypes.ITEM, p_21061_), vec31.x, vec31.y, vec31.z, vec3.x, vec3.y + 0.05D, vec3.z);
        }
  
-@@ -2950,7 +_,28 @@
+@@ -2950,7 +_,29 @@
           } else {
              if (!this.useItem.isEmpty() && this.isUsingItem()) {
                 this.triggerItemUseEffects(this.useItem, 16);
 -               ItemStack itemstack = this.useItem.finishUsingItem(this.level(), this);
++               ItemStack copy = this.useItem.copy(); //Ketting - maintain mixin compat
 +               // CraftBukkit start - fire PlayerItemConsumeEvent
-+               ItemStack forgeResult = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, this.useItem.copy(), getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
++               ItemStack forgeResult = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
 +               ItemStack itemstack;
 +               if (this instanceof ServerPlayer) {
 +                  org.bukkit.inventory.ItemStack craftItem = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(this.useItem);
