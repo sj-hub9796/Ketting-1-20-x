@@ -940,7 +940,7 @@
                 }
              }
           }
-@@ -1581,8 +_,203 @@
+@@ -1581,8 +_,204 @@
        }
     }
  
@@ -1089,7 +1089,8 @@
 +         if (f > 0 || !human) {
 +            if (human) {
 +               // PAIL: Be sure to drag all this code from the EntityHuman subclass each update.
-+               ((Player) this).causeFoodExhaustion(damagesource.getFoodExhaustion(), org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.DAMAGED); // CraftBukkit - EntityExhaustionEvent
++               ((Player) this).setFoodExhaustionReason(org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.DAMAGED); //Ketting
++               ((Player) this).causeFoodExhaustion(damagesource.getFoodExhaustion());
 +               if (f < 3.4028235E37F) {
 +                  ((Player) this).awardStat(Stats.DAMAGE_TAKEN, Math.round(f * 10.0F));
 +               }
