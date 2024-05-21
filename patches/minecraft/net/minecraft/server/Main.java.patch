@@ -71,16 +71,18 @@
  
           Path path = optionset.valueOf(optionspec14);
           if (path != null) {
-@@ -102,29 +_,53 @@
+@@ -102,29 +_,61 @@
              JvmProfiler.INSTANCE.start(Environment.SERVER);
           }
  
 -         Bootstrap.bootStrap();
++         //Ketting start - InjectProtect
 +         try {
 +            Bootstrap.bootStrap();
 +         } catch (org.spongepowered.asm.mixin.throwables.MixinError mixin) {
 +            org.kettingpowered.ketting.core.injectprotect.InjectProtect.onBootErrorCaught(mixin);
 +         }
++         //Ketting end
 +
           Bootstrap.validate();
 +
@@ -91,7 +93,13 @@
           Util.startTimerHackThread();
           Path path1 = Paths.get("server.properties");
 -         DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(path1);
-+         if (!optionset.has(optionspec1)) net.minecraftforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
++         //Ketting start - InjectProtect
++         try {
++            if (!optionset.has(optionspec1)) net.minecraftforge.server.loading.ServerModLoader.load(); // Load mods before we load almost anything else anymore. Single spot now. Only loads if they haven't passed the initserver param
++         } catch (org.spongepowered.asm.mixin.throwables.MixinError mixin) {
++            org.kettingpowered.ketting.core.injectprotect.InjectProtect.onBootErrorCaught(mixin);
++         }
++         //Ketting end
 +         DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(optionset); // CraftBukkit - CLI argument support
           dedicatedserversettings.forceSave();
 -         Path path2 = Paths.get("eula.txt");

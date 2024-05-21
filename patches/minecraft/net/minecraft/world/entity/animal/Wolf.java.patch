@@ -33,11 +33,12 @@
        } else {
           this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(8.0D);
        }
-@@ -324,11 +_,12 @@
+@@ -324,11 +_,13 @@
           return flag ? InteractionResult.CONSUME : InteractionResult.PASS;
        } else if (this.isTame()) {
           if (this.isFood(itemstack) && this.getHealth() < this.getMaxHealth()) {
-+            this.heal((float) item.getFoodProperties().getNutrition(), org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); // CraftBukkit
++            this.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.EATING); //Ketting
++            this.heal((float) item.getFoodProperties().getNutrition());
              if (!p_30412_.getAbilities().instabuild) {
                 itemstack.shrink(1);
              }

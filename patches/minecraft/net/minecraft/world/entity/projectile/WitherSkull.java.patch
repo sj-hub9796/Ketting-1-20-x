@@ -9,15 +9,14 @@
     }
  
     protected void onHitEntity(EntityHitResult p_37626_) {
-@@ -56,7 +_,7 @@
+@@ -56,6 +_,7 @@
                 if (entity.isAlive()) {
                    this.doEnchantDamageEffects(livingentity, entity);
                 } else {
--                  livingentity.heal(5.0F);
-+                  livingentity.heal(5.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.WITHER); // CraftBukkit
++                  livingentity.setRegainReason(org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.WITHER); //Ketting
+                   livingentity.heal(5.0F);
                 }
              }
-          } else {
 @@ -73,7 +_,8 @@
              }
  

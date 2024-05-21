@@ -15,11 +15,24 @@
     }
  
     public int sleepersNeeded(int p_144011_) {
-@@ -35,16 +_,22 @@
+@@ -30,21 +_,32 @@
+       return this.sleepingPlayers;
+    }
+ 
++   boolean ketting$anySleep = false; // CraftBukkit
++   private void ketting$update(ServerPlayer serverplayer){
++      // CraftBukkit start
++      if (serverplayer.isSleeping()) {
++         ketting$anySleep = true;
++      }
++      // CraftBukkit end
++   }
+    public boolean update(List<ServerPlayer> p_144008_) {
+       int i = this.activePlayers;
        int j = this.sleepingPlayers;
        this.activePlayers = 0;
        this.sleepingPlayers = 0;
-+      boolean anySleep = false; // CraftBukkit
++      ketting$anySleep = false;
  
        for(ServerPlayer serverplayer : p_144008_) {
           if (!serverplayer.isSpectator()) {
@@ -28,15 +41,11 @@
 +            if (serverplayer.isSleeping() || serverplayer.fauxSleeping) { // CraftBukkit
                 ++this.sleepingPlayers;
              }
-+            // CraftBukkit start
-+            if (serverplayer.isSleeping()) {
-+               anySleep = true;
-+            }
-+            // CraftBukkit end
++            ketting$update(serverplayer);
           }
        }
  
--      return (j > 0 || this.sleepingPlayers > 0) && (i != this.activePlayers || j != this.sleepingPlayers);
-+      return anySleep && (j > 0 || this.sleepingPlayers > 0) && (i != this.activePlayers || j != this.sleepingPlayers); // CraftBukkit
++      if (!ketting$anySleep) return false; // CraftBukkit
+       return (j > 0 || this.sleepingPlayers > 0) && (i != this.activePlayers || j != this.sleepingPlayers);
     }
  }
