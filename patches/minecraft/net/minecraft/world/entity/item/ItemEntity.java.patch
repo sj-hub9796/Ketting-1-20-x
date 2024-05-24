@@ -237,7 +237,7 @@
  
        if (p_32034_.hasUUID("Owner")) {
           this.target = p_32034_.getUUID("Owner");
-@@ -316,10 +_,58 @@
+@@ -316,10 +_,75 @@
  
     public void playerTouch(Player p_32040_) {
        if (!this.level().isClientSide) {
@@ -252,6 +252,23 @@
 +         // CraftBukkit start - fire PlayerPickupItemEvent
 +         int canHold = p_32040_.getInventory().canHold(itemstack);
 +         int remaining = i - canHold;
++         boolean flyAtPlayer = false; // Paper
++
++         // Paper Start
++         if (this.pickupDelay <= 0) {
++            org.bukkit.event.player.PlayerAttemptPickupItemEvent attemptEvent = new org.bukkit.event.player.PlayerAttemptPickupItemEvent((org.bukkit.entity.Player) p_32040_.getBukkitEntity(), (org.bukkit.entity.Item) this.getBukkitEntity(), remaining);
++            this.level().getCraftServer().getPluginManager().callEvent(attemptEvent);
++
++            flyAtPlayer = attemptEvent.getFlyAtPlayer();
++            if (attemptEvent.isCancelled()) {
++               if (flyAtPlayer) {
++                  p_32040_.take(this, i);
++               }
++
++               return;
++            }
++         }
++         // Paper End
 +
 +         if (this.pickupDelay <= 0 && canHold > 0) {
 +            itemstack.setCount(canHold);
