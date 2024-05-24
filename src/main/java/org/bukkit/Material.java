@@ -4483,6 +4483,17 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
             return Bukkit.getUnsafe().getBlockTranslationKey(this);
         }
     }
+
+    /**
+     * Returns the item rarity for the item. The Material <b>MUST</b> be an Item not a block.
+     * Use {@link #isItem()} before this.
+     *
+     * @return the item rarity
+     */
+    @NotNull
+    public io.papermc.paper.inventory.ItemRarity getItemRarity() {
+        return Bukkit.getUnsafe().getItemRarity(this);
+    }
     // Paper end
 
     /**
