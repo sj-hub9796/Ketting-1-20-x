@@ -322,4 +322,20 @@ public interface FishHook extends Projectile {
          */
         BOBBING;
     }
+
+    // Paper start - More FishHook API
+    /**
+     * Get the number of ticks the hook needs to wait for a fish to bite.
+     *
+     * @return Number of ticks
+     */
+    int getWaitTime();
+
+    /**
+     * Sets the number of ticks the hook needs to wait for a fish to bite.
+     *
+     * @param ticks Number of ticks
+     */
+    void setWaitTime(int ticks);
+    // Paper end
 }

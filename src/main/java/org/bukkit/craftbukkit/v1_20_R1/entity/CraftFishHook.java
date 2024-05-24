@@ -196,4 +196,16 @@ public class CraftFishHook extends CraftProjectile implements FishHook {
     public HookState getState() {
         return HookState.values()[getHandle().currentState.ordinal()];
     }
+
+    // Paper start - More FishHook API
+    @Override
+    public int getWaitTime() {
+        return this.getHandle().timeUntilLured;
+    }
+
+    @Override
+    public void setWaitTime(int ticks) {
+        this.getHandle().timeUntilLured = ticks;
+    }
+    // Paper end
 }
