@@ -27,8 +27,20 @@ public abstract class CraftTileInventoryConverter implements CraftInventoryCreat
 
     @Override
     public Inventory createInventory(InventoryHolder holder, InventoryType type) {
-        return getInventory(getTileEntity());
+        return this.getInventory(holder, type, this.getTileEntity()); // Paper
     }
+
+    // Paper start
+    @Override
+    public Inventory createInventory(InventoryHolder owner, InventoryType type, net.kyori.adventure.text.Component title) {
+        Container te = getTileEntity();
+        if (te instanceof RandomizableContainerBlockEntity) {
+            ((RandomizableContainerBlockEntity) te).setCustomName(io.papermc.paper.adventure.PaperAdventure.asVanilla(title));
+        }
+
+        return this.getInventory(owner, type, te); // Paper
+    }
+    // Paper end
 
     @Override
     public Inventory createInventory(InventoryHolder holder, InventoryType type, String title) {
@@ -37,30 +49,58 @@ public abstract class CraftTileInventoryConverter implements CraftInventoryCreat
             ((RandomizableContainerBlockEntity) te).setCustomName(CraftChatMessage.fromStringOrNull(title));
         }
 
-        return getInventory(te);
+        return this.getInventory(holder, type, te); // Paper
     }
 
+    @Deprecated // Paper - use getInventory with owner and type
     public Inventory getInventory(Container tileEntity) {
+        return this.getInventory(null, null, tileEntity);
+    }
+
+    public Inventory getInventory(InventoryHolder owner, InventoryType type, Container tileEntity) { // Paper
+        if (owner != null) return new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryCustom(owner, type, tileEntity); // Paper
+        // Paper end
         return new CraftInventory(tileEntity);
     }
 
-    public static class Furnace extends CraftTileInventoryConverter {
+    public static class Furnace extends AbstractFurnaceInventoryConverter { // Paper - Furnace, BlastFurnace, and Smoker are pretty much identical
 
         @Override
         public Container getTileEntity() {
             AbstractFurnaceBlockEntity furnace = new FurnaceBlockEntity(BlockPos.ZERO, Blocks.FURNACE.defaultBlockState()); // TODO: customize this if required
             return furnace;
         }
+    // Paper start - abstract furnace converter to apply to all 3 furnaces
+    }
+
+    public static abstract class AbstractFurnaceInventoryConverter extends CraftTileInventoryConverter {
+    // Paper end
+        // Paper start
+        @Override
+        public Inventory createInventory(InventoryHolder owner, InventoryType type, net.kyori.adventure.text.Component title) {
+            Container tileEntity = getTileEntity();
+            ((AbstractFurnaceBlockEntity) tileEntity).setCustomName(io.papermc.paper.adventure.PaperAdventure.asVanilla(title));
+            return this.getInventory(owner, type, tileEntity); // Paper
+        }
+        // Paper end
 
         @Override
         public Inventory createInventory(InventoryHolder owner, InventoryType type, String title) {
-            Container tileEntity = getTileEntity();
+            Container tileEntity = this.getTileEntity();
             ((AbstractFurnaceBlockEntity) tileEntity).setCustomName(CraftChatMessage.fromStringOrNull(title));
-            return getInventory(tileEntity);
+            return this.getInventory(owner, type, tileEntity); // Paper
         }
 
         @Override
         public Inventory getInventory(Container tileEntity) {
+            // Paper start
+            return getInventory(null, null, tileEntity);
+        }
+
+        @Override
+        public Inventory getInventory(InventoryHolder owner, InventoryType type, net.minecraft.world.Container tileEntity) { // Paper
+            if (owner != null) return new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryCustom(owner, type, tileEntity); // Paper
+            // Paper end
             return new CraftInventoryFurnace((AbstractFurnaceBlockEntity) tileEntity);
         }
     }
@@ -72,6 +112,18 @@ public abstract class CraftTileInventoryConverter implements CraftInventoryCreat
             return new BrewingStandBlockEntity(BlockPos.ZERO, Blocks.BREWING_STAND.defaultBlockState());
         }
 
+        // Paper start
+        @Override
+        public Inventory createInventory(InventoryHolder owner, InventoryType type, net.kyori.adventure.text.Component title) {
+            // BrewingStand does not extend TileEntityLootable
+            Container tileEntity = getTileEntity();
+            if (tileEntity instanceof BrewingStandBlockEntity) {
+                ((BrewingStandBlockEntity) tileEntity).setCustomName(io.papermc.paper.adventure.PaperAdventure.asVanilla(title));
+            }
+            return this.getInventory(owner, type, tileEntity); // Paper
+        }
+        // Paper end
+
         @Override
         public Inventory createInventory(InventoryHolder holder, InventoryType type, String title) {
             // BrewingStand does not extend RandomizableContainerBlockEntity
@@ -79,11 +131,19 @@ public abstract class CraftTileInventoryConverter implements CraftInventoryCreat
             if (tileEntity instanceof BrewingStandBlockEntity) {
                 ((BrewingStandBlockEntity) tileEntity).setCustomName(CraftChatMessage.fromStringOrNull(title));
             }
-            return getInventory(tileEntity);
+            return this.getInventory(holder, type, tileEntity); // Paper
         }
 
         @Override
         public Inventory getInventory(Container tileEntity) {
+            // Paper start
+            return getInventory(null, null, tileEntity);
+        }
+
+        @Override
+        public Inventory getInventory(InventoryHolder owner, InventoryType type, net.minecraft.world.Container tileEntity) { // Paper
+            if (owner != null) return new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryCustom(owner, type, tileEntity); // Paper
+            // Paper end
             return new CraftInventoryBrewer(tileEntity);
         }
     }
@@ -112,7 +172,7 @@ public abstract class CraftTileInventoryConverter implements CraftInventoryCreat
         }
     }
 
-    public static class BlastFurnace extends CraftTileInventoryConverter {
+    public static class BlastFurnace extends AbstractFurnaceInventoryConverter { // Paper - Furnace, BlastFurnace, and Smoker are pretty much identical
 
         @Override
         public Container getTileEntity() {
@@ -128,7 +188,7 @@ public abstract class CraftTileInventoryConverter implements CraftInventoryCreat
         }
     }
 
-    public static class Smoker extends CraftTileInventoryConverter {
+    public static class Smoker extends AbstractFurnaceInventoryConverter { // Paper - Furnace, BlastFurnace, and Smoker are pretty much identical
 
         @Override
         public Container getTileEntity() {

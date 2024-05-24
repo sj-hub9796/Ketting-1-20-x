@@ -1394,6 +1394,7 @@ public final class Bukkit {
         return server.createInventory(owner, type);
     }
 
+    // Paper start
     /**
      * Creates an empty inventory with the specified type and title. If the type
      * is {@link InventoryType#CHEST}, the new inventory has a size of 27;
@@ -1419,6 +1420,37 @@ public final class Bukkit {
      * @see InventoryType#isCreatable()
      */
     @NotNull
+    public static Inventory createInventory(@Nullable InventoryHolder owner, @NotNull InventoryType type, net.kyori.adventure.text.@NotNull Component title) {
+        return server.createInventory(owner, type, title);
+    }
+    // Paper end
+
+    /**
+     * Creates an empty inventory with the specified type and title. If the type
+     * is {@link InventoryType#CHEST}, the new inventory has a size of 27;
+     * otherwise the new inventory has the normal size for its type.<br>
+     * It should be noted that some inventory types do not support titles and
+     * may not render with said titles on the Minecraft client.
+     * <br>
+     * {@link InventoryType#WORKBENCH} will not process crafting recipes if
+     * created with this method. Use
+     * {@link Player#openWorkbench(Location, boolean)} instead.
+     * <br>
+     * {@link InventoryType#ENCHANTING} will not process {@link ItemStack}s
+     * for possible enchanting results. Use
+     * {@link Player#openEnchanting(Location, boolean)} instead.
+     *
+     * @param owner The holder of the inventory; can be null if there's no holder.
+     * @param type The type of inventory to create.
+     * @param title The title of the inventory, to be displayed when it is viewed.
+     * @return The new inventory.
+     * @throws IllegalArgumentException if the {@link InventoryType} cannot be
+     * viewed.
+     *
+     * @see InventoryType#isCreatable()
+     */
+    @Deprecated // Paper
+    @NotNull
     public static Inventory createInventory(@Nullable InventoryHolder owner, @NotNull InventoryType type, @NotNull String title) {
         return server.createInventory(owner, type, title);
     }
@@ -1437,6 +1469,7 @@ public final class Bukkit {
         return server.createInventory(owner, size);
     }
 
+    // Paper start
     /**
      * Creates an empty inventory of type {@link InventoryType#CHEST} with the
      * specified size and title.
@@ -1448,6 +1481,24 @@ public final class Bukkit {
      * @return a new inventory
      * @throws IllegalArgumentException if the size is not a multiple of 9
      */
+    @NotNull
+    public static Inventory createInventory(@Nullable InventoryHolder owner, int size, net.kyori.adventure.text.@NotNull Component title) throws IllegalArgumentException {
+        return server.createInventory(owner, size, title);
+    }
+    // Paper end
+
+    /**
+     * Creates an empty inventory of type {@link InventoryType#CHEST} with the
+     * specified size and title.
+     *
+     * @param owner the holder of the inventory, or null to indicate no holder
+     * @param size a multiple of 9 as the size of inventory to create
+     * @param title the title of the inventory, displayed when inventory is
+     *     viewed
+     * @return a new inventory
+     * @throws IllegalArgumentException if the size is not a multiple of 9
+     */
+    @Deprecated // Paper
     @NotNull
     public static Inventory createInventory(@Nullable InventoryHolder owner, int size, @NotNull String title) throws IllegalArgumentException {
         return server.createInventory(owner, size, title);
@@ -2027,6 +2078,17 @@ public final class Bukkit {
     public static UnsafeValues getUnsafe() {
         return server.getUnsafe();
     }
+
+    // Paper start
+    /**
+     * Checks if the server is in the process of being shutdown.
+     *
+     * @return true if server is in the process of being shutdown
+     */
+    public static boolean isStopping() {
+        return server.isStopping();
+    }
+    // Paper enc
 
     @NotNull
     public static Server.Spigot spigot() {

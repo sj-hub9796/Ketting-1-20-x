@@ -1950,6 +1950,14 @@ public final class CraftServer implements Server {
         return CraftInventoryCreator.INSTANCE.createInventory(owner, type);
     }
 
+    // Paper start
+    @Override
+    public Inventory createInventory(InventoryHolder owner, InventoryType type, net.kyori.adventure.text.Component title) {
+        Preconditions.checkArgument(type.isCreatable(), "Cannot open an inventory of type ", type);
+        return CraftInventoryCreator.INSTANCE.createInventory(owner, type, title);
+    }
+    // Paper end
+
     @Override
     public Inventory createInventory(InventoryHolder owner, InventoryType type, String title) {
         Preconditions.checkArgument(type != null, "InventoryType cannot be null");
@@ -1963,6 +1971,14 @@ public final class CraftServer implements Server {
         Preconditions.checkArgument(9 <= size && size <= 54 && size % 9 == 0, "Size for custom inventory must be a multiple of 9 between 9 and 54 slots (got %s)", size);
         return CraftInventoryCreator.INSTANCE.createInventory(owner, size);
     }
+
+    // Paper start
+    @Override
+    public Inventory createInventory(InventoryHolder owner, int size, net.kyori.adventure.text.Component title) throws IllegalArgumentException {
+        Preconditions.checkArgument(9 <= size && size <= 54 && size % 9 == 0, "Size for custom inventory must be a multiple of 9 between 9 and 54 slots (got " + size + ")");
+        return CraftInventoryCreator.INSTANCE.createInventory(owner, size, title);
+    }
+    // Paper end
 
     @Override
     public Inventory createInventory(InventoryHolder owner, int size, String title) throws IllegalArgumentException {
@@ -2460,10 +2476,21 @@ public final class CraftServer implements Server {
 
     public org.bukkit.Server.Spigot spigot()
     {
-        return spigot;
+        return this.spigot;
     }
     // Spigot end
-    
+
+    // Paper start
+    private Iterable<? extends net.kyori.adventure.audience.Audience> adventure$audiences ;
+    @Override
+    public Iterable<? extends net.kyori.adventure.audience.Audience> audiences() {
+        if (this.adventure$audiences == null) {
+            this.adventure$audiences = com.google.common.collect.Iterables.concat(java.util.Collections.singleton(this.getConsoleSender()), this.getOnlinePlayers());
+        }
+        return this.adventure$audiences;
+    }
+    // Paper end
+
     //Ketting start
     public boolean isStopping(){
         return !getServer().isRunning();

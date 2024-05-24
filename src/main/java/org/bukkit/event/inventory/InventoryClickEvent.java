@@ -84,7 +84,7 @@ public class InventoryClickEvent extends InventoryInteractEvent {
      *
      * @return the cursor ItemStack
      */
-    @Nullable
+    @NotNull // Paper - fix nullability
     public ItemStack getCursor() {
         return getView().getCursor();
     }
