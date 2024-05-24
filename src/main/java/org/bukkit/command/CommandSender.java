@@ -6,7 +6,7 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface CommandSender extends Permissible {
+public interface CommandSender extends net.kyori.adventure.audience.Audience, Permissible { // Paper
 
     /**
      * Sends this sender a message
