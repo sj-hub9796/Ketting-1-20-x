@@ -441,6 +441,26 @@ public class Location implements Cloneable, ConfigurationSerializable {
         return this;
     }
 
+    // Paper Start
+    @NotNull
+    public Location toBlockLocation() {
+        Location blockLoc = clone();
+        blockLoc.setX(getBlockX());
+        blockLoc.setY(getBlockY());
+        blockLoc.setZ(getBlockZ());
+        return blockLoc;
+    }
+
+    @NotNull
+    public Location toCenterLocation() {
+        Location centerLoc = clone();
+        centerLoc.setX(getBlockX() + 0.5);
+        centerLoc.setY(getBlockY() + 0.5);
+        centerLoc.setZ(getBlockZ() + 0.5);
+        return centerLoc;
+    }
+    // Paper End
+
     /**
      * Gets the magnitude of the location, defined as sqrt(x^2+y^2+z^2). The
      * value of this method is not cached and uses a costly square-root
