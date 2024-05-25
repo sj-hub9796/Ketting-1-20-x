@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -64,6 +_,17 @@
+@@ -64,12 +_,28 @@
     public FishingHook.FishHookState currentState = FishingHook.FishHookState.FLYING;
     private final int luck;
     private final int lureSpeed;
@@ -18,6 +18,17 @@
  
     private FishingHook(EntityType<? extends FishingHook> p_150141_, Level p_150142_, int p_150143_, int p_150144_) {
        super(p_150141_, p_150142_);
+       this.noCulling = true;
+       this.luck = Math.max(0, p_150143_);
+       this.lureSpeed = Math.max(0, p_150144_);
++      // Paper start
++      // TODO: paper config patch
++      minWaitTime = 100; //world.paperConfig().fishingTimeRange.minimum;
++      maxWaitTime = 600; //world.paperConfig().fishingTimeRange.maximum;
++      // Paper end
+    }
+ 
+    public FishingHook(EntityType<? extends FishingHook> p_150138_, Level p_150139_) {
 @@ -229,8 +_,8 @@
     private boolean shouldStopFishing(Player p_37137_) {
        ItemStack itemstack = p_37137_.getMainHandItem();
@@ -93,7 +104,7 @@
 -         this.timeUntilLured -= this.lureSpeed * 20 * 5;
 +         // CraftBukkit start - logic to modify fishing wait time
 +         this.timeUntilLured = Mth.nextInt(this.random, this.minWaitTime, this.maxWaitTime);
-+         this.timeUntilLured -= (this.applyLure) ? this.lureSpeed * 20 * 5 : 0;
++         this.timeUntilLured -= (this.applyLure) ? (this.lureSpeed * 20 * 5 >= this.maxWaitTime ? this.timeUntilLured - 1 : this.lureSpeed * 20 * 5) : 0; // Paper - Fix Lure infinite loop
 +         // CraftBukkit end
        }
  
