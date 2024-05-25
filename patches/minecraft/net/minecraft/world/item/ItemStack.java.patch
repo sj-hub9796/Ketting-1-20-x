@@ -399,13 +399,15 @@
     }
  
     public boolean hurt(int p_220158_, RandomSource p_220159_, @Nullable ServerPlayer p_220160_) {
-@@ -313,6 +_,21 @@
+@@ -312,7 +_,23 @@
+                }
              }
  
++            int originalDamage = p_220158_; // Paper
              p_220158_ -= j;
 +            // CraftBukkit start
 +            if (p_220160_ != null) {
-+               org.bukkit.event.player.PlayerItemDamageEvent event = new org.bukkit.event.player.PlayerItemDamageEvent(p_220160_.getBukkitEntity(), org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this), p_220158_);
++               org.bukkit.event.player.PlayerItemDamageEvent event = new org.bukkit.event.player.PlayerItemDamageEvent(p_220160_.getBukkitEntity(), org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this), p_220158_, originalDamage); // Paper
 +               event.getPlayer().getServer().getPluginManager().callEvent(event);
 +
 +               if (p_220158_ != event.getDamage() || event.isCancelled()) {
