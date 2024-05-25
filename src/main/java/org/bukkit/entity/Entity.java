@@ -710,4 +710,11 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
     @Override
     Spigot spigot();
     // Spigot end
+
+    // Paper Start
+    /**
+     * Check if entity is in lava
+     */
+    boolean isInLava();
+    // Paper End
 }

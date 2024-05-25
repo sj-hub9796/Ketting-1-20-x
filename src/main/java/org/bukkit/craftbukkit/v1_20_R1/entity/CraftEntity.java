@@ -1087,4 +1087,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return spigot;
     }
     // Spigot end
+
+    // Paper Start
+    @Override
+    public boolean isInLava() {
+        return getHandle().isInLava();
+    }
+    // Paper End
 }
