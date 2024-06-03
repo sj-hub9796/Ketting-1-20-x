@@ -326,7 +326,7 @@
     }
  
     public InteractionResult useItem(ServerPlayer p_9262_, Level p_9263_, ItemStack p_9264_, InteractionHand p_9265_) {
-@@ -261,6 +_,8 @@
+@@ -261,9 +_,13 @@
        } else if (p_9262_.getCooldowns().isOnCooldown(p_9264_.getItem())) {
           return InteractionResult.PASS;
        } else {
@@ -334,7 +334,12 @@
 +         if (cancelResult != null) return cancelResult;
           int i = p_9264_.getCount();
           int j = p_9264_.getDamageValue();
++         p_9262_.forceDrops = true; //Ketting
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.use(p_9263_, p_9262_, p_9265_);
++         p_9262_.forceDrops = false; //Ketting
+          ItemStack itemstack = interactionresultholder.getObject();
+          if (itemstack == p_9264_ && itemstack.getCount() == i && itemstack.getUseDuration() <= 0 && itemstack.getDamageValue() == j) {
+             return interactionresultholder.getResult();
 @@ -294,24 +_,71 @@
        }
     }

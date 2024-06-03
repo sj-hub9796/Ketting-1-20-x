@@ -22,7 +22,7 @@
 +   }
 +
 +   // CraftBukkit
-+   default org.bukkit.inventory.Recipe toBukkitRecipe(){
-+      return null;
++   default org.bukkit.inventory.Recipe toBukkitRecipe() {
++      return new org.kettingpowered.ketting.craftbukkit.CraftModdedRecipe(this); //Ketting - return modded recipe if not overridden
     }
  }
