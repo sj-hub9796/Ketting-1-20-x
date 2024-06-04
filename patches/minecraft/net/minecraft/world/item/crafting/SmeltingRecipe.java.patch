@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/SmeltingRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmeltingRecipe.java
-@@ -16,4 +_,17 @@
+@@ -16,4 +_,22 @@
     public RecipeSerializer<?> getSerializer() {
        return RecipeSerializer.SMELTING_RECIPE;
     }
@@ -8,6 +8,11 @@
 +   // CraftBukkit start
 +   @Override
 +   public org.bukkit.inventory.Recipe toBukkitRecipe() {
++      //Ketting start - fix issues with empty results
++      if (this.result.isEmpty())
++         return new org.kettingpowered.ketting.craftbukkit.CraftModdedRecipe(this);
++      //Ketting end
++
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this.result);
 +
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftFurnaceRecipe recipe = new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftFurnaceRecipe(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(this.id), result, org.bukkit.craftbukkit.v1_20_R1.inventory.CraftRecipe.toBukkit(this.ingredient), this.experience, this.cookingTime);
