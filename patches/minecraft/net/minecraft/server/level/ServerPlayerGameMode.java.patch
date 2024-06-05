@@ -172,7 +172,7 @@
           }
  
        }
-@@ -219,40 +_,143 @@
+@@ -219,40 +_,154 @@
  
     }
  
@@ -219,6 +219,10 @@
  
              if (this.isCreative()) {
 -               return true;
++               //Ketting start - mixin error
++               this.removeBlock$cancel = true;
++               removeBlock(p_9281_, false);
++               //Ketting end
 +               // return true; // CraftBukkit
              } else {
                 ItemStack itemstack = this.player.getMainHandItem();
@@ -317,7 +321,14 @@
 +   }
 +   //Ketting end
 +
++   //Ketting start - mixin error
++   private boolean removeBlock$cancel = false;
 +   private boolean removeBlock(BlockPos p_180235_1_, boolean canHarvest) {
++      if (removeBlock$cancel) {
++         removeBlock$cancel = false;
++         return true; //we return true here as the creative destroy return value would also be true (not that it matters, the return value is ignored)
++      }
++      //Ketting end
 +      BlockState state = this.level.getBlockState(p_180235_1_);
 +      boolean removed = state.onDestroyedByPlayer(this.level, p_180235_1_, this.player, canHarvest, this.level.getFluidState(p_180235_1_));
 +      if (removed)
