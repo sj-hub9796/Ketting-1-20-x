@@ -22,13 +22,17 @@
     final int width;
     final int height;
     final NonNullList<Ingredient> recipeItems;
-@@ -47,6 +_,68 @@
+@@ -47,6 +_,72 @@
        this(p_250963_, p_250221_, p_250716_, p_251480_, p_251980_, p_252150_, p_248581_, true);
     }
  
 +   // CraftBukkit start
 +   @Override
-+   public org.bukkit.inventory.ShapedRecipe toBukkitRecipe() {
++   public org.bukkit.inventory.Recipe toBukkitRecipe() { //Ketting - org.bukkit.inventory.ShapedRecipe -> org.bukkit.inventory.Recipe
++      //Ketting start - if dimensions are bigger than a 3x3, we can't convert it to a Bukkit recipe, so we assume that it's modded
++      if (this.width > 3 || this.height > 3)
++         return new org.kettingpowered.ketting.craftbukkit.CraftModdedRecipe(this);
++      //Ketting end
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this.result);
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftShapedRecipe recipe = new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftShapedRecipe(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(this.id), result);
 +      recipe.setGroup(this.group);
