@@ -8,7 +8,7 @@
  
     public ShapelessRecipe(ResourceLocation p_251840_, String p_249640_, CraftingBookCategory p_249390_, ItemStack p_252071_, NonNullList<Ingredient> p_250689_) {
        this.id = p_251840_;
-@@ -27,7 +_,24 @@
+@@ -27,7 +_,29 @@
        this.category = p_249390_;
        this.result = p_252071_;
        this.ingredients = p_250689_;
@@ -19,7 +19,12 @@
 +   // CraftBukkit start
 +   @SuppressWarnings("unchecked")
 +   @Override
-+   public org.bukkit.inventory.ShapelessRecipe toBukkitRecipe() {
++   public org.bukkit.inventory.Recipe toBukkitRecipe() { //Ketting - org.bukkit.inventory.ShapelessRecipe -> org.bukkit.inventory.Recipe
++      //Ketting start - empty check
++      if (this.result.isEmpty())
++         return new org.kettingpowered.ketting.craftbukkit.CraftModdedRecipe(this);
++      //Ketting end
++
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this.result);
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftShapelessRecipe recipe = new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftShapelessRecipe(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(this.id), result);
 +      recipe.setGroup(this.group);
