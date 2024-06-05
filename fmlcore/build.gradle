@@ -93,7 +93,7 @@ publishing {
                 username = System.getenv("KETTINGUSERNAME")
                 password = System.getenv("KETTINGPASSWORD")
             }
-            url = "https://nexus.c0d3m4513r.com/repository/Ketting-Server-Releases/"
+            url = "https://reposilite.c0d3m4513r.com/Ketting-Server-Releases/"
         }
     }
 }

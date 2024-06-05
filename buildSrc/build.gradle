@@ -1,5 +1,5 @@
 repositories {
-    maven { url = 'https://nexus.c0d3m4513r.com/repository/Forge/'}
+    maven { url = 'https://reposilite.c0d3m4513r.com/Forge/'}
 	mavenCentral()
 }
 
