@@ -10,6 +10,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.recipe.CookingBookCategory;
 import org.bukkit.inventory.recipe.CraftingBookCategory;
+import org.kettingpowered.ketting.craftbukkit.CraftModdedRecipeChoice;
 
 public interface CraftRecipe extends Recipe {
 
@@ -25,12 +26,16 @@ public interface CraftRecipe extends Recipe {
         } else if (bukkit instanceof RecipeChoice.ExactChoice) {
             stack = new Ingredient(((RecipeChoice.ExactChoice) bukkit).getChoices().stream().map((mat) -> new net.minecraft.world.item.crafting.Ingredient.ItemValue(CraftItemStack.asNMSCopy(mat))));
             stack.exact = true;
+        //Ketting start
+        } else if (bukkit instanceof CraftModdedRecipeChoice modded) {
+            stack = modded.getIngredient();
+            //Ketting end
         } else {
             throw new IllegalArgumentException("Unknown recipe stack instance " + bukkit);
         }
 
         stack.getItems();
-        if (requireNotEmpty) {
+        if (stack.isVanilla() && requireNotEmpty) { //Ketting - vanilla check
             Preconditions.checkArgument(stack.itemStacks.length != 0, "Recipe requires at least one non-air choice");
         }
 
@@ -39,6 +44,11 @@ public interface CraftRecipe extends Recipe {
 
     public static RecipeChoice toBukkit(Ingredient list) {
         list.getItems();
+
+        //Ketting start
+        if (!list.isVanilla())
+            return new CraftModdedRecipeChoice(list);
+        //Ketting end
 
         if (list.itemStacks.length == 0) {
             return null;
