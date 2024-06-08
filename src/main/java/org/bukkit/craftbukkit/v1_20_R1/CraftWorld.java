@@ -1295,7 +1295,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public File getWorldFolder() {
-        return world.convertable.getLevelPath(LevelResource.ROOT).toFile().getParentFile();
+        return this.world.convertable.getDimensionPath(this.world.dimension()).toFile();
     }
 
     @Override

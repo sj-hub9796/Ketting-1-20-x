@@ -603,7 +603,7 @@ tasks.register('mergeBaseForgeJar', MergeJars) {
         def output = project.layout.buildDirectory.dir(name).map { it.file("forge-${inputVersion}-universal.jar") }.get().asFile
         project.rootProject.extensions.download.run {
             //Ketting - use our own mirror
-            src "https://nexus.c0d3m4513r.com/repository/Forge/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-universal.jar"
+            src "https://reposilite.c0d3m4513r.com/Forge/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-universal.jar"
             dest output
         }
         return output
@@ -1202,7 +1202,7 @@ publishing {
                 username = System.getenv("KETTINGUSERNAME")
                 password = System.getenv("KETTINGPASSWORD")
             }
-            url = "https://nexus.c0d3m4513r.com/repository/Ketting-Server-Releases/"
+            url = "https://reposilite.c0d3m4513r.com/Ketting-Server-Releases/"
         }
     }
 }

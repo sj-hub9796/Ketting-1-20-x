@@ -2,7 +2,7 @@ import org.gradle.internal.os.OperatingSystem
 
 pluginManagement {
     repositories {
-        maven { url = 'https://nexus.c0d3m4513r.com/repository/Magma/' }
+        maven { url = 'https://reposilite.c0d3m4513r.com/Magma/' }
         //Everything below is not required, but kept for redundancy
         gradlePluginPortal()
         maven { url = 'https://maven.minecraftforge.net/' }

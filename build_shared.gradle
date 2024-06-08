@@ -10,8 +10,8 @@ println("Version: $version")
 
 repositories {
     //Ketting start
-    maven { url = 'https://nexus.c0d3m4513r.com/repository/Magma/' }
-    maven { url = 'https://nexus.c0d3m4513r.com/repository/Ketting/' }
+    maven { url = 'https://reposilite.c0d3m4513r.com/Magma/' }
+    maven { url = 'https://reposilite.c0d3m4513r.com/Ketting/' }
     //Everything below is not required, but kept for redundancy
     //Ketting end
     mavenCentral()

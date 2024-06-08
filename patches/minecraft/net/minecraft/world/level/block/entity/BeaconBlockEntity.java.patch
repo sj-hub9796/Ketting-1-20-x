@@ -128,3 +128,12 @@
  
     public static void playSound(Level p_155104_, BlockPos p_155105_, SoundEvent p_155106_) {
        p_155104_.playSound((Player)null, p_155105_, p_155106_, SoundSource.BLOCKS, 1.0F, 1.0F);
+@@ -297,7 +_,7 @@
+ 
+    @Nullable
+    public AbstractContainerMenu createMenu(int p_58696_, Inventory p_58697_, Player p_58698_) {
+-      return BaseContainerBlockEntity.canUnlock(p_58698_, this.lockKey, this.getDisplayName()) ? new BeaconMenu(p_58696_, p_58697_, this.dataAccess, ContainerLevelAccess.create(this.level, this.getBlockPos())) : null;
++      return BaseContainerBlockEntity.canUnlock(p_58698_, this.lockKey, this.getDisplayName()) ? new BeaconMenu(p_58696_, p_58697_, this.dataAccess, ContainerLevelAccess.craftCreate(this.level, this.getBlockPos())) : null; //Ketting
+    }
+ 
+    public Component getDisplayName() {

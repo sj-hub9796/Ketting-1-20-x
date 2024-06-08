@@ -29,8 +29,8 @@
 +   // CraftBukkit start
 +   @Override
 +   public org.bukkit.inventory.Recipe toBukkitRecipe() { //Ketting - org.bukkit.inventory.ShapedRecipe -> org.bukkit.inventory.Recipe
-+      //Ketting start - if dimensions are bigger than a 3x3, we can't convert it to a Bukkit recipe, so we assume that it's modded
-+      if (this.width > 3 || this.height > 3)
++      //Ketting start - if dimensions are bigger than a 3x3, we can't convert it to a Bukkit recipe, so we assume that it's modded. Also check if the result is empty.
++      if (this.width > 3 || this.height > 3 || this.result.isEmpty())
 +         return new org.kettingpowered.ketting.craftbukkit.CraftModdedRecipe(this);
 +      //Ketting end
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this.result);

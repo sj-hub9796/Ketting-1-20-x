@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/inventory/ContainerLevelAccess.java
 +++ b/net/minecraft/world/inventory/ContainerLevelAccess.java
-@@ -7,6 +_,21 @@
+@@ -7,14 +_,65 @@
  import net.minecraft.world.level.Level;
  
  public interface ContainerLevelAccess {
@@ -22,8 +22,33 @@
     ContainerLevelAccess NULL = new ContainerLevelAccess() {
        public <T> Optional<T> evaluate(BiFunction<Level, BlockPos, T> p_39304_) {
           return Optional.empty();
-@@ -15,6 +_,18 @@
+       }
+    };
  
++   //Ketting start - this method exists because the original create method can be overridden by mixins, losing the CraftBukkit additions, and causing issues
++   static ContainerLevelAccess craftCreate(final Level p_39290_, final BlockPos p_39291_) {
++      ContainerLevelAccess instance = create(p_39290_, p_39291_);
++
++      return new ContainerLevelAccess() {
++         // CraftBukkit start
++         @Override
++         public Level getWorld() {
++            return p_39290_;
++         }
++
++         @Override
++         public BlockPos getPosition() {
++            return p_39291_;
++         }
++         // CraftBukkit end
++
++         public <T> Optional<T> evaluate(BiFunction<Level, BlockPos, T> p_39298_) {
++            return instance.evaluate(p_39298_);
++         }
++      };
++   }
++   //Ketting end
++
     static ContainerLevelAccess create(final Level p_39290_, final BlockPos p_39291_) {
        return new ContainerLevelAccess() {
 +         // CraftBukkit start

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
-@@ -65,8 +_,19 @@
+@@ -65,8 +_,24 @@
     }
  
     public boolean isIncomplete() {
@@ -12,6 +12,11 @@
 +   // CraftBukkit start
 +   @Override
 +   public org.bukkit.inventory.Recipe toBukkitRecipe() {
++      //Ketting start - empty check
++      if (this.result.isEmpty())
++         return new org.kettingpowered.ketting.craftbukkit.CraftModdedRecipe(this);
++      //Ketting end
++
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack result = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(this.result);
 +
 +      org.bukkit.craftbukkit.v1_20_R1.inventory.CraftSmithingTransformRecipe recipe = new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftSmithingTransformRecipe(org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey.fromMinecraft(this.id), result, org.bukkit.craftbukkit.v1_20_R1.inventory.CraftRecipe.toBukkit(this.template), org.bukkit.craftbukkit.v1_20_R1.inventory.CraftRecipe.toBukkit(this.base), org.bukkit.craftbukkit.v1_20_R1.inventory.CraftRecipe.toBukkit(this.addition));
