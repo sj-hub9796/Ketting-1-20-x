@@ -1326,10 +1326,17 @@
        }
  
        double d1 = this.getX() - this.xo;
-@@ -2358,6 +_,7 @@
+@@ -2358,6 +_,14 @@
  
           ItemStack itemstack1 = this.getItemBySlot(equipmentslot);
           if (this.equipmentHasChanged(itemstack, itemstack1)) {
++            // Paper start
++            if (this instanceof ServerPlayer && equipmentslot.getType() == EquipmentSlot.Type.ARMOR) {
++               final org.bukkit.inventory.ItemStack oldItem = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(itemstack);
++               final org.bukkit.inventory.ItemStack newItem = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(itemstack1);
++               new com.destroystokyo.paper.event.player.PlayerArmorChangeEvent((org.bukkit.entity.Player) this.getBukkitEntity(), com.destroystokyo.paper.event.player.PlayerArmorChangeEvent.SlotType.valueOf(equipmentslot.name()), oldItem, newItem).callEvent();
++            }
++            // Paper end
 +            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent(this, equipmentslot, itemstack, itemstack1));
              if (map == null) {
                 map = Maps.newEnumMap(EquipmentSlot.class);
