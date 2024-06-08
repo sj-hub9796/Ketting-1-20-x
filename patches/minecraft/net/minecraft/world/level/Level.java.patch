@@ -9,11 +9,10 @@
     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
     public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
     public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));
-@@ -110,8 +_,105 @@
+@@ -110,8 +_,109 @@
     private final RegistryAccess registryAccess;
     private final DamageSources damageSources;
     private long subTickCount;
--
 +   public boolean restoringBlockSnapshots = false;
 +   public boolean captureBlockSnapshots = false;
 +   public java.util.ArrayList<net.minecraftforge.common.util.BlockSnapshot> capturedBlockSnapshots = new java.util.ArrayList<>();
@@ -39,13 +38,23 @@
 +   public List<net.minecraft.world.entity.item.ItemEntity> captureDrops;
 +   public final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<org.bukkit.entity.SpawnCategory> ticksPerSpawnCategory = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
 +   public boolean populating;
-+   public final org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot
++   public org.spigotmc.SpigotWorldConfig spigotConfig; // Spigot //Ketting - not final
 +
 +   public final org.bukkit.craftbukkit.v1_20_R1.SpigotTimings.WorldTimingsHandler timings; // Spigot
 +   public static BlockPos lastPhysicsProblem; // Spigot
 +   private org.spigotmc.TickLimiter entityLimiter;
 +   private org.spigotmc.TickLimiter tileLimiter;
 +   private int tileTickPosition;
++
++   //Ketting start - setters
++   protected void setEntityLimiter(org.spigotmc.TickLimiter entityLimiter) {
++      this.entityLimiter = entityLimiter;
++   }
++
++   protected void setTileLimiter(org.spigotmc.TickLimiter tileLimiter) {
++      this.tileLimiter = tileLimiter;
++   }
++   //Ketting end
 +
 +   public org.bukkit.craftbukkit.v1_20_R1.CraftWorld getWorld() {
 +      if (this.world == null) {
@@ -94,16 +103,10 @@
 +      init$biomeProvider = null;
 +   }
 +   //Ketting end
-+
-+   String levelname = joptsimple.internal.Strings.EMPTY;
+ 
     protected Level(WritableLevelData p_270739_, ResourceKey<Level> p_270683_, RegistryAccess p_270200_, Holder<DimensionType> p_270240_, Supplier<ProfilerFiller> p_270692_, boolean p_270904_, boolean p_270470_, long p_270248_, int p_270466_) {
 +      super(Level.class);
 +      bukkitInit();
-+
-+      if (p_270739_ != null)
-+         this.levelname = ((net.minecraft.world.level.storage.ServerLevelData) p_270739_).getLevelName(); //Ketting
-+
-+      this.spigotConfig = new org.spigotmc.SpigotWorldConfig(levelname); // Spigot
 +
 +      // CraftBukkit Ticks things
 +      for (org.bukkit.entity.SpawnCategory spawnCategory : org.bukkit.entity.SpawnCategory.values()) {
@@ -116,7 +119,7 @@
        this.profiler = p_270692_;
        this.levelData = p_270739_;
        this.dimensionTypeRegistration = p_270240_;
-@@ -141,6 +_,45 @@
+@@ -141,6 +_,43 @@
        this.neighborUpdater = new CollectingNeighborUpdater(this, p_270466_);
        this.registryAccess = p_270200_;
        this.damageSources = new DamageSources(p_270200_);
@@ -156,9 +159,7 @@
 +         public void onBorderSetDamageSafeZOne(WorldBorder worldborder, double d0) {}
 +      });
 +      // CraftBukkit end
-+      timings = new org.bukkit.craftbukkit.v1_20_R1.SpigotTimings.WorldTimingsHandler(levelname); // Spigot - code below can generate new world and access timings
-+      this.entityLimiter = new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime);
-+      this.tileLimiter = new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime);
++      timings = new org.bukkit.craftbukkit.v1_20_R1.SpigotTimings.WorldTimingsHandler(this); // Spigot - code below can generate new world and access timings
     }
  
     public boolean isClientSide() {

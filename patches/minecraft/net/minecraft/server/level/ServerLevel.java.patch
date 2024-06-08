@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -188,24 +_,65 @@
+@@ -188,24 +_,88 @@
     private final List<CustomSpawner> customSpawners;
     @Nullable
     private EndDragonFight dragonFight;
@@ -20,9 +20,13 @@
 +      return this.chunkSource.getChunk(x, z, false);
 +   }
 +
++   //Ketting start - type key
++   private ResourceKey<LevelStem> typeKey;
++
 +   @Override
 +   public ResourceKey<LevelStem> getTypeKey() {
-+      return convertable.dimensionType;
++      return typeKey;
++      //Ketting end
 +   }
 +
 +   //Ketting start - return serverleveldata
@@ -43,22 +47,41 @@
        super(p_215002_, p_215003_, p_214999_.registryAccess(), p_215004_.type(), p_214999_::getProfiler, false, p_215006_, p_215007_, p_214999_.getMaxChainedNeighborUpdates());
 +      this.pvpMode = p_214999_.isPvpAllowed();
 +      convertable = p_215001_;
-+      uuid = org.bukkit.craftbukkit.v1_20_R1.util.WorldUUID.getUUID(p_215001_.getDimensionPath(p_215003_).toFile());
 +      // CraftBukkit end
        this.tickTime = p_215009_;
        this.server = p_214999_;
        this.customSpawners = p_215008_;
 -      this.serverLevelData = p_215002_;
 -      ChunkGenerator chunkgenerator = p_215004_.generator();
-+      //Ketting start - wrap level data
++      //Ketting start - init type key, wrap level data and init spigot config
++      this.typeKey = convertable.dimensionType;
++      if (this.typeKey == null) {
++         org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Level key not set, determining from stem {}", p_215004_);
++         this.typeKey = getServer().registryAccess()
++                 .registryOrThrow(Registries.LEVEL_STEM)
++                 .getResourceKey(p_215004_)
++                 .orElseGet(() -> {
++                    org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Assigning level key {} to stem {}", p_215003_.location(), p_215004_);
++                    return ResourceKey.create(Registries.LEVEL_STEM, p_215003_.location());
++                 });
++      }
++
 +      if (p_215002_ instanceof net.minecraft.world.level.storage.PrimaryLevelData primary) {
 +         this.serverLevelData = primary;
 +      } else if (p_215002_ instanceof net.minecraft.world.level.storage.DerivedLevelData derived) {
 +         this.serverLevelData = org.kettingpowered.ketting.utils.DelegateWorldInfo.wrap(derived);
++         derived.setTypeKey(this.typeKey);
 +      } else {
 +         org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Could not wrap level data, this can cause some problems with bukkit", new UnsupportedOperationException());
 +         this.serverLevelData = p_215002_;
 +      }
++
++      this.spigotConfig = new org.spigotmc.SpigotWorldConfig(serverLevelData.getLevelName());
++      uuid = org.bukkit.craftbukkit.v1_20_R1.util.WorldUUID.getUUID(p_215001_.getDimensionPath(this.dimension()).toFile());
++
++      this.setEntityLimiter(new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime));
++      this.setTileLimiter(new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime));
++      this.timings.init(serverLevelData.getLevelName());
 +      //Ketting end
 +      ChunkGenerator chunkgenerator = bukkitInit(p_215004_.generator()); //Ketting
        boolean flag = p_214999_.forceSynchronousWrites();

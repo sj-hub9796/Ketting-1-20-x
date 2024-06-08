@@ -2,7 +2,9 @@ package org.bukkit.craftbukkit.v1_20_R1;
 
 import java.util.HashMap;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.ServerLevelData;
 import org.bukkit.craftbukkit.v1_20_R1.scheduler.CraftTask;
 import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitTask;
@@ -112,29 +114,34 @@ public class SpigotTimings {
      * Set of timers per world, to track world specific timings.
      */
     public static class WorldTimingsHandler {
-        public final CustomTimingsHandler mobSpawn;
-        public final CustomTimingsHandler doChunkUnload;
-        public final CustomTimingsHandler doTickPending;
-        public final CustomTimingsHandler doTickTiles;
-        public final CustomTimingsHandler doChunkMap;
-        public final CustomTimingsHandler doSounds;
-        public final CustomTimingsHandler entityTick;
-        public final CustomTimingsHandler tileEntityTick;
-        public final CustomTimingsHandler tileEntityPending;
-        public final CustomTimingsHandler tracker;
-        public final CustomTimingsHandler doTick;
-        public final CustomTimingsHandler tickEntities;
+        //Ketting start - remove final modifier
+        public CustomTimingsHandler mobSpawn;
+        public CustomTimingsHandler doChunkUnload;
+        public CustomTimingsHandler doTickPending;
+        public CustomTimingsHandler doTickTiles;
+        public CustomTimingsHandler doChunkMap;
+        public CustomTimingsHandler doSounds;
+        public CustomTimingsHandler entityTick;
+        public CustomTimingsHandler tileEntityTick;
+        public CustomTimingsHandler tileEntityPending;
+        public CustomTimingsHandler tracker;
+        public CustomTimingsHandler doTick;
+        public CustomTimingsHandler tickEntities;
 
-        public final CustomTimingsHandler syncChunkLoadTimer;
-        public final CustomTimingsHandler syncChunkLoadStructuresTimer;
-        public final CustomTimingsHandler syncChunkLoadEntitiesTimer;
-        public final CustomTimingsHandler syncChunkLoadTileEntitiesTimer;
-        public final CustomTimingsHandler syncChunkLoadTileTicksTimer;
-        public final CustomTimingsHandler syncChunkLoadPostTimer;
+        public CustomTimingsHandler syncChunkLoadTimer;
+        public CustomTimingsHandler syncChunkLoadStructuresTimer;
+        public CustomTimingsHandler syncChunkLoadEntitiesTimer;
+        public CustomTimingsHandler syncChunkLoadTileEntitiesTimer;
+        public CustomTimingsHandler syncChunkLoadTileTicksTimer;
+        public CustomTimingsHandler syncChunkLoadPostTimer;
+        //Ketting end
 
-        //Ketting start
-        public WorldTimingsHandler(String name) {
-            //Ketting end
+        //Ketting start - move to init
+        public WorldTimingsHandler(Level server) {
+            init(server.levelData instanceof ServerLevelData s ? s.getLevelName() : "Unknown");
+        }
+
+        public void init(String name) {
             mobSpawn = new CustomTimingsHandler("** " + name + "mobSpawn");
             doChunkUnload = new CustomTimingsHandler("** " + name + "doChunkUnload");
             doTickPending = new CustomTimingsHandler("** " + name + "doTickPending");
@@ -157,5 +164,6 @@ public class SpigotTimings {
             doTick = new CustomTimingsHandler(name + "doTick");
             tickEntities = new CustomTimingsHandler(name + "tickEntities");
         }
+        //Ketting end
     }
 }
