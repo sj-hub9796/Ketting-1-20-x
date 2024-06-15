@@ -628,7 +628,7 @@
              if (d0 * d0 + d1 * d1 + d2 * d2 < 1024.0D) {
                 serverplayer.connection.send(new ClientboundBlockDestructionPacket(p_8612_, p_8613_, p_8614_));
              }
-@@ -880,10 +_,22 @@
+@@ -880,14 +_,37 @@
     }
  
     public void playSeededSound(@Nullable Player p_263330_, double p_263393_, double p_263369_, double p_263354_, Holder<SoundEvent> p_263412_, SoundSource p_263338_, float p_263352_, float p_263390_, long p_263403_) {
@@ -651,6 +651,21 @@
        this.server.getPlayerList().broadcast(p_263545_, p_263544_.getX(), p_263544_.getY(), p_263544_.getZ(), (double)p_263491_.value().getRange(p_263530_), this.dimension(), new ClientboundSoundEntityPacket(p_263491_, p_263542_, p_263544_, p_263530_, p_263520_, p_263490_));
     }
  
++   //Ketting start - cancel level events
++   private int globalLevelEvent$cancel = -1;
++   public void cancelLevelEvent(int p_8811_) {
++      globalLevelEvent$cancel = p_8811_;
++   }
++
+    public void globalLevelEvent(int p_8811_, BlockPos p_8812_, int p_8813_) {
++      if (globalLevelEvent$cancel != -1 && p_8811_ == globalLevelEvent$cancel) {
++         globalLevelEvent$cancel = -1;
++         return;
++      }
++      //Ketting end
+       if (this.getGameRules().getBoolean(GameRules.RULE_GLOBAL_SOUND_EVENTS)) {
+          this.server.getPlayerList().broadcastAll(new ClientboundLevelEventPacket(p_8811_, p_8812_, p_8813_, true));
+       } else {
 @@ -905,6 +_,7 @@
     }
  

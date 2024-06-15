@@ -516,6 +516,17 @@
     }
  
     @Nullable
+@@ -730,6 +_,10 @@
+ 
+    public abstract int getFreeMapId();
+ 
++   //Ketting start
++   public void cancelLevelEvent(int p_46665_) {}
++   //Ketting end
++
+    public void globalLevelEvent(int p_46665_, BlockPos p_46666_, int p_46667_) {
+    }
+ 
 @@ -760,16 +_,15 @@
     public abstract Scoreboard getScoreboard();
  
