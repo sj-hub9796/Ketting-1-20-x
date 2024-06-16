@@ -955,7 +955,7 @@
     }
  
     public boolean is(Entity p_20356_) {
-@@ -2408,38 +_,88 @@
+@@ -2408,38 +_,90 @@
        this.portalEntrancePos = p_20362_.portalEntrancePos;
     }
  
@@ -1007,7 +1007,9 @@
 -                  ServerLevel.makeObsidianPlatform(p_20118_);
 -               }
 +            // CraftBukkit start
-+            p_20118_ = portalinfo.world;
++            if (portalinfo.world != null) //Ketting - null check
++               p_20118_ = portalinfo.world;
++
 +            if (p_20118_ == level) {
 +               // SPIGOT-6782: Just move the entity if a plugin changed the world to the one the entity is already in
 +               moveTo(portalinfo.pos.x, portalinfo.pos.y, portalinfo.pos.z, portalinfo.yRot, portalinfo.xRot);

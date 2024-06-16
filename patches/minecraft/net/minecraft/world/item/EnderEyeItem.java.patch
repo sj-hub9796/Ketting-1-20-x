@@ -1,10 +1,9 @@
 --- a/net/minecraft/world/item/EnderEyeItem.java
 +++ b/net/minecraft/world/item/EnderEyeItem.java
-@@ -54,7 +_,25 @@
+@@ -54,7 +_,29 @@
                    }
                 }
  
--               level.globalLevelEvent(1038, blockpos1.offset(1, 0, 1), 0);
 +               // CraftBukkit start - Use relative location for far away sounds
 +               // level.globalLevelEvent(1038, blockpos1.offset(1, 0, 1), 0);
 +               int viewDistance = level.getCraftServer().getViewDistance() * 16;
@@ -24,6 +23,10 @@
 +                  }
 +               }
 +               // CraftBukkit end
++               //Ketting start - fire globalLevelEvent, but disable it, prevents mixin error
++               level.cancelLevelEvent(1038);
+                level.globalLevelEvent(1038, blockpos1.offset(1, 0, 1), 0);
++               //Ketting end
              }
  
              return InteractionResult.CONSUME;

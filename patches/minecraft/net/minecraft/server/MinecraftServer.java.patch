@@ -225,7 +225,7 @@
           int i = serverchunkcache.getGenerator().getSpawnHeight(p_177897_);
           if (i < p_177897_.getMinBuildHeight()) {
              BlockPos blockpos = chunkpos.getWorldPosition();
-@@ -442,8 +_,23 @@
+@@ -442,8 +_,24 @@
        serverleveldata.setGameType(GameType.SPECTATOR);
     }
  
@@ -238,6 +238,7 @@
 +   //Ketting End
 +
     private void prepareLevels(ChunkProgressListener p_129941_) {
++      this.markWorldsDirty(); //Ketting - force level update
 +      this.forceTicks = true; // CraftBukkit
        ServerLevel serverlevel = this.overworld();
 +      //Ketting Start
@@ -665,7 +666,7 @@
  
        this.profiler.pop();
     }
-@@ -935,6 +_,22 @@
+@@ -935,6 +_,24 @@
        return this.levels.get(p_129881_);
     }
  
@@ -675,6 +676,7 @@
 +      Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
 +      newLevels.put(level.dimension(), level);
 +      this.levels = Collections.unmodifiableMap(newLevels);
++      this.markWorldsDirty(); //Ketting - force level update
 +   }
 +
 +   public void removeLevel(ServerLevel level) {
@@ -682,6 +684,7 @@
 +      Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
 +      newLevels.remove(level.dimension());
 +      this.levels = Collections.unmodifiableMap(newLevels);
++      this.markWorldsDirty(); //Ketting - force level update
 +   }
 +   // CraftBukkit end
 +
