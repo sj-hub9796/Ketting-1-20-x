@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.kettingpowered.ketting.core.Ketting;
 
 /**
  * All supported color values for dyes and cloth
@@ -216,12 +217,28 @@ public enum DyeColor {
         ImmutableMap.Builder<Color, DyeColor> byColor = ImmutableMap.builder();
         ImmutableMap.Builder<Color, DyeColor> byFirework = ImmutableMap.builder();
 
+        //Ketting start - prevent duplicate entries
+        java.util.List<Color> colors = new java.util.ArrayList<>();
+        java.util.List<Color> fireworkColors = new java.util.ArrayList<>();
+
         for (DyeColor color : values()) {
             BY_WOOL_DATA[color.woolData & 0xff] = color;
             BY_DYE_DATA[color.dyeData & 0xff] = color;
-            byColor.put(color.getColor(), color);
-            byFirework.put(color.getFireworkColor(), color);
+
+            if (!colors.contains(color.getColor())) {
+                byColor.put(color.getColor(), color);
+                colors.add(color.getColor());
+            } else Ketting.LOGGER.warn("Duplicate color {} for key {}", color.getColor(), color);
+
+            if (!fireworkColors.contains(color.getFireworkColor())) {
+                byFirework.put(color.getFireworkColor(), color);
+                fireworkColors.add(color.getFireworkColor());
+            } else Ketting.LOGGER.warn("Duplicate firework color {} for key {}", color.getFireworkColor(), color);
         }
+
+        colors.clear();
+        fireworkColors.clear();
+        //Ketting end
 
         BY_COLOR = byColor.build();
         BY_FIREWORK = byFirework.build();
