@@ -948,7 +948,7 @@ public abstract class CraftRegionAccessor implements RegionAccessor {
         } else if (TNTPrimed.class.isAssignableFrom(clazz)) {
             entity = new PrimedTnt(world, x, y, z, null);
         } else if (ExperienceOrb.class.isAssignableFrom(clazz)) {
-            entity = new net.minecraft.world.entity.ExperienceOrb(world, x, y, z, 0);
+            entity = new net.minecraft.world.entity.ExperienceOrb(world, x, y, z, 0, org.bukkit.entity.ExperienceOrb.SpawnReason.CUSTOM, null, null); // Paper
         } else if (LightningStrike.class.isAssignableFrom(clazz)) {
             entity = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create(world);
             entity.moveTo(location.getX(), location.getY(), location.getZ());

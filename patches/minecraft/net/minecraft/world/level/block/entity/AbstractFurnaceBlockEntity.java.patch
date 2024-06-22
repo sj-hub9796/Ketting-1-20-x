@@ -308,6 +308,8 @@
           ++i;
        }
  
+-      ExperienceOrb.award(p_154999_, p_155000_, i);
+-   }
 +      // CraftBukkit start - fire org.bukkit.event.inventory.FurnaceExtractEvent / BlockExpEvent
 +      if (ketting$entityhuman != null && ketting$blockposition$1 != null && ketting$itemstack != null) { // Ketting
 +         org.bukkit.event.block.BlockExpEvent event;
@@ -321,8 +323,8 @@
 +      }
 +      // CraftBukkit end
 +
-       ExperienceOrb.award(p_154999_, p_155000_, i);
-    }
++      ExperienceOrb.award(p_154999_, p_155000_, i, org.bukkit.entity.ExperienceOrb.SpawnReason.FURNACE, ketting$entityhuman); // Paper
++   }
 +   
 +   // Ketting start - Add CraftBukkit method
 +   private static int ketting$amount;

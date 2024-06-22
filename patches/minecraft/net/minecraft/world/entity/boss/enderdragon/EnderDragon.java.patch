@@ -180,7 +180,7 @@
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), Mth.floor((float)i * 0.08F));
 +         if (this.dragonDeathTime > 150 && this.dragonDeathTime % 5 == 0 && true) {  // CraftBukkit - SPIGOT-2420: Already checked for the game rule when calculating the xp
 +            int award = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.08F));
-+            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
++            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award, org.bukkit.entity.ExperienceOrb.SpawnReason.ENTITY_DEATH, this.lastHurtByPlayer, this); // Paper
           }
  
           if (this.dragonDeathTime == 1 && !this.isSilent()) {
@@ -212,7 +212,7 @@
 -            ExperienceOrb.award((ServerLevel)this.level(), this.position(), Mth.floor((float)i * 0.2F));
 +         if (true) { // CraftBukkit - SPIGOT-2420: Already checked for the game rule when calculating the xp
 +            int award = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.unlimitedLastHurtByPlayer, Mth.floor((float)i * 0.2F));
-+            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award);
++            ExperienceOrb.award((ServerLevel) this.level(), this.position(), award, org.bukkit.entity.ExperienceOrb.SpawnReason.ENTITY_DEATH, this.lastHurtByPlayer, this); // Paper
           }
  
           if (this.dragonFight != null) {
