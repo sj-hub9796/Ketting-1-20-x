@@ -1,11 +1,8 @@
 package org.kettingpowered.task
 
-import net.minecraftforge.forge.tasks.Util
 import org.gradle.api.DefaultTask
-import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
@@ -21,14 +18,19 @@ abstract class GenerateLibs extends DefaultTask {
     @TaskAction
     void genActions() {
         def entries = new HashMap<GString, GString> ()
-        getProject().configurations.installer.resolvedConfiguration.resolvedArtifacts.each { dep->
-            def art = dep.moduleVersion.id
-            if ('junit'.equals(art.name) && 'junit'.equals(art.group)) return;
-            def mavenId = "$art.group:$art.name:$art.version" + (dep.classifier != null ? ":$dep.classifier" : "") + (dep.extension != null ? "@$dep.extension" : "")
-            def key = "$art.group:$art.name:" + (dep.classifier != null ? ":$dep.classifier" : "") + (dep.extension != null ? "@$dep.extension" : "")
-            entries.put(key,"$dep.file.sha512\tSHA3-512\t$mavenId")
-        }
+        getProject().configurations.installer.resolvedConfiguration.resolvedArtifacts.each { dep -> addEntry(dep, entries) }
+        getProject().configurations.transitiveInstaller.resolvedConfiguration.resolvedArtifacts.each { dep -> addEntry(dep, entries) }
 
         output.get().asFile.text = entries.values().join('\n')
+    }
+
+    void addEntry(ResolvedArtifact dep, HashMap<GString, GString> entries) {
+        def art = dep.moduleVersion.id
+        if ('junit'.equals(art.name) && 'junit'.equals(art.group)) return;
+        def mavenId = "$art.group:$art.name:$art.version" + (dep.classifier != null ? ":$dep.classifier" : "") + (dep.extension != null ? "@$dep.extension" : "")
+        def key = "$art.group:$art.name:" + (dep.classifier != null ? ":$dep.classifier" : "") + (dep.extension != null ? "@$dep.extension" : "")
+
+        if (entries.containsKey(key)) return;
+        entries.put(key,"$dep.file.sha512\tSHA3-512\t$mavenId")
     }
 }
