@@ -52,28 +52,6 @@ class LibraryLoader
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator();
         locator.addService( RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class );
         locator.addService( TransporterFactory.class, HttpTransporterFactory.class );
-        locator.setErrorHandler(new DefaultServiceLocator.ErrorHandler() {
-            @Override
-            public void serviceCreationFailed(Class<?> type, Class<?> impl, Throwable exception) {
-                System.err.println("Failed to create service " + type);
-                exception.printStackTrace();
-
-                //get to the root cause
-                Throwable cause = exception;
-                while (cause.getCause() != null) {
-                    cause = cause.getCause();
-                }
-
-                System.err.println("Root cause: " + cause);
-                cause.printStackTrace();
-            }
-        });
-
-        final List<RepositorySystem> services = locator.getServices(RepositorySystem.class);
-        System.out.println("Services: " + services.size());
-        for (RepositorySystem service : services) {
-            System.out.println("Service: " + service);
-        }
 
         this.repository = locator.getService( RepositorySystem.class );
         this.session = MavenRepositorySystemUtils.newSession();
