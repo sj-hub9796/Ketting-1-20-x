@@ -432,7 +432,7 @@
                 }
  
                 f += f1;
-@@ -1088,9 +_,7 @@
+@@ -1088,19 +_,25 @@
                 double d0 = (double)(this.walkDist - this.walkDistO);
                 if (flag && !flag2 && !flag1 && this.onGround() && d0 < (double)this.getSpeed()) {
                    ItemStack itemstack = this.getItemInHand(InteractionHand.MAIN_HAND);
@@ -442,10 +442,13 @@
 +                  flag3 = itemstack.canPerformAction(net.minecraftforge.common.ToolActions.SWORD_SWEEP);
                 }
  
-                float f4 = 0.0F;
-@@ -1099,8 +_,16 @@
+-               float f4 = 0.0F;
++               float f3 = 0.0F;
+                boolean flag4 = false;
+                int j = EnchantmentHelper.getFireAspect(this);
                 if (p_36347_ instanceof LivingEntity) {
-                   f4 = ((LivingEntity)p_36347_).getHealth();
+-                  f4 = ((LivingEntity)p_36347_).getHealth();
++                  f3 = ((LivingEntity)p_36347_).getHealth();
                    if (j > 0 && !p_36347_.isOnFire()) {
 -                     flag4 = true;
 -                     p_36347_.setSecondsOnFire(1);
@@ -462,9 +465,12 @@
                    }
                 }
  
-@@ -1121,10 +_,14 @@
+@@ -1119,12 +_,16 @@
+                   }
+ 
                    if (flag3) {
-                      float f3 = 1.0F + EnchantmentHelper.getSweepingDamageRatio(this) * f;
+-                     float f3 = 1.0F + EnchantmentHelper.getSweepingDamageRatio(this) * f;
++                     float f4 = 1.0F + EnchantmentHelper.getSweepingDamageRatio(this) * f;
  
 -                     for(LivingEntity livingentity : this.level().getEntitiesOfClass(LivingEntity.class, p_36347_.getBoundingBox().inflate(1.0D, 0.25D, 1.0D))) {
 -                        if (livingentity != this && livingentity != p_36347_ && !this.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && this.distanceToSqr(livingentity) < 9.0D) {
@@ -511,7 +517,7 @@
                    }
  
                    if (flag2) {
-@@ -1163,13 +_,15 @@
+@@ -1163,22 +_,32 @@
                    EnchantmentHelper.doPostDamageEffects(this, p_36347_);
                    ItemStack itemstack1 = this.getMainHandItem();
                    Entity entity = p_36347_;
@@ -529,8 +535,10 @@
                          this.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
                       }
                    }
-@@ -1178,7 +_,15 @@
-                      float f5 = f4 - ((LivingEntity)p_36347_).getHealth();
+ 
+                   if (p_36347_ instanceof LivingEntity) {
+-                     float f5 = f4 - ((LivingEntity)p_36347_).getHealth();
++                     float f5 = f3 - ((LivingEntity)p_36347_).getHealth();
                       this.awardStat(Stats.DAMAGE_DEALT, Math.round(f5 * 10.0F));
                       if (j > 0) {
 -                        p_36347_.setSecondsOnFire(j * 4);
