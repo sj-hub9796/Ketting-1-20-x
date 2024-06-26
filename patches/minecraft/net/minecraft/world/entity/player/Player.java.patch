@@ -474,7 +474,7 @@
 +                        double entityReachSq = Mth.square(this.getEntityReach()); // Use entity reach instead of constant 9.0. Vanilla uses bottom center-to-center checks here, so don't update this to use canReach, since it uses closest-corner checks.
 +                        if (livingentity != this && livingentity != p_36347_ && !this.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker()) && this.distanceToSqr(livingentity) < entityReachSq) {
 +                           // CraftBukkit start - Only apply knockback if the damage hits
-+                           if (livingentity.hurt(this.damageSources().playerAttack(this).sweep(), f4)) {
++                           if (livingentity.hurt(this.damageSources().playerAttack(this).sweep(), f3)) {
 +                              livingentity.knockback((double) 0.4F, (double) Mth.sin(this.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(this.getYRot() * ((float) Math.PI / 180F))));
 +                           }
 +                           // CraftBukkit end
