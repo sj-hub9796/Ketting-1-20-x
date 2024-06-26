@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/level/lighting/LeveledPriorityQueue.java
++++ b/net/minecraft/world/level/lighting/LeveledPriorityQueue.java
+@@ -14,6 +_,7 @@
+       for(int i = 0; i < p_278289_; ++i) {
+          this.queues[i] = new LongLinkedOpenHashSet(p_278259_, 0.5F) {
+             protected void rehash(int p_278313_) {
++               if (size < 0 || p_278313_ < 0) return; //Ketting
+                if (p_278313_ > p_278259_) {
+                   super.rehash(p_278313_);
+                }
