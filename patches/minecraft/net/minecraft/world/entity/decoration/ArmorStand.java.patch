@@ -23,7 +23,7 @@
     private boolean hasPhysics() {
        return !this.isMarker() && !this.isNoGravity();
     }
-@@ -355,32 +_,60 @@
+@@ -355,29 +_,58 @@
           return false;
        } else if (itemstack.isEmpty() && (this.disabledSlots & 1 << p_31590_.getFilterFlag() + 16) != 0) {
           return false;
@@ -96,10 +96,7 @@
 +            // CraftBukkit end
              if (p_31579_.is(DamageTypeTags.IS_EXPLOSION)) {
                 this.brokenByAnything(p_31579_);
--               this.kill();
-                return false;
-             } else if (p_31579_.is(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
-                if (this.isOnFire()) {
+                this.kill();
 @@ -422,7 +_,7 @@
                       } else {
                          this.brokenByPlayer(p_31579_);
