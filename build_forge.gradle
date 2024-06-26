@@ -101,6 +101,9 @@ configurations {
         extendsFrom(bootstrap)
         transitive = false
     }
+    transitiveInstaller {
+        transitive = true
+    }
     kettinglauncher{
         transitive = false
     }
@@ -144,6 +147,16 @@ dependencies {
     installer(libs.bundles.bukkitlibs){
         exclude group: 'junit', module: 'junit'
     }
+    transitiveInstaller(libs.bundles.maven.transitive) {
+        exclude group: 'org.apache.maven', module: 'maven-model'
+        exclude group: 'org.apache.maven', module: 'maven-model-builder'
+    }
+    compileOnly(libs.bundles.maven.transitive) {
+        exclude group: 'org.apache.maven', module: 'maven-model'
+        exclude group: 'org.apache.maven', module: 'maven-model-builder'
+    }
+    installer(libs.mavenmodelcombined)
+    compileOnly(libs.mavenmodelcombined)
     installer(libs.bundles.launcher) // Add missing libraries
     installer(variantOf(libs.nettyTransportEpoll) { classifier("linux-x86_64") })
     installer(variantOf(libs.nettyTransportEpoll) { classifier("linux-aarch_64") })
