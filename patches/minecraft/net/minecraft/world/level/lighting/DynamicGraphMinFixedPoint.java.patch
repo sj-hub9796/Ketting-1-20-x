@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/level/lighting/DynamicGraphMinFixedPoint.java
++++ b/net/minecraft/world/level/lighting/DynamicGraphMinFixedPoint.java
+@@ -23,6 +_,7 @@
+          this.priorityQueue = new LeveledPriorityQueue(p_75543_, p_75544_);
+          this.computedLevels = new Long2ByteOpenHashMap(p_75545_, 0.5F) {
+             protected void rehash(int p_75611_) {
++               if (size < (containsNullKey ? 1 : 0) || p_75611_ < 0) return; //Ketting
+                if (p_75611_ > p_75545_) {
+                   super.rehash(p_75611_);
+                }
