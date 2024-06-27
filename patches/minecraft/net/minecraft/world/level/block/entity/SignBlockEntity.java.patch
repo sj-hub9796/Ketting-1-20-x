@@ -9,6 +9,15 @@
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_TEXT_LINE_WIDTH = 90;
     private static final int TEXT_LINE_HEIGHT = 10;
+@@ -131,7 +_,7 @@
+       Level level = this.level;
+       if (level instanceof ServerLevel serverlevel) {
+          try {
+-            return ComponentUtils.updateForEntity(createCommandSourceStack((Player)null, serverlevel, this.worldPosition), p_278307_, (Entity)null, 0);
++            return ComponentUtils.updateForEntity(withSource(createCommandSourceStack((Player)null, serverlevel, this.worldPosition)), p_278307_, (Entity)null, 0);
+          } catch (CommandSyntaxException commandsyntaxexception) {
+          }
+       }
 @@ -142,12 +_,13 @@
     public void updateSignText(Player p_278048_, boolean p_278103_, List<FilteredText> p_277990_) {
        if (!this.isWaxed() && p_278048_.getUUID().equals(this.getPlayerWhoMayEdit()) && this.level != null) {
@@ -70,11 +79,19 @@
        return p_277359_;
     }
  
-@@ -213,10 +_,37 @@
+@@ -205,7 +_,7 @@
+          Style style = component.getStyle();
+          ClickEvent clickevent = style.getClickEvent();
+          if (clickevent != null && clickevent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+-            p_279304_.getServer().getCommands().performPrefixedCommand(createCommandSourceStack(p_279304_, p_279201_, p_278282_), clickevent.getValue());
++            p_279304_.getServer().getCommands().performPrefixedCommand(withSource(createCommandSourceStack(p_279304_, p_279201_, p_278282_)), clickevent.getValue());
+             flag = true;
+          }
+       }
+@@ -213,12 +_,47 @@
        return flag;
     }
  
--   private static CommandSourceStack createCommandSourceStack(@Nullable Player p_279428_, Level p_279359_, BlockPos p_279430_) {
 +   // CraftBukkit start
 +   @Override
 +   public void sendSystemMessage(Component ichatbasecomponent) {}
@@ -99,18 +116,26 @@
 +      return false;
 +   }
 +
-+   private CommandSourceStack createCommandSourceStack(@Nullable Player p_279428_, Level p_279359_, BlockPos p_279430_) {
-+      // CraftBukkit end
+    private static CommandSourceStack createCommandSourceStack(@Nullable Player p_279428_, Level p_279359_, BlockPos p_279430_) {
        String s = p_279428_ == null ? "Sign" : p_279428_.getName().getString();
--      Component component = (Component)(p_279428_ == null ? Component.literal("Sign") : p_279428_.getDisplayName());
--      return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(p_279430_), Vec2.ZERO, (ServerLevel)p_279359_, 2, s, component, p_279359_.getServer(), p_279428_);
-+      Object object = p_279428_ == null ? Component.literal("Sign") : p_279428_.getDisplayName();
-+
-+      // CraftBukkit - this
-+      return new CommandSourceStack(this, Vec3.atCenterOf(p_279430_), Vec2.ZERO, (ServerLevel) p_279359_, 2, s, (Component) object, p_279359_.getServer(), p_279428_);
+       Component component = (Component)(p_279428_ == null ? Component.literal("Sign") : p_279428_.getDisplayName());
+       return new CommandSourceStack(CommandSource.NULL, Vec3.atCenterOf(p_279430_), Vec2.ZERO, (ServerLevel)p_279359_, 2, s, component, p_279359_.getServer(), p_279428_);
     }
  
++   //Ketting - start
++   private CommandSourceStack withSource(CommandSourceStack in){
++      in.source = this;
++      return in;
++   } 
++   //Ketting - keep compat with bukkit
++   private CommandSourceStack createCommandSourceStackBukkit(@Nullable Player p_279428_, Level p_279359_, BlockPos p_279430_) {
++      return withSource(createCommandSourceStack(p_279428_, p_279359_, p_279430_));
++   }
++   //Ketting - end
++
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
+       return ClientboundBlockEntityDataPacket.create(this);
+    }
 @@ -242,7 +_,7 @@
  
     private void markUpdated() {
