@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -244,11 +_,40 @@
+@@ -244,11 +_,41 @@
     private final StructureTemplateManager structureTemplateManager;
     protected final WorldData worldData;
     private volatile boolean isSaving;
@@ -38,7 +38,8 @@
 +               }
 +            org.spigotmc.WatchdogThread.doEntireThreadDump();
 +         }
-+         if (org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_FORCE.getValue()) Runtime.getRuntime().halt(0);
++         if (org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_HALT.getValue()) Runtime.getRuntime().halt(0);
++         if (org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_EXIT.getValue()) System.exit(0);
        }, "Server thread");
        thread.setUncaughtExceptionHandler((p_177909_, p_177910_) -> {
           LOGGER.error("Uncaught exception in server thread", p_177910_);
