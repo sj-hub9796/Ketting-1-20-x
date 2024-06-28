@@ -218,12 +218,19 @@
           if (commandnode.canUse(p_82115_)) {
              ArgumentBuilder<SharedSuggestionProvider, ?> argumentbuilder = (ArgumentBuilder)commandnode.createBuilder();
              argumentbuilder.requires((p_82126_) -> {
-@@ -358,7 +_,48 @@
+@@ -357,8 +_,55 @@
+       };
     }
  
++   //Ketting start - dispatcher redirection
++   public CommandDispatcher<CommandSourceStack> getDirectDispatcher() {
++      return this.dispatcher;
++   }
++
     public CommandDispatcher<CommandSourceStack> getDispatcher() {
 +      if (org.kettingpowered.ketting.common.utils.DispatcherRedirector.needsRedirect())
 +         return getForgeDispatcher().unwrap();
++      //Ketting end
        return this.dispatcher;
 +   }
 +
