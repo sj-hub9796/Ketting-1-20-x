@@ -74,26 +74,7 @@ public class WatchdogThread extends Thread
                 log.log( Level.SEVERE, "If you are unsure or still think this is a Spigot bug, please report to https://www.spigotmc.org/" );
                 log.log( Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports" );
                 log.log( Level.SEVERE, "Spigot version: " + Bukkit.getServer().getVersion() );
-                //
-                if ( net.minecraft.world.level.Level.lastPhysicsProblem != null )
-                {
-                    log.log( Level.SEVERE, "------------------------------" );
-                    log.log( Level.SEVERE, "During the run of the server, a physics stackoverflow was supressed" );
-                    log.log( Level.SEVERE, "near " + net.minecraft.world.level.Level.lastPhysicsProblem );
-                }
-                //
-                log.log( Level.SEVERE, "------------------------------" );
-                log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Spigot!):" );
-                dumpThread( ManagementFactory.getThreadMXBean().getThreadInfo( MinecraftServer.getServer().serverThread.getId(), Integer.MAX_VALUE ), log );
-                log.log( Level.SEVERE, "------------------------------" );
-                //
-                log.log( Level.SEVERE, "Entire Thread Dump:" );
-                ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads( true, true );
-                for ( ThreadInfo thread : threads )
-                {
-                    dumpThread( thread, log );
-                }
-                log.log( Level.SEVERE, "------------------------------" );
+                doEntireThreadDump();
 
                 if ( restart && !MinecraftServer.getServer().hasStopped() )
                 {
@@ -111,6 +92,30 @@ public class WatchdogThread extends Thread
             }
         }
     }
+    
+    public static void doEntireThreadDump(){
+        Logger log = Bukkit.getServer().getLogger();
+        //
+        if ( net.minecraft.world.level.Level.lastPhysicsProblem != null )
+        {
+            log.log( Level.SEVERE, "------------------------------" );
+            log.log( Level.SEVERE, "During the run of the server, a physics stackoverflow was supressed" );
+            log.log( Level.SEVERE, "near " + net.minecraft.world.level.Level.lastPhysicsProblem );
+        }
+        //
+        log.log( Level.SEVERE, "------------------------------" );
+        log.log( Level.SEVERE, "Server thread dump (Look for plugins here before reporting to Spigot!):" );
+        dumpThread( ManagementFactory.getThreadMXBean().getThreadInfo( MinecraftServer.getServer().serverThread.getId(), Integer.MAX_VALUE ), log );
+        log.log( Level.SEVERE, "------------------------------" );
+        //
+        log.log( Level.SEVERE, "Entire Thread Dump:" );
+        ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads( true, true );
+        for ( ThreadInfo thread : threads )
+        {
+            dumpThread( thread, log );
+        }
+        log.log( Level.SEVERE, "------------------------------" );
+    }
 
     private static void dumpThread(ThreadInfo thread, Logger log)
     {
@@ -120,6 +125,7 @@ public class WatchdogThread extends Thread
         log.log( Level.SEVERE, "\tPID: " + thread.getThreadId()
                 + " | Suspended: " + thread.isSuspended()
                 + " | Native: " + thread.isInNative()
+                + " | Daemon: " + thread.isDaemon()
                 + " | State: " + thread.getThreadState() );
         if ( thread.getLockedMonitors().length != 0 )
         {
