@@ -194,7 +194,7 @@
           } catch (Exception exception) {
              LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)exception);
              return;
-@@ -190,22 +_,39 @@
+@@ -190,22 +_,36 @@
  
           WorldData worlddata = worldstem.worldData();
           levelstoragesource$levelstorageaccess.saveDataTag(registryaccess$frozen, worlddata);
@@ -228,9 +228,6 @@
           });
           Thread thread = new Thread("Server Shutdown Thread") {
              public void run() {
-+               //Ketting start - InjectProtect
-+               org.kettingpowered.ketting.core.injectprotect.InjectProtect.shutdownCalled();
-+               //Ketting end
 +               // FORGE: Halting as GameTestServer will cause issues as it always calls System#exit on both crash and normal exit, so skip it
 +               if (!(dedicatedserver instanceof net.minecraft.gametest.framework.GameTestServer))
                 dedicatedserver.halt(true);
