@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -244,11 +_,30 @@
+@@ -244,11 +_,41 @@
     private final StructureTemplateManager structureTemplateManager;
     protected final WorldData worldData;
     private volatile boolean isSaving;
@@ -28,7 +28,18 @@
 -      Thread thread = new Thread(() -> {
 +      Thread thread = new Thread(net.minecraftforge.fml.util.thread.SidedThreadGroups.SERVER, () -> {
           atomicreference.get().runServer();
-+         Runtime.getRuntime().halt(0); //Ketting - fix server hanging on exit
++         if (org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_THREADDUMP_ENABLE.getValue()) {
++            int sleep_ms = org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_THREADDUMP_SLEEP.getValue();
++            if (sleep_ms > 0)
++               try{
++                  Thread.sleep(sleep_ms);
++               } catch (InterruptedException e) {
++                   throw new RuntimeException(e);
++               }
++            org.spigotmc.WatchdogThread.doEntireThreadDump();
++         }
++         if (org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_HALT.getValue()) Runtime.getRuntime().halt(0);
++         if (org.kettingpowered.ketting.config.KettingConfig.getInstance().HALT_EXIT.getValue()) System.exit(0);
        }, "Server thread");
        thread.setUncaughtExceptionHandler((p_177909_, p_177910_) -> {
           LOGGER.error("Uncaught exception in server thread", p_177910_);
