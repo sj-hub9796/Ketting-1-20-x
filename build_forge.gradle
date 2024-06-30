@@ -138,8 +138,15 @@ dependencies {
     runtimeOnly(libs.bootstrap)
 
     //Ketting start
-    installer(libs.kettingcore){
+    transitiveInstaller(libs.kettingcore){
         exclude group: 'org.spongepowered', module: 'mixin'
+        exclude group: 'org.ow2'
+        exclude group: 'org.slf4j'
+    }
+    compileOnly (libs.kettingcore){
+        exclude group: 'org.spongepowered', module: 'mixin'
+        exclude group: 'org.ow2'
+        exclude group: 'org.slf4j'
     }
     installer(libs.kettingcommon)
     kettinglauncher libs.kettinglauncher
