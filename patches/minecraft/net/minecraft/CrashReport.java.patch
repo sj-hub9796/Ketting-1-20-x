@@ -1,7 +1,10 @@
 --- a/net/minecraft/CrashReport.java
 +++ b/net/minecraft/CrashReport.java
-@@ -33,6 +_,7 @@
+@@ -31,8 +_,10 @@
+    private final SystemReport systemReport = new SystemReport();
+ 
     public CrashReport(String p_127509_, Throwable p_127510_) {
++      org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(p_127510_); //Ketting
        this.title = p_127509_;
        this.exception = p_127510_;
 +      this.systemReport.setDetail("CraftBukkit Information", new org.bukkit.craftbukkit.v1_20_R1.CraftCrashReport()); // CraftBukkit
