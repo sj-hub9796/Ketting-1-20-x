@@ -9,7 +9,7 @@
        OptionSpec<Void> optionspec2 = optionparser.accepts("demo");
        OptionSpec<Void> optionspec3 = optionparser.accepts("bonusChest");
        OptionSpec<Void> optionspec4 = optionparser.accepts("forceUpgrade");
-@@ -84,13 +_,61 @@
+@@ -84,13 +_,69 @@
        OptionSpec<Void> optionspec13 = optionparser.accepts("jfrProfile");
        OptionSpec<Path> optionspec14 = optionparser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
        OptionSpec<String> optionspec15 = optionparser.nonOptions();
@@ -31,6 +31,14 @@
 +      org.kettingpowered.ketting.core.Ketting ketting = org.kettingpowered.ketting.core.Ketting.init(SharedConstants.getCurrentVersion().getName());
 +      ketting.registerAdapter(new org.kettingpowered.ketting.adapters.ForgeAdapterImpl(), new org.kettingpowered.ketting.adapters.BukkitAdapterImpl());
 +      org.kettingpowered.ketting.common.betterui.BetterUI.name = org.kettingpowered.ketting.internal.KettingConstants.NAME;
++
++      //Init stacktrace deobfuscator
++      org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.init(
++              org.kettingpowered.ketting.internal.KettingFileVersioned.MOJANG_MAPPINGS,
++              org.kettingpowered.ketting.remapper.KettingRemapper.getResourceMapper().jarMapping.methods,
++              Main.class.getClassLoader()
++      );
++      org.kettingpowered.ketting.deobf.DeobfRewritePolicy.setDeobfuscator(org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator::deobf);
 +      //Ketting end
 +
 +      //Ketting start - init JDBC
