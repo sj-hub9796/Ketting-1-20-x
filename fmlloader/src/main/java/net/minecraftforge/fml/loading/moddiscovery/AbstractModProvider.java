@@ -176,6 +176,11 @@ public abstract class AbstractModProvider implements IModProvider
     private static final Map<String, ClassLoader> parentLoaders;
     //Ketting mark as nullable for things we do not want loaded, because they already are loaded, but still continue starting.
     protected @org.jetbrains.annotations.Nullable IModLocator.ModFileOrException createMod(Path... path) {
+        return this.createMod(getDefaultJarModType(), path);
+    }
+
+    // FORGE: Backporting artifact, the defaultType must be the first parameter since path is varargs
+    protected @org.jetbrains.annotations.Nullable IModLocator.ModFileOrException createMod(String defaultType, Path... path) {
         var mjm = new ModJarMetadata();
         final SecureJar unfiltered_sj = SecureJar.from(
                 Manifest::new,
@@ -254,7 +259,7 @@ public abstract class AbstractModProvider implements IModProvider
         IModFile mod;
         var type = sj.moduleDataProvider().getManifest().getMainAttributes().getValue(ModFile.TYPE);
         if (type == null) {
-            type = getDefaultJarModType();
+            type = defaultType;
         }
         if (sj.moduleDataProvider().findFile(MODS_TOML).isPresent()) {
             LOGGER.debug(LogMarkers.SCAN, "Found {} mod of type {}: {}", MODS_TOML, type, path);

@@ -293,7 +293,7 @@
 +                     // Ketting start
 +                     org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockFormUpdate.set(false);
 +                     if (org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockFormEvent(this, blockpos1, blockstate1, null))  { // CraftBukkit
-+                        this.setBlockAndUpdate(blockpos2, Blocks.ICE.defaultBlockState());
++                        this.setBlockAndUpdate(blockpos1, blockstate1);
 +                     }
 +                     // Ketting end
                    }
@@ -302,7 +302,7 @@
 +                  // Ketting start
 +                  org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockFormUpdate.set(false);
 +                  if (org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockFormEvent(this, blockpos1, Blocks.SNOW.defaultBlockState(), null))  { // CraftBukkit
-+                     this.setBlockAndUpdate(blockpos2, Blocks.ICE.defaultBlockState());
++                     this.setBlockAndUpdate(blockpos1, Blocks.SNOW.defaultBlockState());
 +                  }
 +                  // Ketting end
                 }

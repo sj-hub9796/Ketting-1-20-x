@@ -45,7 +45,7 @@
              }
           }
  
-@@ -315,6 +_,31 @@
+@@ -315,6 +_,33 @@
                 private void movePlayerFile(File p_11168_, String p_11169_, String p_11170_) {
                    File file5 = new File(file1, p_11169_ + ".dat");
                    File file6 = new File(p_11168_, p_11170_ + ".dat");
@@ -56,6 +56,7 @@
 +                  try {
 +                     root = net.minecraft.nbt.NbtIo.readCompressed(new java.io.FileInputStream(file5));
 +                  } catch (Exception exception) {
++                     org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(exception); //Ketting
 +                     exception.printStackTrace();
 +                  }
 +
@@ -69,6 +70,7 @@
 +                     try {
 +                        net.minecraft.nbt.NbtIo.writeCompressed(root, new java.io.FileOutputStream(file2));
 +                     } catch (Exception exception) {
++                        org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(exception); //Ketting
 +                        exception.printStackTrace();
 +                     }
 +                  }

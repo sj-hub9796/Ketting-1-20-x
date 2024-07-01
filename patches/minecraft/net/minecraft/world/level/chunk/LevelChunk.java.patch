@@ -135,7 +135,7 @@
        }
  
     }
-@@ -362,6 +_,13 @@
+@@ -362,6 +_,19 @@
              blockentity.setRemoved();
           }
  
@@ -144,7 +144,13 @@
 +         System.out.println("Attempted to place a tile entity (" + p_156374_ + ") at " + p_156374_.getBlockPos().getX() + "," + p_156374_.getBlockPos().getY() + "," + p_156374_.getBlockPos().getZ()
 +                 + " (" + getBlockState(blockpos) + ") where there was no entity tile!");
 +         System.out.println("Chunk coordinates: " + (this.chunkPos.x * 16) + "," + (this.chunkPos.z * 16));
-+         new Exception().printStackTrace();
++         //Ketting start
++         //new Exception().printStackTrace();
++         Exception exception = new Exception();
++         org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(exception);
++         exception.printStackTrace();
++         //Ketting end
++
 +         // CraftBukkit end
        }
     }

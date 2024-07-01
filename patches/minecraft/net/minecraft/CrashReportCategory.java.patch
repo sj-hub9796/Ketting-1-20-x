@@ -1,6 +1,6 @@
 --- a/net/minecraft/CrashReportCategory.java
 +++ b/net/minecraft/CrashReportCategory.java
-@@ -102,8 +_,10 @@
+@@ -102,8 +_,11 @@
        if (astacktraceelement.length <= 0) {
           return 0;
        } else {
@@ -10,6 +10,7 @@
 +         if (len <= 0) len = astacktraceelement.length;
 +         this.stackTrace = new StackTraceElement[len];
 +         System.arraycopy(astacktraceelement, astacktraceelement.length - len, this.stackTrace, 0, this.stackTrace.length);
++         this.stackTrace = org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(this.stackTrace); //Ketting
           return this.stackTrace.length;
        }
     }
@@ -32,7 +33,7 @@
 +   }
 +
 +   public void applyStackTrace(Throwable t) {
-+      this.stackTrace = t.getStackTrace();
++      this.stackTrace = org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(t.getStackTrace()); //Ketting
     }
  
     public static void populateBlockDetails(CrashReportCategory p_178951_, LevelHeightAccessor p_178952_, BlockPos p_178953_, @Nullable BlockState p_178954_) {

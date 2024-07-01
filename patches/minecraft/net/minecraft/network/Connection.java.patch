@@ -1,6 +1,21 @@
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -74,6 +_,11 @@
+@@ -62,18 +_,23 @@
+    });
+    public static final AttributeKey<ConnectionProtocol> ATTRIBUTE_PROTOCOL = AttributeKey.valueOf("protocol");
+    public static final LazyLoadedValue<NioEventLoopGroup> NETWORK_WORKER_GROUP = new LazyLoadedValue<>(() -> {
+-      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).build());
++      return new NioEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(LOGGER)).build()); //Ketting
+    });
+    public static final LazyLoadedValue<EpollEventLoopGroup> NETWORK_EPOLL_WORKER_GROUP = new LazyLoadedValue<>(() -> {
+-      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build());
++      return new EpollEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(LOGGER)).build()); //Ketting
+    });
+    public static final LazyLoadedValue<DefaultEventLoopGroup> LOCAL_WORKER_GROUP = new LazyLoadedValue<>(() -> {
+-      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).build());
++      return new DefaultEventLoopGroup(0, (new ThreadFactoryBuilder()).setNameFormat("Netty Local Client IO #%d").setDaemon(true).setUncaughtExceptionHandler(new net.minecraft.DefaultUncaughtExceptionHandlerWithName(LOGGER)).build()); //Ketting
+    });
+    private final PacketFlow receiving;
     private final Queue<Connection.PacketHolder> queue = Queues.newConcurrentLinkedQueue();
     public Channel channel;
     public SocketAddress address;
@@ -44,11 +59,14 @@
     }
  
     public void channelInactive(ChannelHandlerContext p_129527_) {
-@@ -147,6 +_,7 @@
+@@ -147,6 +_,10 @@
  
           }
        }
-+      if (net.minecraft.server.MinecraftServer.getServer().isDebugging()) p_129534_.printStackTrace(); // Spigot
++      if (net.minecraft.server.MinecraftServer.getServer().isDebugging()) {
++         org.kettingpowered.ketting.common.deobf.StacktraceDeobfuscator.deobf(p_129534_); //Ketting
++         p_129534_.printStackTrace(); // Spigot
++      }
     }
  
     protected void channelRead0(ChannelHandlerContext p_129487_, Packet<?> p_129488_) {

@@ -82,9 +82,17 @@ public class JarInJarDependencyLocator extends AbstractJarFileDependencyLocator
             final Map<String, ?> outerFsArgs = ImmutableMap.of("packagePath", pathInModFile);
             final FileSystem zipFS = FileSystems.newFileSystem(filePathUri, outerFsArgs);
             final Path pathInFS = zipFS.getPath("/");
-            final IModLocator.ModFileOrException mod = createMod(pathInFS);
-            if (mod == null) return Optional.empty(); //Ketting continue launching, if the modfile is a lib, that is already loaded.
-            return Optional.of(mod.file());
+            final IModFile.Type parentType = file.getType();
+            final String modType;
+            if (parentType == IModFile.Type.LIBRARY || parentType == IModFile.Type.LANGPROVIDER) {
+                modType = IModFile.Type.LIBRARY.name();
+            } else {
+                modType = IModFile.Type.GAMELIBRARY.name();
+            }
+            //Ketting start - skip loading the modfile if it is a lib that is already loaded.
+            final IModLocator.ModFileOrException mod = createMod(modType, pathInFS);
+            return mod == null ? Optional.empty() : Optional.of(mod.file());
+            //Ketting end
         }
         catch (Exception e)
         {
