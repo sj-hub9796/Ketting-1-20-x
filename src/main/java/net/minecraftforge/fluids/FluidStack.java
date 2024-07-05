@@ -22,6 +22,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.kettingpowered.ketting.core.Ketting;
 
 import java.util.Optional;
 
@@ -172,7 +173,10 @@ public class FluidStack
 
     public void setAmount(int amount)
     {
-        if (getRawFluid() == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
+        if (getRawFluid() == Fluids.EMPTY) {
+            Ketting.LOGGER.error("Can't modify the empty stack.");
+            return;
+        }
         this.amount = amount;
         updateEmpty();
     }
@@ -197,7 +201,10 @@ public class FluidStack
 
     public void setTag(CompoundTag tag)
     {
-        if (getRawFluid() == Fluids.EMPTY) throw new IllegalStateException("Can't modify the empty stack.");
+        if (getRawFluid() == Fluids.EMPTY) {
+            Ketting.LOGGER.error("Can't modify the empty stack.");
+            return;
+        }
         this.tag = tag;
     }
 

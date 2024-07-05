@@ -351,7 +351,7 @@
           ItemStack itemstack = interactionresultholder.getObject();
           if (itemstack == p_9264_ && itemstack.getCount() == i && itemstack.getUseDuration() <= 0 && itemstack.getDamageValue() == j) {
              return interactionresultholder.getResult();
-@@ -294,52 +_,127 @@
+@@ -294,52 +_,128 @@
        }
     }
  
@@ -467,6 +467,7 @@
        }
 -   }
 +      return useItemOn$result;
++      // CraftBukkit end
 +      } finally {
 +         useItemOn$result = InteractionResult.PASS;
 +         useItemOn$cancelled = false;
