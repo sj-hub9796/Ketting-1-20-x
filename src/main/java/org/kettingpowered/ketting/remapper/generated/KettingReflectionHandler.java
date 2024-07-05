@@ -1,7 +1,7 @@
 package org.kettingpowered.ketting.remapper.generated;
 
-import io.izzel.arclight.api.Unsafe;
 import org.kettingpowered.ketting.internal.KettingConstants;
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
 import org.kettingpowered.ketting.remapper.KettingRedirectAdapter;
 import org.kettingpowered.ketting.remapper.ClassLoaderRemapper;
 import org.kettingpowered.ketting.remapper.GlobalClassRepo;

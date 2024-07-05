@@ -1,8 +1,8 @@
 package org.kettingpowered.ketting.remapper;
 
 import io.izzel.arclight.api.PluginPatcher;
-import io.izzel.arclight.api.Unsafe;
 import net.md_5.specialsource.repo.ClassRepo;
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 

@@ -16,6 +16,7 @@ dependencies {
 
     implementation(project(':fmlloader'))
     implementation(libs.commons.io)
+    implementation(libs.kettingcommon)
 }
 
 java {

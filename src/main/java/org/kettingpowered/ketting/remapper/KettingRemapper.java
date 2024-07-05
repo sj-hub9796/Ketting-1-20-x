@@ -3,7 +3,6 @@ package org.kettingpowered.ketting.remapper;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import io.izzel.arclight.api.PluginPatcher;
-import io.izzel.arclight.api.Unsafe;
 import net.md_5.specialsource.InheritanceMap;
 import net.md_5.specialsource.JarMapping;
 import net.md_5.specialsource.JarRemapper;
@@ -12,6 +11,7 @@ import net.md_5.specialsource.provider.JointProvider;
 import org.apache.commons.io.FileUtils;
 import org.kettingpowered.ketting.asm.SwitchTableFixer;
 import org.kettingpowered.ketting.core.Ketting;
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
 import org.kettingpowered.ketting.remapper.patcher.KettingPluginPatcher;
 import org.kettingpowered.ketting.remapper.resource.RemapSourceHandler;
 

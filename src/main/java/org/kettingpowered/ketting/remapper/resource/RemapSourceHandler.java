@@ -3,7 +3,7 @@ package org.kettingpowered.ketting.remapper.resource;
 import com.google.common.io.ByteStreams;
 import cpw.mods.modlauncher.ClassTransformer;
 import cpw.mods.modlauncher.TransformingClassLoader;
-import io.izzel.arclight.api.Unsafe;
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
 import org.kettingpowered.ketting.remapper.GlobalClassRepo;
 import org.kettingpowered.ketting.remapper.KettingRemapper;
 import org.objectweb.asm.ClassReader;
