@@ -1,14 +1,16 @@
 --- a/net/minecraft/server/dedicated/Settings.java
 +++ b/net/minecraft/server/dedicated/Settings.java
-@@ -26,13 +_,34 @@
+@@ -26,13 +_,36 @@
  public abstract class Settings<T extends Settings<T>> {
     private static final Logger LOGGER = LogUtils.getLogger();
     public final Properties properties;
 +   // CraftBukkit start
 +   private joptsimple.OptionSet options = null;
++   
++   public static java.util.concurrent.atomic.AtomicReference<joptsimple.OptionSet> ketting$options = new java.util.concurrent.atomic.AtomicReference<>(new joptsimple.OptionParser().parse()); // Ketting
  
     public Settings(Properties p_139801_) {
-+      this(p_139801_, new joptsimple.OptionParser().parse());
++      this(p_139801_, ketting$options.getAndSet(new joptsimple.OptionParser().parse())); // Ketting
 +   }
 +   public Settings(Properties p_139801_, final joptsimple.OptionSet options) {
        this.properties = p_139801_;
