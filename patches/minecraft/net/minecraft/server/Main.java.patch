@@ -79,7 +79,7 @@
  
           Path path = optionset.valueOf(optionspec14);
           if (path != null) {
-@@ -102,29 +_,61 @@
+@@ -102,29 +_,62 @@
              JvmProfiler.INSTANCE.start(Environment.SERVER);
           }
  
@@ -108,7 +108,8 @@
 +            org.kettingpowered.ketting.core.injectprotect.InjectProtect.onBootErrorCaught(mixin);
 +         }
 +         //Ketting end
-+         DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(optionset); // CraftBukkit - CLI argument support
++         net.minecraft.server.dedicated.Settings.ketting$options.set(optionset); // Ketting
++         DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(((java.io.File) optionset.valueOf("config")).toPath()); // CraftBukkit - CLI argument support
           dedicatedserversettings.forceSave();
 -         Path path2 = Paths.get("eula.txt");
 -         Eula eula = new Eula(path2);

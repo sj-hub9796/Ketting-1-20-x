@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/dedicated/DedicatedServerSettings.java
 +++ b/net/minecraft/server/dedicated/DedicatedServerSettings.java
-@@ -7,9 +_,11 @@
+@@ -7,9 +_,17 @@
     private final Path source;
     private DedicatedServerProperties properties;
  
@@ -10,8 +10,14 @@
 +   // CraftBukkit start
 +   public DedicatedServerSettings(joptsimple.OptionSet optionset) {
 +      this.source = ((java.io.File) optionset.valueOf("config")).toPath();
-+      this.properties = DedicatedServerProperties.fromFile(source, optionset);
++      Settings.ketting$options.set(optionset); // Ketting
++      this.properties = DedicatedServerProperties.fromFile(source);
 +      // CraftBukkit end
++   }
++
++   public DedicatedServerSettings(Path path) {
++      this.source = path;
++      this.properties = DedicatedServerProperties.fromFile(source);
     }
  
     public DedicatedServerProperties getProperties() {

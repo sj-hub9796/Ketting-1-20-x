@@ -8,16 +8,10 @@
     public final boolean onlineMode = this.get("online-mode", true);
     public final boolean preventProxyConnections = this.get("prevent-proxy-connections", false);
     public final String serverIp = this.get("server-ip", "");
-@@ -118,12 +_,31 @@
+@@ -118,12 +_,39 @@
        this.initialDataPackConfiguration = getDatapackConfig(this.get("initial-enabled-packs", String.join(",", WorldDataConfiguration.DEFAULT.dataPacks().getEnabled())), this.get("initial-disabled-packs", String.join(",", WorldDataConfiguration.DEFAULT.dataPacks().getDisabled())));
     }
  
--   public static DedicatedServerProperties fromFile(Path p_180930_) {
--      return new DedicatedServerProperties(loadFromFile(p_180930_));
--   }
--
--   protected DedicatedServerProperties reload(RegistryAccess p_139761_, Properties p_139762_) {
--      return new DedicatedServerProperties(p_139762_);
 +   // CraftBukkit start
 +   public DedicatedServerProperties(Properties properties, joptsimple.OptionSet optionset) {
 +      super(properties, optionset);
@@ -42,7 +36,16 @@
 +
 +   protected DedicatedServerProperties reload(RegistryAccess p_139761_, Properties p_139762_, joptsimple.OptionSet optionset) {
 +      return new DedicatedServerProperties(properties, optionset);
-+      // CraftBukkit end
++   }
++   // CraftBukkit end
++   
+    public static DedicatedServerProperties fromFile(Path p_180930_) {
+       return new DedicatedServerProperties(loadFromFile(p_180930_));
+    }
+ 
+    protected DedicatedServerProperties reload(RegistryAccess p_139761_, Properties p_139762_) {
+-      return new DedicatedServerProperties(p_139762_);
++      return new DedicatedServerProperties(properties);
     }
  
     @Nullable
