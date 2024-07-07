@@ -1,12 +1,10 @@
 --- a/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
 +++ b/net/minecraft/core/dispenser/BoatDispenseItemBehavior.java
-@@ -33,22 +_,54 @@
+@@ -33,22 +_,51 @@
        double d2 = p_123375_.y() + (double)((float)direction.getStepY() * 1.125F);
        double d3 = p_123375_.z() + (double)direction.getStepZ() * d0;
        BlockPos blockpos = p_123375_.getPos().relative(direction);
 +      Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(level, d0, d1, d2) : new Boat(level, d0, d1, d2));
-+      boat.setVariant(this.type);
-+      boat.setYRot(direction.toYRot());
        double d4;
 -      if (level.getFluidState(blockpos).is(FluidTags.WATER)) {
 +      if (boat.canBoatInFluid(level.getFluidState(blockpos))) {
@@ -19,13 +17,13 @@
  
           d4 = 0.0D;
        }
- 
+-
 -      Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(level, d1, d2 + d4, d3) : new Boat(level, d1, d2 + d4, d3));
--      boat.setVariant(this.type);
--      boat.setYRot(direction.toYRot());
+       boat.setVariant(this.type);
+       boat.setYRot(direction.toYRot());
 -      level.addFreshEntity(boat);
 -      p_123376_.shrink(1);
-+      // Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(level, d0, d1, d2) : new Boat(level, d0, d1, d2));
++      
 +      // CraftBukkit start
 +      ItemStack itemstack1 = p_123376_.split(1);
 +      org.bukkit.block.Block block = org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock.at(level, p_123375_.getPos());
@@ -52,12 +50,10 @@
 +         }
 +      }
 +
-+      Boat boat1 = (Boat)(this.isChestBoat ? new ChestBoat(level, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()) : new Boat(level, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
++      boat.setDeltaMovement(event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
 +      // CraftBukkit end
-+
-+      boat1.setVariant(this.type);
-+      boat1.setYRot(direction.toYRot());
-+      if (!level.addFreshEntity(boat1)) p_123376_.grow(1); // CraftBukkit
++      
++      if (!level.addFreshEntity(boat)) p_123376_.grow(1); // CraftBukkit
 +      // p_123376_.shrink(1); // CraftBukkit - handled during event processing
        return p_123376_;
     }
