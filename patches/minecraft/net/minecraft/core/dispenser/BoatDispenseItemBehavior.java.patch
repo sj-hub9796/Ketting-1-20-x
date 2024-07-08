@@ -5,6 +5,8 @@
        double d3 = p_123375_.z() + (double)direction.getStepZ() * d0;
        BlockPos blockpos = p_123375_.getPos().relative(direction);
 +      Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(level, d0, d1, d2) : new Boat(level, d0, d1, d2));
++      boat.setVariant(this.type);
++      boat.setYRot(direction.toYRot());
        double d4;
 -      if (level.getFluidState(blockpos).is(FluidTags.WATER)) {
 +      if (boat.canBoatInFluid(level.getFluidState(blockpos))) {
@@ -19,8 +21,8 @@
        }
 -
 -      Boat boat = (Boat)(this.isChestBoat ? new ChestBoat(level, d1, d2 + d4, d3) : new Boat(level, d1, d2 + d4, d3));
-       boat.setVariant(this.type);
-       boat.setYRot(direction.toYRot());
+-      boat.setVariant(this.type);
+-      boat.setYRot(direction.toYRot());
 -      level.addFreshEntity(boat);
 -      p_123376_.shrink(1);
 +      
