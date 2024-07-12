@@ -16,14 +16,13 @@
     public static final int HAND_SLOTS = 2;
     public static final int ARMOR_SLOTS = 4;
     public static final int EQUIPMENT_SLOT_OFFSET = 98;
-@@ -226,11 +_,33 @@
+@@ -226,11 +_,32 @@
     private float swimAmountO;
     protected Brain<?> brain;
     private boolean skipDropExperience;
 +   // CraftBukkit start
 +   public int expToDrop;
 +   public boolean forceDrops;
-+   public java.util.ArrayList<org.bukkit.inventory.ItemStack> drops = new java.util.ArrayList<org.bukkit.inventory.ItemStack>();
 +   public final org.bukkit.craftbukkit.v1_20_R1.attribute.CraftAttributeMap craftAttributes;
 +   public boolean collides = true;
 +   public java.util.Set<UUID> collidableExemptions = new java.util.HashSet<>();
