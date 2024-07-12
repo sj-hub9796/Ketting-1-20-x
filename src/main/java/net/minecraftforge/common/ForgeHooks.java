@@ -305,7 +305,7 @@ public class ForgeHooks
 
     public static boolean onLivingDrops(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit)
     {
-        return MinecraftForge.EVENT_BUS.post(new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit));
+        return MinecraftForge.EVENT_BUS.post(org.kettingpowered.ketting.craftbukkit.EventConverter.callLivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit)); //Ketting
     }
 
     @Nullable
