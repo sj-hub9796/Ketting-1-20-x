@@ -721,7 +721,7 @@
                 this.level().addFreshEntity(itementity);
              }
           }
-@@ -1335,12 +_,9 @@
+@@ -1335,12 +_,12 @@
  
     protected void dropAllDeathLoot(DamageSource p_21192_) {
        Entity entity = p_21192_.getEntity();
@@ -733,18 +733,32 @@
 -      }
 +
 +      int i = net.minecraftforge.common.ForgeHooks.getLootingLevel(this, entity, p_21192_);
-+      this.captureDrops(new java.util.ArrayList<>());
++      //Ketting start - get already captured items
++      Collection<ItemEntity> alreadyCaptured = this.captureDrops();
++      this.captureDrops(alreadyCaptured != null ? alreadyCaptured : new java.util.ArrayList<>());
++      //Ketting end
  
        boolean flag = this.lastHurtByPlayerTime > 0;
        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-@@ -1350,14 +_,32 @@
+@@ -1349,15 +_,42 @@
+       }
  
        this.dropEquipment();
-       this.dropExperience();
+-      this.dropExperience();
++      // this.dropExperience(); //Ketting - moved down
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0))
-+         drops.forEach(e -> level().addFreshEntity(e));
++      //Ketting start - recapture if ServerPlayer
++      {
++         if (this instanceof ServerPlayer)
++            this.captureDrops(drops);
++         else
++            drops.forEach(e -> level().addFreshEntity(e));
++      }
++      //Ketting end
++
++      this.dropExperience(); //Ketting
     }
  
     protected void dropEquipment() {
