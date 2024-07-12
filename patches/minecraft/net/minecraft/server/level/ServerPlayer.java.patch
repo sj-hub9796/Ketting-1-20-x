@@ -211,7 +211,7 @@
        } catch (Throwable throwable) {
           CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking player");
           CrashReportCategory crashreportcategory = crashreport.addCategory("Player being ticked");
-@@ -563,16 +_,102 @@
+@@ -563,13 +_,15 @@
     }
  
     private void updateScoreForCriteria(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -222,121 +222,12 @@
        });
     }
  
-+   //Ketting start
-+   @Nullable Boolean bukkitOnDeathKeepinv = null;
-+   private @Nullable org.bukkit.event.entity.PlayerDeathEvent callDeathEvent(DamageSource p_9035_,String deathmessage){
-+      final boolean originalKeepInv = this.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
-+      final boolean keepInventory = originalKeepInv || this.isSpectator();
-+      
-+      keepLevel = keepInventory; // SPIGOT-2222: pre-set keepLevel
-+      org.bukkit.event.entity.PlayerDeathEvent event;
-+      if (!this.dead) event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerDeathEvent(this, new java.util.ArrayList<>(), deathmessage, keepInventory); //Ketting - capturedDrops
-+      else {
-+         event = new org.bukkit.event.entity.PlayerDeathEvent(this.getBukkitEntity(), new java.util.ArrayList<>(), getExpReward(), deathmessage);
-+         event.setKeepInventory(originalKeepInv);
-+      }
-+      
-+      bukkitOnDeathKeepinv = event.getKeepInventory();
-+      final boolean needsSwap = originalKeepInv ^ bukkitOnDeathKeepinv;
-+
-+      //Add added drops during the bukkit event to the inventory.
-+      //This is so that grave mods can also potentially handle these items.
-+      for (org.bukkit.inventory.ItemStack stack : event.getDrops()){
-+         if (stack == null || stack.getType() == org.bukkit.Material.AIR) continue;
-+         getInventory().add(org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asNMSCopy(stack));
-+      }
-+
-+      if (needsSwap) this.level().getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(bukkitOnDeathKeepinv, this.getServer());
-+      final boolean forgeResult;
-+      try{
-+         forgeResult = net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_);
-+         
-+         //if the forgeResult was true, forge would have returned without doing anything.
-+         //we make sure to inherit that behaviour here.
-+         if (!forgeResult){
-+            if (!this.isSpectator()) {
-+               this.dropAllDeathLoot(p_9035_);
-+
-+               //we have to manually drop these drops.
-+               //we originally called bukkit here, and let bukkit drop it in the `callPlayerDeathEvent`, 
-+               // but due to restructuring that does not happen anymore.
-+               for (org.bukkit.inventory.ItemStack stack : drops) {
-+                  if (stack == null || stack.getType() == org.bukkit.Material.AIR || stack.getAmount() == 0) continue;
-+                  level().getWorld().dropItem(getBukkitEntity().getLocation(), stack);
-+               }
-+               drops = new java.util.ArrayList<>();
-+            }
-+         }
-+         
-+      }finally {
-+         if (needsSwap) this.level().getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(originalKeepInv, this.getServer());
-+      }
-+      
-+      //and lastly, any items that got added during forge's death event's can be added after all the things that should have been dropped have been dropped.
-+      // this.addForgeCaptures(); FIXME
-+      
-+      return forgeResult ? null : event;
-+   }
-+   //Ketting end
-+
     public void die(DamageSource p_9035_) {
        this.gameEvent(GameEvent.ENTITY_DIE);
-+
-+      //Ketting start
-+      Component defaultMessage = this.getCombatTracker().getDeathMessage();
-+      String deathmessage = defaultMessage.getString();
-+      
-+      org.bukkit.event.entity.PlayerDeathEvent event = callDeathEvent(p_9035_, deathmessage);
-+      if (event == null) return; //This is to keep compat with forge
-+      //Ketting end
++      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_)) return;
        boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
--      if (flag) {
--         Component component = this.getCombatTracker().getDeathMessage();
-+      // CraftBukkit start - fire PlayerDeathEvent
-+      if (this.dead) {
-+         return;
-+      }
-+      
-+
-+      // SPIGOT-943 - only call if they have an inventory open
-+      if (this.containerMenu != this.inventoryMenu) {
-+         this.closeContainer();
-+      }
-+
-+      String deathMessage = event.getDeathMessage();
-+
-+      if (deathMessage != null && deathMessage.length() > 0 && flag) { // TODO: allow plugins to override?
-+         Component component;
-+
-+         if (deathMessage.equals(deathmessage)) {
-+            component = this.getCombatTracker().getDeathMessage();
-+         } else {
-+            component = org.bukkit.craftbukkit.v1_20_R1.util.CraftChatMessage.fromStringOrNull(deathMessage);
-+         }
-+
-          this.connection.send(new ClientboundPlayerCombatKillPacket(this.getId(), component), PacketSendListener.exceptionallySend(() -> {
-             int i = 256;
-             String s = component.getString(256);
-@@ -600,12 +_,13 @@
-       if (this.level().getGameRules().getBoolean(GameRules.RULE_FORGIVE_DEAD_PLAYERS)) {
-          this.tellNeutralMobsThatIDied();
-       }
--
--      if (!this.isSpectator()) {
--         this.dropAllDeathLoot(p_9035_);
--      }
--
--      this.getScoreboard().forAllObjectives(ObjectiveCriteria.DEATH_COUNT, this.getScoreboardName(), Score::increment);
-+      // SPIGOT-5478 must be called manually now
-+      this.dropExperience();
-+      this.setCamera(this); // Remove spectated target
-+      // CraftBukkit end
-+
-+      // CraftBukkit - Get our scores instead
-+      this.level().getCraftServer().getScoreboardManager().getScoreboardScores(ObjectiveCriteria.DEATH_COUNT, this.getScoreboardName(), Score::increment);
-       LivingEntity livingentity = this.getKillCredit();
-       if (livingentity != null) {
-          this.awardStat(Stats.ENTITY_KILLED_BY.get(livingentity.getType()));
+       if (flag) {
+          Component component = this.getCombatTracker().getDeathMessage();
 @@ -639,10 +_,13 @@
           this.increaseScore(p_9051_);
           String s = this.getScoreboardName();
@@ -936,15 +827,6 @@
     }
  
     public void displayClientMessage(Component p_9154_, boolean p_9155_) {
-@@ -1115,7 +_,7 @@
-          this.experienceProgress = p_9016_.experienceProgress;
-          this.setScore(p_9016_.getScore());
-          this.portalEntrancePos = p_9016_.portalEntrancePos;
--      } else if (this.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || p_9016_.isSpectator()) {
-+      } else if ((bukkitOnDeathKeepinv != null && bukkitOnDeathKeepinv) || bukkitOnDeathKeepinv == null && (this.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || p_9016_.isSpectator())) { //ketting - handled in callDeathEvent
-          this.getInventory().replaceWith(p_9016_.getInventory());
-          this.experienceLevel = p_9016_.experienceLevel;
-          this.totalExperience = p_9016_.totalExperience;
 @@ -1129,12 +_,21 @@
        this.lastSentExp = -1;
        this.lastSentHealth = -1.0F;
