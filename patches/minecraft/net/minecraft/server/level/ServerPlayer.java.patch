@@ -211,7 +211,7 @@
        } catch (Throwable throwable) {
           CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking player");
           CrashReportCategory crashreportcategory = crashreport.addCategory("Player being ticked");
-@@ -563,16 +_,111 @@
+@@ -563,16 +_,102 @@
     }
  
     private void updateScoreForCriteria(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -273,18 +273,9 @@
 +      }
 +      
 +      //and lastly, any items that got added during forge's death event's can be added after all the things that should have been dropped have been dropped.
-+      this.addForgeCaptures();
++      // this.addForgeCaptures(); FIXME
 +      
 +      return forgeResult ? null : event;
-+   }
-+   
-+   private void addForgeCaptures(){
-+      Inventory inv = this.getForgeCapturesAndClear();
-+      if (inv != null) {
-+         for (ItemStack itemStack : inv.getContents())
-+            this.getInventory().add(itemStack);
-+         this.getInventory().setChanged();
-+      }
 +   }
 +   //Ketting end
 +
