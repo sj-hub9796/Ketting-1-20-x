@@ -1,5 +1,7 @@
 package io.izzel.arclight.api;
 
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Array;

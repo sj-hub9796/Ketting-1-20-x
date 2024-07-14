@@ -1,6 +1,6 @@
 package org.kettingpowered.ketting.utils;
 
-import io.izzel.arclight.api.Unsafe;
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
 
 import java.net.MalformedURLException;
 import java.net.URL;
