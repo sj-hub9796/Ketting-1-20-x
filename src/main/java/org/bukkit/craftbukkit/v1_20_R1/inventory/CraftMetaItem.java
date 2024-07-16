@@ -859,11 +859,23 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         return CraftChatMessage.fromJSONComponent(displayName);
     }
 
+    // Paper start
+    @Override
+    public net.md_5.bungee.api.chat.BaseComponent[] getDisplayNameComponent() {
+        return displayName == null ? new net.md_5.bungee.api.chat.BaseComponent[0] : net.md_5.bungee.chat.ComponentSerializer.parse(displayName);
+    }
+    // Paper end
     @Override
     public final void setDisplayName(String name) {
         this.displayName = CraftChatMessage.fromStringOrNullToJSON(name);
     }
 
+    // Paper start
+    @Override
+    public void setDisplayNameComponent(net.md_5.bungee.api.chat.BaseComponent[] component) {
+        this.displayName = net.md_5.bungee.chat.ComponentSerializer.toString(component);
+    }
+    // Paper end
     @Override
     public boolean hasDisplayName() {
         return displayName != null;
@@ -1006,6 +1018,15 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
         return this.lore == null ? null : new ArrayList<String>(Lists.transform(this.lore, CraftChatMessage::fromJSONComponent));
     }
 
+    // Paper start
+    @Override
+    public List<net.md_5.bungee.api.chat.BaseComponent[]> getLoreComponents() {
+        return this.lore == null ? null : new ArrayList<>(this.lore.stream().map(entry ->
+                net.md_5.bungee.chat.ComponentSerializer.parse(entry)
+        ).collect(java.util.stream.Collectors.toList()));
+    }
+    // Paper end
+
     @Override
     public void setLore(List<String> lore) {
         if (lore == null || lore.isEmpty()) {
@@ -1019,6 +1040,22 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
             safelyAdd(lore, this.lore, false);
         }
     }
+
+    // Paper start
+    @Override
+    public void setLoreComponents(List<net.md_5.bungee.api.chat.BaseComponent[]> lore) {
+        if (lore == null) {
+            this.lore = null;
+        } else {
+            if (this.lore == null) {
+                safelyAdd(lore, this.lore = new ArrayList<>(lore.size()), false);
+            } else {
+                this.lore.clear();
+                safelyAdd(lore, this.lore, false);
+            }
+        }
+    }
+    // Paper end
 
     @Override
     public boolean hasCustomModelData() {
