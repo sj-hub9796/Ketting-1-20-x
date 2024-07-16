@@ -96,16 +96,25 @@
                 this.ejectPassengers();
                 if (flag && !this.hasCustomName()) {
                    this.discard();
-@@ -261,6 +_,14 @@
+@@ -260,7 +_,23 @@
+       return this.flipped ? this.getDirection().getOpposite().getClockWise() : this.getDirection().getClockWise();
     }
  
++   // Ketting start - Fix Mixin issue
++   double prevX;
++   double prevY;
++   double prevZ;
++   float prevYaw;
++   float prevPitch;
++   // Ketting end - Fix Mixin issue
++
     public void tick() {
 +      // CraftBukkit start
-+      double prevX = this.getX();
-+      double prevY = this.getY();
-+      double prevZ = this.getZ();
-+      float prevYaw = this.getYRot();
-+      float prevPitch = this.getXRot();
++      prevX = this.getX();
++      prevY = this.getY();
++      prevZ = this.getZ();
++      prevYaw = this.getYRot();
++      prevPitch = this.getXRot();
 +      // CraftBukkit end
 +
        if (this.getHurtTime() > 0) {
