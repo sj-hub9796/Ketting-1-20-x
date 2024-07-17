@@ -288,6 +288,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
 
     //Ketting start
     private static final Set<String> EXTEND_TAGS = ImmutableSet.of(
+            //EvilCraft
+            "Name",
+            //Create
+            "Items",
+            "Schedule",
+            //The rest
             "map_is_scaling",
             "map",
             "CustomPotionEffects",
