@@ -39,6 +39,7 @@ public class KettingConfig extends AbstractConfig {
     public final BooleanValue PRINT_INJECTIONS = new BooleanValue("debug.print_injections", false, "Print all values injected into Bukkit to the console.");
     public final BooleanValue WARN_ON_UNKNOWN_ENTITY = new BooleanValue("debug.warn_on_unknown_entity", true, "Print a warning to the console when an entity unknown to Bukkit is spawned.");
     public final BooleanValue WARN_ON_NULL_NBT = new BooleanValue("debug.warn_on_null_nbt", true, "Print a warning to the console when something tries to set a null NBT tag.");
+    public final BooleanValue WARN_ON_UNKNOWN_STRUCTURE_TYPE = new BooleanValue("debug.warn_on_unknown_structure_type", true, "Print a warning to the console when a structure type is unknown to Bukkit.");
 
     public final BooleanValue OVERWRITE_FORGE_PERMISSIONS = new BooleanValue("forge.overwrite_forge_permissions", false, "--- WARNING - THIS WILL COMPLETELY DISABLE FORGE PERMISSION CHECKS ---  Overwrite Forge permissions with Bukkit permissions, makes it possible to use a permission manager plugin for modded commands. If true, Forge permissions will be set to 'forge.command.MODDEDCOMMAND' where MODDEDCOMMAND is the name of the modded command.");
 
