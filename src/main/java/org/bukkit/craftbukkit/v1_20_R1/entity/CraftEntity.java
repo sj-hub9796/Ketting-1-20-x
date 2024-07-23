@@ -219,6 +219,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
                     else if (entity instanceof net.minecraft.world.entity.monster.Zoglin) { return new CraftZoglin(server, (net.minecraft.world.entity.monster.Zoglin) entity); }
                     else if (entity instanceof Warden) { return new CraftWarden(server, (Warden) entity); }
 
+                    else if (entity instanceof net.minecraft.world.entity.raid.Raider) { return new CraftCustomRaider(server, (net.minecraft.world.entity.raid.Raider) entity); } //Ketting
                     else  { return new CraftMonster(server, (net.minecraft.world.entity.monster.Monster) entity); }
                 }
                 else if (entity instanceof net.minecraft.world.entity.animal.AbstractGolem) {
