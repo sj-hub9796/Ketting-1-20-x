@@ -34,7 +34,7 @@
 +   public final java.util.concurrent.atomic.AtomicBoolean ketting$releaseAllOccupants$force = new java.util.concurrent.atomic.AtomicBoolean(false);
 +   // CraftBukkit start - This allows us to bypass the night/rain/emergency check
 +   public List<Entity> releaseBees(BlockState p_58760_, BeehiveBlockEntity.BeeReleaseStatus p_58761_, boolean force) {
-+      ketting$releaseAllOccupants$force.set(false);
++      ketting$releaseAllOccupants$force.set(force);
 +      return releaseAllOccupants(p_58760_, p_58761_);
 +   }
 +
