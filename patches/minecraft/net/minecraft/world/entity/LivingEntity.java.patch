@@ -1591,9 +1591,8 @@
              ((PathfinderMob)this).getNavigation().stop();
           }
  
--         return true;
 +         this.ketting$randomTeleportCB = Optional.of(true); // CraftBukkit // Ketting
-+         return false;
+          return true;
        }
 +   }
 +
