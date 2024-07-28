@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ThrownEgg.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEgg.java
-@@ -43,18 +_,56 @@
+@@ -43,18 +_,57 @@
     protected void onHit(HitResult p_37488_) {
        super.onHit(p_37488_);
        if (!this.level().isClientSide) {
@@ -57,6 +57,7 @@
 +                     ((org.bukkit.entity.Ageable) entitychicken.getBukkitEntity()).setBaby();
 +                  }
 +                  // CraftBukkit end
++                  entitychicken.moveTo(this.getX(), this.getY(), this.getZ(), this.getYRot(), 0.0F);
 +                  this.level().prepareAddFreshEntity(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.EGG); // Ketting - Add reason
 +                  this.level().addFreshEntity(entitychicken);
                 }
