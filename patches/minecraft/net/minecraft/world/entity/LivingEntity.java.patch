@@ -742,7 +742,7 @@
  
        boolean flag = this.lastHurtByPlayerTime > 0;
        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-@@ -1349,15 +_,75 @@
+@@ -1349,15 +_,80 @@
        }
  
        this.dropEquipment();
@@ -751,8 +751,13 @@
 +      // this.dropExperience(); //Ketting - moved down
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
-+      dropAllDeathLoot$dropsCopy = new java.util.ArrayList<ItemEntity>(drops); //Ketting
-+      if (this instanceof ServerPlayer s) handlePlayerDeath(s, drops); //Ketting
++
++      //Ketting start
++      if (this instanceof ServerPlayer s) {
++         dropAllDeathLoot$dropsCopy = new java.util.ArrayList<ItemEntity>(drops); //Ketting
++         handlePlayerDeath(s, drops);
++      }
++      //Ketting end
 +
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0) && !handlePlayerDeath$cbKeepInv) //Ketting
 +         drops.forEach(e -> level().addFreshEntity(e));
