@@ -887,6 +887,7 @@ public class CraftEventFactory {
         return event;
     }
 
+    public static AtomicBoolean callPlayerDeathEvent$skipDrops = new AtomicBoolean(false); // Ketting
     public static PlayerDeathEvent callPlayerDeathEvent(ServerPlayer victim, List<org.bukkit.inventory.ItemStack> drops, String deathMessage, boolean keepInventory) {
         CraftPlayer entity = victim.getBukkitEntity();
         PlayerDeathEvent event = new PlayerDeathEvent(entity, drops, victim.getExpReward(), 0, deathMessage);
@@ -900,6 +901,8 @@ public class CraftEventFactory {
         victim.newTotalExp = event.getNewTotalExp();
         victim.expToDrop = event.getDroppedExp();
         victim.newExp = event.getNewExp();
+
+        if (callPlayerDeathEvent$skipDrops.getAndSet(false)) return event; //Ketting
 
         for (org.bukkit.inventory.ItemStack stack : event.getDrops()) {
             if (stack == null || stack.getType() == Material.AIR) continue;

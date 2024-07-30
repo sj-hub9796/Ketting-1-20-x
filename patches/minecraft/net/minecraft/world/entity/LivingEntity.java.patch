@@ -739,15 +739,24 @@
  
        boolean flag = this.lastHurtByPlayerTime > 0;
        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-@@ -1349,15 +_,42 @@
+@@ -1349,15 +_,76 @@
        }
  
        this.dropEquipment();
 -      this.dropExperience();
+-   }
 +      // this.dropExperience(); //Ketting - moved down
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
++      if (this instanceof ServerPlayer s) handlePlayerDeath(s, drops); //Ketting
++
 +      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0))
++         drops.forEach(e -> level().addFreshEntity(e));
++
++      if (this instanceof ServerPlayer s && handlePlayerDeath$swap)
++         s.level().getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(handlePlayerDeath$originalKeepInv, s.getServer()); //Ketting
++
++      /*if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0))
 +      //Ketting start - recapture if ServerPlayer
 +      {
 +         if (this instanceof ServerPlayer)
@@ -755,10 +764,36 @@
 +         else
 +            drops.forEach(e -> level().addFreshEntity(e));
 +      }
-+      //Ketting end
++      //Ketting end*/
 +
 +      this.dropExperience(); //Ketting
-    }
++   }
++
++   //Ketting start
++   private boolean handlePlayerDeath$originalKeepInv;
++   private boolean handlePlayerDeath$swap;
++   protected org.bukkit.event.entity.PlayerDeathEvent handlePlayerDeath$event;
++   private void handlePlayerDeath(ServerPlayer cast, Collection<ItemEntity> drops) {
++      List<org.bukkit.inventory.ItemStack> bukkitDrops = io.izzel.tools.collection.XmapList.create((List<ItemEntity>) drops, org.bukkit.inventory.ItemStack.class,
++                (ItemEntity e) -> org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(e.getItem()),
++                itemStack -> {
++                    ItemEntity itemEntity = new ItemEntity(cast.level(), cast.getX(), cast.getY(), cast.getZ(), org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asNMSCopy(itemStack));
++                    itemEntity.setDefaultPickUpDelay();
++                    return itemEntity;
++                });
++
++      handlePlayerDeath$originalKeepInv = cast.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || cast.isSpectator();
++
++      cast.keepLevel = handlePlayerDeath$originalKeepInv; // SPIGOT-2222: pre-set keepLevel
++
++      org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerDeathEvent$skipDrops.set(true); //item drops are handled by forge
++      handlePlayerDeath$event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerDeathEvent(cast, bukkitDrops, cast.getCombatTracker().getDeathMessage().getString(), handlePlayerDeath$originalKeepInv);
++
++      boolean cbKeepInv = handlePlayerDeath$event.getKeepInventory();
++      handlePlayerDeath$swap = handlePlayerDeath$originalKeepInv ^ cbKeepInv;
++      if (handlePlayerDeath$swap) cast.level().getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(cbKeepInv, cast.getServer());
++   }
++   //Ketting end
  
     protected void dropEquipment() {
     }
