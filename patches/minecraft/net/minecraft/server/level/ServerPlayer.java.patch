@@ -211,7 +211,7 @@
        } catch (Throwable throwable) {
           CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking player");
           CrashReportCategory crashreportcategory = crashreport.addCategory("Player being ticked");
-@@ -563,19 +_,62 @@
+@@ -563,16 +_,37 @@
     }
  
     private void updateScoreForCriteria(ObjectiveCriteria p_9105_, int p_9106_) {
@@ -222,96 +222,54 @@
        });
     }
  
++   //Ketting start - mixin
++   private @Nullable String die$deathMessage;
++   private String die$defaultDeathMessage;
++   //Ketting end
     public void die(DamageSource p_9035_) {
        this.gameEvent(GameEvent.ENTITY_DIE);
 +      if (net.minecraftforge.common.ForgeHooks.onLivingDeath(this, p_9035_)) return;
++      //Ketting start
++      if (this.isRemoved()) return;
++
++      die$defaultDeathMessage = this.getCombatTracker().getDeathMessage().getString();
++      if (!this.isSpectator()) {
++         this.dropAllDeathLoot(p_9035_);
++         die$deathMessage = this.handlePlayerDeath$event.getDeathMessage();
++      }
        boolean flag = this.level().getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES);
 -      if (flag) {
 -         Component component = this.getCombatTracker().getDeathMessage();
--         this.connection.send(new ClientboundPlayerCombatKillPacket(this.getId(), component), PacketSendListener.exceptionallySend(() -> {
-+      //Ketting start
-+      if (this.isRemoved()) return;
-+      boolean keepInventory = this.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) || this.isSpectator();
-+      Inventory copyInv;
-+      if (keepInventory) {
-+         copyInv = this.getInventory();
-+      } else {
-+         copyInv = new Inventory(this);
-+         copyInv.replaceWith(this.getInventory());
-+      }
-+      this.dropAllDeathLoot(p_9035_);
++      if (die$deathMessage != null && die$deathMessage.length() > 0 && flag) {
++         Component component;
 +
-+      Component defaultMessage = this.getCombatTracker().getDeathMessage();
-+      String deathmessage = defaultMessage.getString();
-+
-+      List<org.bukkit.inventory.ItemStack> loot = new java.util.ArrayList<>();
-+      Collection<ItemEntity> drops = this.captureDrops(null);
-+
-+      if (drops != null) {
-+         for (ItemEntity entity : drops) {
-+            org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack craftItemStack = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(entity.getItem());
-+            loot.add(craftItemStack);
-+         }
-+      }
-+      this.keepLevel = keepInventory;
-+
-+      Inventory recapturedDrops = new Inventory(this); //recapture drops that got added back to the inventory (eg. soulbound items)
-+      if (!keepInventory) {
-+         recapturedDrops.replaceWith(this.getInventory());
-+         this.getInventory().replaceWith(copyInv);
-+      }
-+      org.bukkit.event.entity.PlayerDeathEvent event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage, keepInventory);
-+      if (this.containerMenu != this.inventoryMenu) {
-+         this.closeContainer();
-+      }
-+      String deathMessage = event.getDeathMessage();
-+      if (deathMessage != null && !deathMessage.isEmpty() && flag) {
-+         Component itextcomponent;
-+         if (deathMessage.equals(deathmessage)) {
-+            itextcomponent = this.getCombatTracker().getDeathMessage();
++         if (die$deathMessage.equals(die$defaultDeathMessage)) {
++            component = this.getCombatTracker().getDeathMessage();
 +         } else {
-+            itextcomponent = org.bukkit.craftbukkit.v1_20_R1.util.CraftChatMessage.fromStringOrNull(deathMessage);
++            component = org.bukkit.craftbukkit.v1_20_R1.util.CraftChatMessage.fromStringOrNull(die$deathMessage);
 +         }
-+         this.connection.send(new ClientboundPlayerCombatKillPacket(this.getId(), itextcomponent), PacketSendListener.exceptionallySend(() -> {
++         //Ketting end
+          this.connection.send(new ClientboundPlayerCombatKillPacket(this.getId(), component), PacketSendListener.exceptionallySend(() -> {
              int i = 256;
--            String s = component.getString(256);
-+            String s = itextcomponent.getString(256);
-             Component component1 = Component.translatable("death.attack.message_too_long", Component.literal(s).withStyle(ChatFormatting.YELLOW));
-             Component component2 = Component.translatable("death.attack.even_more_magic", this.getDisplayName()).withStyle((p_143420_) -> {
-                return p_143420_.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, component1));
-@@ -585,12 +_,12 @@
-          Team team = this.getTeam();
-          if (team != null && team.getDeathMessageVisibility() != Team.Visibility.ALWAYS) {
-             if (team.getDeathMessageVisibility() == Team.Visibility.HIDE_FOR_OTHER_TEAMS) {
--               this.server.getPlayerList().broadcastSystemToTeam(this, component);
-+               this.server.getPlayerList().broadcastSystemToTeam(this, itextcomponent);
-             } else if (team.getDeathMessageVisibility() == Team.Visibility.HIDE_FOR_OWN_TEAM) {
--               this.server.getPlayerList().broadcastSystemToAllExceptTeam(this, component);
-+               this.server.getPlayerList().broadcastSystemToAllExceptTeam(this, itextcomponent);
-             }
-          } else {
--            this.server.getPlayerList().broadcastSystemMessage(component, false);
-+            this.server.getPlayerList().broadcastSystemMessage(itextcomponent, false);
-          }
-       } else {
-          this.connection.send(new ClientboundPlayerCombatKillPacket(this.getId(), CommonComponents.EMPTY));
-@@ -601,11 +_,16 @@
+             String s = component.getString(256);
+@@ -601,11 +_,19 @@
           this.tellNeutralMobsThatIDied();
        }
  
--      if (!this.isSpectator()) {
--         this.dropAllDeathLoot(p_9035_);
-+      this.dropExperience();
-+
-+      if (!event.getKeepInventory()) {
-+         this.getInventory().clearContent();
-+         this.getInventory().replaceWith(recapturedDrops); //place the recaptured drops back into the inventory
++      //Ketting start - moved up
++      /*
+       if (!this.isSpectator()) {
+          this.dropAllDeathLoot(p_9035_);
        }
-+      this.setCamera(this);
-+      ((org.bukkit.craftbukkit.v1_20_R1.scoreboard.CraftScoreboardManager) org.bukkit.Bukkit.getScoreboardManager()).getScoreboardScores(ObjectiveCriteria.DEATH_COUNT, this.getScoreboardName(), Score::increment);
++      */
 +      //Ketting end
++      this.setCamera(this); //Ketting - CraftBukkit: Remove spectated target
  
 -      this.getScoreboard().forAllObjectives(ObjectiveCriteria.DEATH_COUNT, this.getScoreboardName(), Score::increment);
++      //Ketting start - replace with CB variant
++      ((org.bukkit.craftbukkit.v1_20_R1.scoreboard.CraftScoreboardManager) org.bukkit.Bukkit.getScoreboardManager()).getScoreboardScores(ObjectiveCriteria.DEATH_COUNT, this.getScoreboardName(), Score::increment);
++      //this.getScoreboard().forAllObjectives(ObjectiveCriteria.DEATH_COUNT, this.getScoreboardName(), Score::increment);
++      //Ketting end
        LivingEntity livingentity = this.getKillCredit();
        if (livingentity != null) {
           this.awardStat(Stats.ENTITY_KILLED_BY.get(livingentity.getType()));
