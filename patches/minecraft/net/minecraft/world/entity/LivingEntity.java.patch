@@ -720,8 +720,11 @@
                 this.level().addFreshEntity(itementity);
              }
           }
-@@ -1335,12 +_,12 @@
+@@ -1333,14 +_,15 @@
+       }
+    }
  
++   private Collection<ItemEntity> dropAllDeathLoot$dropsCopy; //Ketting
     protected void dropAllDeathLoot(DamageSource p_21192_) {
        Entity entity = p_21192_.getEntity();
 -      int i;
@@ -739,7 +742,7 @@
  
        boolean flag = this.lastHurtByPlayerTime > 0;
        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-@@ -1349,15 +_,74 @@
+@@ -1349,15 +_,75 @@
        }
  
        this.dropEquipment();
@@ -748,20 +751,21 @@
 +      // this.dropExperience(); //Ketting - moved down
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
++      dropAllDeathLoot$dropsCopy = new java.util.ArrayList<ItemEntity>(drops); //Ketting
 +      if (this instanceof ServerPlayer s) handlePlayerDeath(s, drops); //Ketting
 +
-+      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0))
-+         drops.forEach(e -> {
-+            //Ketting start
-+            if (this instanceof ServerPlayer s && handlePlayerDeath$cbKeepInv)
-+               s.getInventory().add(e.getItem());
-+            else
-+               level().addFreshEntity(e);
-+            //Ketting end
-+         });
++      if (!net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0) && !handlePlayerDeath$cbKeepInv) //Ketting
++         drops.forEach(e -> level().addFreshEntity(e));
 +
-+      if (this instanceof ServerPlayer s && handlePlayerDeath$swap)
-+         s.level().getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(handlePlayerDeath$originalKeepInv, s.getServer()); //Ketting
++      //Ketting start
++      if (this instanceof ServerPlayer s) {
++         if (handlePlayerDeath$swap) s.level().getGameRules().getRule(GameRules.RULE_KEEPINVENTORY).set(handlePlayerDeath$originalKeepInv, s.getServer());
++         if (handlePlayerDeath$cbKeepInv) {
++            if (!drops.isEmpty()) dropAllDeathLoot$dropsCopy.addAll(drops); //Plugins can still add items
++            dropAllDeathLoot$dropsCopy.forEach(e -> s.getInventory().add(e.getItem()));
++         }
++      }
++      //Ketting end
 +
 +      this.dropExperience(); //Ketting
 +   }
