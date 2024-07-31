@@ -18,6 +18,16 @@ import java.util.List;
 
 public class EventConverter {
 
+    public static List<ItemStack> createXmapList(Collection<ItemEntity> drops, LivingEntity entity) {
+        return XmapList.create((List<ItemEntity>) drops, ItemStack.class,
+                (ItemEntity e) -> CraftItemStack.asCraftMirror(e.getItem()),
+                itemStack -> {
+                    ItemEntity itemEntity = new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), CraftItemStack.asNMSCopy(itemStack));
+                    itemEntity.setDefaultPickUpDelay();
+                    return itemEntity;
+                });
+    }
+
     public static LivingDropsEvent callLivingDropsEvent(LivingEntity entity, DamageSource source, Collection<ItemEntity> drops, int lootingLevel, boolean recentlyHit) {
         LivingDropsEvent event = new LivingDropsEvent(entity, source, drops, lootingLevel, recentlyHit);
         if (entity instanceof ServerPlayer) return event;
@@ -25,13 +35,7 @@ public class EventConverter {
         if (!(drops instanceof ArrayList))
             drops = new ArrayList<>(drops);
 
-        List<ItemStack> bukkitDrops = XmapList.create((List<ItemEntity>) drops, ItemStack.class,
-                (ItemEntity e) -> CraftItemStack.asCraftMirror(e.getItem()),
-                itemStack -> {
-                    ItemEntity itemEntity = new ItemEntity(entity.level(), entity.getX(), entity.getY(), entity.getZ(), CraftItemStack.asNMSCopy(itemStack));
-                    itemEntity.setDefaultPickUpDelay();
-                    return itemEntity;
-                });
+        List<ItemStack> bukkitDrops = createXmapList(drops, entity);
 
         CraftLivingEntity craftLivingEntity = ((CraftLivingEntity) entity.getBukkitEntity());
         EntityDeathEvent bukkitEvent = new EntityDeathEvent(craftLivingEntity, bukkitDrops, entity.getExpReward());
