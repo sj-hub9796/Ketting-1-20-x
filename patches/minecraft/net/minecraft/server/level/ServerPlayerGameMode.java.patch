@@ -172,13 +172,14 @@
           }
  
        }
-@@ -219,40 +_,154 @@
+@@ -219,40 +_,136 @@
  
     }
  
 +   //Ketting start - prevent any mixin injects from occurring here
 +   private org.bukkit.block.Block destroyBlock$bblock;
 +   private java.util.Optional<org.bukkit.event.block.BlockBreakEvent> destroyBlock$event;
++   private boolean destroyBlock$flag;
     public boolean destroyBlock(BlockPos p_9281_) {
        BlockState blockstate = this.level.getBlockState(p_9281_);
 -      if (!this.player.getMainHandItem().getItem().canAttackBlock(blockstate, this.level, p_9281_, this.player)) {
@@ -207,33 +208,30 @@
           } else {
 -            block.playerWillDestroy(this.level, p_9281_, blockstate, this.player);
 -            boolean flag = this.level.removeBlock(p_9281_, false);
+-            if (flag) {
+-               block.destroy(this.level, p_9281_, blockstate);
+-            }
 +            // CraftBukkit start
 +            org.bukkit.block.BlockState state = destroyBlock$bblock.getState();
 +            level.captureDrops = new java.util.ArrayList<>();
 +            // CraftBukkit end
-+            boolean flag = /*this.level*/removeBlock(p_9281_, false); //Ketting
-+
-             if (flag) {
-                block.destroy(this.level, p_9281_, blockstate);
-             }
  
              if (this.isCreative()) {
 -               return true;
-+               //Ketting start - mixin error
-+               this.removeBlock$cancel = true;
 +               removeBlock(p_9281_, false);
-+               //Ketting end
++               destroyBlock$flag = false; //Ketting - we do not want to drop xp in creative
 +               // return true; // CraftBukkit
              } else {
                 ItemStack itemstack = this.player.getMainHandItem();
                 ItemStack itemstack1 = itemstack.copy();
 -               boolean flag1 = this.player.hasCorrectToolForDrops(blockstate);
 +               boolean flag1 = blockstate.canHarvestBlock(this.level, p_9281_, this.player); // previously player.hasCorrectToolForDrops(blockstate)
-+
                 itemstack.mineBlock(this.level, blockstate, p_9281_, this.player);
 -               if (flag && flag1) {
 +               if (itemstack.isEmpty() && !itemstack1.isEmpty())
 +                  net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.player, itemstack1, InteractionHand.MAIN_HAND);
++               boolean flag = removeBlock(p_9281_, flag1);
++               destroyBlock$flag = flag; //Ketting
 +
 +               if (flag && flag1 && destroyBlock$event.get().isDropItems()) { // CraftBukkit - Check if block should drop items
                    block.playerDestroy(this.level, this.player, p_9281_, blockstate, blockentity, itemstack1);
@@ -252,7 +250,7 @@
 +            level.captureDrops = null;
 +
 +            // Drop event experience
-+            if (flag && exp > 0) //Ketting
++            if (destroyBlock$flag && exp > 0) //Ketting
 +               blockstate.getBlock().popExperience(this.level, p_9281_, exp);
 +
 +            return true;
@@ -289,12 +287,6 @@
 +         // Sword + Creative mode pre-cancel
 +         event.setCancelled(isSwordNoBreak);
 +
-+         // Calculate default block experience
-+         BlockState nmsData = this.level.getBlockState(p_9281_);
-+         Block nmsBlock = nmsData.getBlock();
-+
-+         ItemStack itemstack = this.player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND);
-+
 +         this.level.getCraftServer().getPluginManager().callEvent(event);
 +
 +         if (event.isCancelled()) {
@@ -321,14 +313,7 @@
 +   }
 +   //Ketting end
 +
-+   //Ketting start - mixin error
-+   private boolean removeBlock$cancel = false;
 +   private boolean removeBlock(BlockPos p_180235_1_, boolean canHarvest) {
-+      if (removeBlock$cancel) {
-+         removeBlock$cancel = false;
-+         return true; //we return true here as the creative destroy return value would also be true (not that it matters, the return value is ignored)
-+      }
-+      //Ketting end
 +      BlockState state = this.level.getBlockState(p_180235_1_);
 +      boolean removed = state.onDestroyedByPlayer(this.level, p_180235_1_, this.player, canHarvest, this.level.getFluidState(p_180235_1_));
 +      if (removed)
