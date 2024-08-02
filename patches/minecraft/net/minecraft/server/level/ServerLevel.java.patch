@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -188,24 +_,88 @@
+@@ -188,24 +_,90 @@
     private final List<CustomSpawner> customSpawners;
     @Nullable
     private EndDragonFight dragonFight;
@@ -60,10 +60,12 @@
 +         this.typeKey = getServer().registryAccess()
 +                 .registryOrThrow(Registries.LEVEL_STEM)
 +                 .getResourceKey(p_215004_)
-+                 .orElseGet(() -> {
-+                    org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Assigning level key {} to stem {}", p_215003_.location(), p_215004_);
-+                    return ResourceKey.create(Registries.LEVEL_STEM, p_215003_.location());
-+                 });
++                 .orElse(null);
++
++         if (this.typeKey == null) {
++            org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Assigning level key {} to stem {}", p_215003_.location(), p_215004_);
++            this.typeKey = ResourceKey.create(Registries.LEVEL_STEM, p_215003_.location());
++         }
 +      }
 +
 +      if (p_215002_ instanceof net.minecraft.world.level.storage.PrimaryLevelData primary) {
