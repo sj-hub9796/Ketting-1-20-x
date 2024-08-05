@@ -845,16 +845,16 @@
 +         if (hitresult == null || hitresult.getType() != BlockHitResult.Type.BLOCK) {
 +            org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerInteractEvent(this.player, org.bukkit.event.block.Action.RIGHT_CLICK_AIR, itemstack, interactionhand);
 +            cancelled = event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
-+         } else {
-+            BlockHitResult hitresultblock = (BlockHitResult) hitresult;
-+            if (player.gameMode.firedInteract && player.gameMode.interactPosition.equals(hitresultblock.getBlockPos()) && player.gameMode.interactHand == interactionhand && ItemStack.isSameItemSameTags(player.gameMode.interactItemStack, itemstack)) {
-+               cancelled = player.gameMode.interactResult;
-+            } else {
-+               org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerInteractEvent(player, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, hitresultblock.getBlockPos(), hitresultblock.getDirection(), itemstack, true, interactionhand, hitresultblock.getLocation());
-+               cancelled = event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
-+            }
++         //Ketting start - apply rewrite
++         } else if (this.player.gameMode.firedInteract) {
 +            player.gameMode.firedInteract = false;
++            cancelled = player.gameMode.interactResult;
++         } else {
++            BlockHitResult hitresultblock = hitresult;
++            org.bukkit.event.player.PlayerInteractEvent event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerInteractEvent(this.player, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, hitresultblock.getBlockPos(), hitresultblock.getDirection(), itemstack, true, interactionhand, hitresultblock.getLocation());
++            cancelled = event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
 +         }
++         //Ketting end
 +
 +         if (cancelled) {
 +            this.player.getBukkitEntity().updateInventory(); // SPIGOT-2524
