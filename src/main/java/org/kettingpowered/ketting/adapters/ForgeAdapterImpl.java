@@ -41,7 +41,7 @@ public class ForgeAdapterImpl implements ForgeAdapter {
                     modInfo.getDisplayName(),
                     String.format("%s.%s.%s", modInfo.getVersion().getMajorVersion(), modInfo.getVersion().getMinorVersion(), modInfo.getVersion().getIncrementalVersion()),
                     ModList.get().isLoaded(modId),
-                    Collections.emptyList()
+                    new ArrayList<>()
             );
             mod.dependencies().addAll(getDependencies(modInfo, mod));
             modCache.put(modId, mod);
