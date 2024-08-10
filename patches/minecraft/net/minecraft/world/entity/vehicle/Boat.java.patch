@@ -156,7 +156,17 @@
                    if (!fluidstate.isSource()) {
                       return Boat.Status.UNDER_FLOWING_WATER;
                    }
-@@ -759,21 +_,27 @@
+@@ -747,6 +_,9 @@
+       }
+    }
+ 
++   //Ketting start - mixin error
++   org.bukkit.entity.Vehicle checkFallDamage$vehicle;
++   org.bukkit.event.vehicle.VehicleDestroyEvent checkFallDamage$destroyEvent;
+    protected void checkFallDamage(double p_38307_, boolean p_38308_, BlockState p_38309_, BlockPos p_38310_) {
+       this.lastYd = this.getDeltaMovement().y;
+       if (!this.isPassenger()) {
+@@ -759,21 +_,28 @@
  
                 this.causeFallDamage(this.fallDistance, 1.0F, this.damageSources().fall());
                 if (!this.level().isClientSide && !this.isRemoved()) {
@@ -166,10 +176,11 @@
 -                        this.spawnAtLocation(this.getVariant().getPlanks());
 -                     }
 +                  // CraftBukkit start
-+                  org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
-+                  org.bukkit.event.vehicle.VehicleDestroyEvent destroyEvent = new org.bukkit.event.vehicle.VehicleDestroyEvent(vehicle, null);
-+                  this.level().getCraftServer().getPluginManager().callEvent(destroyEvent);
-+                  if (!destroyEvent.isCancelled()) {
++                  checkFallDamage$vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
++                  checkFallDamage$destroyEvent = new org.bukkit.event.vehicle.VehicleDestroyEvent(checkFallDamage$vehicle, null);
++                  this.level().getCraftServer().getPluginManager().callEvent(checkFallDamage$destroyEvent);
++                  if (!checkFallDamage$destroyEvent.isCancelled()) {
++                  //Ketting end
 +                     this.kill();
 +                     if (this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 +                        for (int i = 0; i < 3; ++i) {
