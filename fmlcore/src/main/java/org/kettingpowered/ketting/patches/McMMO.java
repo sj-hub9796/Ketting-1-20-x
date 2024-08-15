@@ -23,10 +23,10 @@ public class McMMO implements PluginPatcher {
 
     public void handleClass(ClassNode node, ClassRepo classRepo) {
         if (node.name.equals("com/gmail/nossr50/util/MobHealthbarUtils"))
-            handleAetherBosses(node);
+            handleBosses(node);
     }
 
-    private void handleAetherBosses(ClassNode node) {
+    private void handleBosses(ClassNode node) {
         node.methods.forEach(m -> {
             if (m.name.equals("isBoss") && m.desc.equals("(Lorg/bukkit/entity/LivingEntity;)Z"))
                 handleIsBoss(m);
