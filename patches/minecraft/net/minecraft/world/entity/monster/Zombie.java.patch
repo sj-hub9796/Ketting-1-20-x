@@ -114,7 +114,7 @@
           }
        }
  
-@@ -375,27 +_,37 @@
+@@ -375,18 +_,26 @@
  
     public boolean killedEntity(ServerLevel p_219160_, LivingEntity p_219161_) {
        boolean flag = super.killedEntity(p_219160_, p_219161_);
@@ -123,27 +123,29 @@
           if (p_219160_.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
              return flag;
           }
--
--         ZombieVillager zombievillager = villager.convertTo(EntityType.ZOMBIE_VILLAGER, false);
--         if (zombievillager != null) {
--            zombievillager.finalizeSpawn(p_219160_, p_219160_.getCurrentDifficultyAt(zombievillager.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag)null);
--            zombievillager.setVillagerData(villager.getVillagerData());
--            zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
--            zombievillager.setTradeOffers(villager.getOffers().createTag());
--            zombievillager.setVillagerXp(villager.getVillagerXp());
--            if (!this.isSilent()) {
--               p_219160_.levelEvent((Player)null, 1026, this.blockPosition(), 0);
--            }
--
--            flag = false;
--         }
-+         // CraftBukkit start
-+         flag = zombifyVillager(p_219160_, villager, this.blockPosition(), this.isSilent(), org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.INFECTION) == null;
-       }
  
++         // CraftBukkit start
++         // Ketting start - CB outlined the contents to zombifyVillager, which causes mixin inject errors. re-inline it and keep the zombifyVillager method
++         villager.ketting$convertTo$transformReason.set(org.bukkit.event.entity.EntityTransformEvent.TransformReason.INFECTION);
++         villager.ketting$convertTo$spawnReason.set(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.INFECTION);
+          ZombieVillager zombievillager = villager.convertTo(EntityType.ZOMBIE_VILLAGER, false);
++         // Ketting end
++         // CraftBukkit end
+          if (zombievillager != null) {
+             zombievillager.finalizeSpawn(p_219160_, p_219160_.getCurrentDifficultyAt(zombievillager.blockPosition()), MobSpawnType.CONVERSION, new Zombie.ZombieGroupData(false, true), (CompoundTag)null);
+             zombievillager.setVillagerData(villager.getVillagerData());
+             zombievillager.setGossips(villager.getGossips().store(NbtOps.INSTANCE));
+             zombievillager.setTradeOffers(villager.getOffers().createTag());
+             zombievillager.setVillagerXp(villager.getVillagerXp());
++            net.minecraftforge.event.ForgeEventFactory.onLivingConvert(villager, zombievillager);
++            // CraftBukkit start
+             if (!this.isSilent()) {
+                p_219160_.levelEvent((Player)null, 1026, this.blockPosition(), 0);
+             }
+@@ -398,6 +_,28 @@
        return flag;
-+   }
-+
+    }
+ 
 +   public static ZombieVillager zombifyVillager(ServerLevel p_219160_, Villager p_219161_, BlockPos blockPosition, boolean silent, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
 +      ZombieVillager zombieVillager = (ZombieVillager) p_219161_.convertTo(EntityType.ZOMBIE_VILLAGER, false, org.bukkit.event.entity.EntityTransformEvent.TransformReason.INFECTION, spawnReason);
 +      // CraftBukkit end
@@ -164,9 +166,11 @@
 +      }
 +      return zombieVillager;
 +      // CraftBukkit end
-    }
- 
++   }
++
     protected float getStandingEyeHeight(Pose p_34313_, EntityDimensions p_34314_) {
+       return this.isBaby() ? 0.93F : 1.74F;
+    }
 @@ -438,6 +_,7 @@
                       chicken1.finalizeSpawn(p_34297_, p_34298_, MobSpawnType.JOCKEY, (SpawnGroupData)null, (CompoundTag)null);
                       chicken1.setChickenJockey(true);
