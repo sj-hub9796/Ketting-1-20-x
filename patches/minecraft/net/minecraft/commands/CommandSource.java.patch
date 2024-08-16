@@ -1,27 +1,28 @@
 --- a/net/minecraft/commands/CommandSource.java
 +++ b/net/minecraft/commands/CommandSource.java
-@@ -18,6 +_,17 @@
+@@ -18,6 +_,15 @@
        public boolean shouldInformAdmins() {
           return false;
        }
 +
 +      // CraftBukkit start
-+      @Override
-+      public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
-+         //Ketting start - don't throw
-+         //throw new UnsupportedOperationException("Not supported yet.");
-+         org.kettingpowered.ketting.core.Ketting.LOGGER.debug("NULL CommandSource call to getBukkitSender requested. Returning null.", new UnsupportedOperationException("Not supported yet."));
-+         return null;
-+         //Ketting end
-+      }
++      //Ketting start - don't override. Just use the stubbed default.
++      //@Override
++      //public org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      //   throw new UnsupportedOperationException("Not supported yet.");
++      //}
++      //Ketting end
 +      // CraftBukkit end
     };
  
     void sendSystemMessage(Component p_230797_);
-@@ -31,4 +_,6 @@
+@@ -31,4 +_,9 @@
     default boolean alwaysAccepts() {
        return false;
     }
 +
-+   org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper); // CraftBukkit
++   default org.bukkit.command.CommandSender getBukkitSender(CommandSourceStack wrapper) {
++      org.kettingpowered.ketting.core.Ketting.LOGGER.warn("CommandSource call to default getBukkitSender requested. Returning a Stubbed bukkit CommandSender.", new UnsupportedOperationException("Not supported yet."));
++      return org.kettingpowered.ketting.craftbukkit.StubCraftCommandSender.INSTANCE;
++   } // CraftBukkit
  }
