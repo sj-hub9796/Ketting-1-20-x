@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.v1_20_R1.tag;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.core.Registry;
@@ -28,6 +29,6 @@ public class CraftBlockTag extends CraftTag<Block, Material> {
 
     @Override
     public Set<Material> getValues() {
-        return getHandle().stream().map((block) -> CraftMagicNumbers.getMaterial(block.value())).collect(Collectors.toUnmodifiableSet());
+        return getHandle().stream().map((block) -> CraftMagicNumbers.getMaterial(block.value())).filter(Objects::nonNull).collect(Collectors.toUnmodifiableSet());
     }
 }
