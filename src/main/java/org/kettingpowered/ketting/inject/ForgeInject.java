@@ -31,6 +31,7 @@ import org.bukkit.craftbukkit.v1_20_R1.potion.CraftPotionUtil;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftSpawnCategory;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.SpawnCategory;
@@ -387,7 +388,7 @@ public class ForgeInject {
 
     private static void addForgeEnchantments() {
         ForgeRegistries.ENCHANTMENTS.getEntries().forEach(entry -> {
-            CraftEnchantment enchantment = new CraftEnchantment(entry.getValue());
+            Enchantment enchantment = new CraftEnchantment(entry.getValue(), standardize(entry.getKey().location()));
             if (!org.bukkit.enchantments.Enchantment.byKey.containsKey(enchantment.getKey())
                     || !org.bukkit.enchantments.Enchantment.byName.containsKey(enchantment.getName())) {
                 org.bukkit.enchantments.Enchantment.byKey.put(enchantment.getKey(), enchantment);

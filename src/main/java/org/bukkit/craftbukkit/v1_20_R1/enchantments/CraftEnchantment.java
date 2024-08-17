@@ -13,9 +13,18 @@ import org.bukkit.inventory.ItemStack;
 public class CraftEnchantment extends Enchantment {
     private final net.minecraft.world.item.enchantment.Enchantment target;
 
-    public CraftEnchantment(net.minecraft.world.item.enchantment.Enchantment target) {
+    //Ketting start - modded effect names
+    private final String moddedName;
+
+    public CraftEnchantment(net.minecraft.world.item.enchantment.Enchantment target, String moddedName) {
         super(CraftNamespacedKey.fromMinecraft(BuiltInRegistries.ENCHANTMENT.getKey(target)));
         this.target = target;
+        this.moddedName = moddedName;
+    }
+
+    public CraftEnchantment(net.minecraft.world.item.enchantment.Enchantment target) {
+        this(target, null);
+        //Ketting end
     }
 
     @Override
@@ -81,6 +90,7 @@ public class CraftEnchantment extends Enchantment {
 
     @Override
     public String getName() {
+        if (moddedName != null) return moddedName; //Ketting
         // PAIL: migration paths
         switch (BuiltInRegistries.ENCHANTMENT.getId(target)) {
         case 0:
