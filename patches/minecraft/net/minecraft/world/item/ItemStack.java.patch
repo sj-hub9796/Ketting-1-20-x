@@ -335,7 +335,7 @@
 +               }
 +
 +               // SPIGOT-1288 - play sound stripped from ItemBlock
-+               if (this.item instanceof BlockItem) {
++               if (false && this.item instanceof BlockItem) { //Ketting - handled in BlockItem again due to mixin issues, will cause SPIGOT-1288 to appear again
 +                  net.minecraft.world.level.block.SoundType soundeffecttype = ((BlockItem) this.item).getBlock().defaultBlockState().getSoundType(); // TODO: not strictly correct, however currently only affects decorated pots
 +                  world.playSound(player, blockpos, soundeffecttype.getPlaceSound(), net.minecraft.sounds.SoundSource.BLOCKS, (soundeffecttype.getVolume() + 1.0F) / 2.0F, soundeffecttype.getPitch() * 0.8F);
 +               }
