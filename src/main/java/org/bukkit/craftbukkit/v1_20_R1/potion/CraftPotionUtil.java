@@ -74,7 +74,7 @@ public class CraftPotionUtil {
         }
         Preconditions.checkNotNull(type, "Unknown potion type from data " + data);
 
-        return "minecraft:" + type;
+        return type.indexOf(':') != -1 ? type : "minecraft:" + type; //Ketting - allow custom namespaces
     }
 
     public static PotionData toBukkit(String type) {

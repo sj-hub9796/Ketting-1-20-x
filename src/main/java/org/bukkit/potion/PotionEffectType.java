@@ -1,10 +1,11 @@
 package org.bukkit.potion;
 
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import org.bukkit.Color;
 import org.bukkit.Keyed;
 import org.bukkit.NamespacedKey;
@@ -185,7 +186,6 @@ public abstract class PotionEffectType implements Keyed {
      * Causes the player's vision to dim occasionally.
      */
     public static final PotionEffectType DARKNESS = new PotionEffectTypeWrapper(33, "darkness");
-    public static final PotionEffectType NORMAL = new PotionEffectTypeWrapper(34, new NamespacedKey("kettingpowered", "neutral")); // Ketting
 
     private final int id;
     private final NamespacedKey key;
@@ -232,7 +232,7 @@ public abstract class PotionEffectType implements Keyed {
     @NotNull
     @Override
     public NamespacedKey getKey() {
-       return key;
+        return key;
     }
 
     /**
@@ -283,7 +283,7 @@ public abstract class PotionEffectType implements Keyed {
         return "PotionEffectType[" + id + ", " + getName() + "]";
     }
 
-    private static final ArrayList<PotionEffectType> byId = new ArrayList<>(); //Ketting - to arraylist
+    public static PotionEffectType[] byId = new PotionEffectType[34]; //Ketting - public + not final
     private static final Map<String, PotionEffectType> byName = new HashMap<String, PotionEffectType>();
     private static final Map<NamespacedKey, PotionEffectType> byKey = new HashMap<NamespacedKey, PotionEffectType>();
     // will break on updates.
@@ -311,9 +311,9 @@ public abstract class PotionEffectType implements Keyed {
     @Deprecated
     @Nullable
     public static PotionEffectType getById(int id) {
-        if (id >= byId.size() || id < 0) //Ketting - to arraylist
+        if (id >= byId.length || id < 0)
             return null;
-        return byId.get(id); //Ketting - to arraylist
+        return byId[id];
     }
 
     /**
@@ -335,20 +335,24 @@ public abstract class PotionEffectType implements Keyed {
      *
      * @param type PotionType to register
      */
-    //Ketting - make byId be an arraylist
     public static void registerPotionEffectType(@NotNull PotionEffectType type) {
-        while (byId.size() <= type.id) byId.add(null);
-        if (byId.get(type.id) != null || byName.containsKey(type.getName().toLowerCase(java.util.Locale.ENGLISH)) || byKey.containsKey(type.key)) {
+        if (byId[type.id] != null || byName.containsKey(type.getName().toLowerCase(java.util.Locale.ENGLISH)) || byKey.containsKey(type.key)) {
             throw new IllegalArgumentException("Cannot set already-set type");
         } else if (!acceptingNew) {
             throw new IllegalStateException(
                     "No longer accepting new potion effect types (can only be done by the server implementation)");
         }
 
-        byId.set(type.id, type);
+        byId[type.id] = type;
         byName.put(type.getName().toLowerCase(java.util.Locale.ENGLISH), type);
         byKey.put(type.key, type);
     }
+
+    //Ketting start
+    public static void startAcceptingRegistrations() {
+        acceptingNew = true;
+    }
+    //Ketting end
 
     /**
      * Stops accepting any effect type registrations.
@@ -356,12 +360,6 @@ public abstract class PotionEffectType implements Keyed {
     public static void stopAcceptingRegistrations() {
         acceptingNew = false;
     }
-
-    //Ketting startSer
-    public static void startAcceptingRegistrations() {
-        acceptingNew = true;
-    }
-    //Ketting end
 
     /**
      * Returns an array of all the registered {@link PotionEffectType}s.
@@ -371,6 +369,6 @@ public abstract class PotionEffectType implements Keyed {
      */
     @NotNull
     public static PotionEffectType[] values() {
-        return byId.stream().filter(Objects::nonNull).toArray(PotionEffectType[]::new); //Ketting - to arraylist
+        return Arrays.asList(byId).stream().filter(Objects::nonNull).toArray(PotionEffectType[]::new); //Ketting - skip nulls
     }
 }

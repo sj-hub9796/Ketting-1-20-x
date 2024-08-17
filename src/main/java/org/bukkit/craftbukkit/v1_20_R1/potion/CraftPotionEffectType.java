@@ -13,9 +13,18 @@ import org.bukkit.potion.PotionEffectType;
 public class CraftPotionEffectType extends PotionEffectType {
     private final MobEffect handle;
 
-    public CraftPotionEffectType(MobEffect handle) {
-        super(BuiltInRegistries.MOB_EFFECT.getId(handle) + 1, CraftNamespacedKey.fromMinecraft(BuiltInRegistries.MOB_EFFECT.getKey(handle)));
+    //Ketting start - modded effect names
+    private final String moddedName;
+
+    public CraftPotionEffectType(MobEffect handle, String moddedName) {
+        super(MobEffect.getId(handle), CraftNamespacedKey.fromMinecraft(BuiltInRegistries.MOB_EFFECT.getKey(handle)));
         this.handle = handle;
+        this.moddedName = moddedName;
+    }
+
+    public CraftPotionEffectType(MobEffect handle) {
+        this(handle, null);
+        //Ketting end
     }
 
     @Override
@@ -29,6 +38,7 @@ public class CraftPotionEffectType extends PotionEffectType {
 
     @Override
     public String getName() {
+        if (moddedName != null) return moddedName; //Ketting
         switch (getId()) {
         case 1:
             return "SPEED";

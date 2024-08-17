@@ -10,6 +10,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.TrappedChestBlock;
@@ -398,52 +399,52 @@ public class ForgeInject {
     }
 
     private static void addForgePotions() {
+        // Stage 1 - register the actual effects
+        int maxId = ForgeRegistries.MOB_EFFECTS.getValues().stream().mapToInt(MobEffect::getId).max().orElse(0);
+        PotionEffectType.byId = new PotionEffectType[maxId + 1];
         PotionEffectType.startAcceptingRegistrations();
         ForgeRegistries.MOB_EFFECTS.getEntries().forEach(entry -> {
-            var pet = new CraftPotionEffectType(entry.getValue());
-
-            if (pet == null)
-                return;
+            var effect = new CraftPotionEffectType(entry.getValue(), standardize(entry.getKey().location()));
 
             try {
-                PotionEffectType.registerPotionEffectType(pet);
-                debug("Registering Forge Potion into Bukkit: " + pet.getName());
-            } catch (IllegalStateException e) {
-                Ketting.LOGGER.error("Could not register potion effect into Bukkit: " + pet.getName() + ". " + e.getMessage());
+                PotionEffectType.registerPotionEffectType(effect);
+                debug("Registering Forge mob effect into Bukkit: " + effect.getName());
+            } catch (Throwable e) {
+                Ketting.LOGGER.error("Could not register mob effect into Bukkit: " + effect.getName() + ". " + e.getMessage());
             }
         });
         PotionEffectType.stopAcceptingRegistrations();
-        // Stage 1 complete - now to add the types to bukkit
 
-
-        int ordinal = EntityType.values().length;
+        // Stage 2 - add the types to bukkit
+        int ordinal = PotionType.values().length;
         List<PotionType> values = new ArrayList<>();
         BiMap<PotionType, String> newRegular = HashBiMap.create(CraftPotionUtil.regular);
         for (var entry : ForgeRegistries.POTIONS.getEntries()) {
             var location = entry.getKey().location();
-            if (location.getNamespace().equals(NamespacedKey.MINECRAFT)) {
-                continue;
-            }
-            var enumName = standardize(location);
             var potion = entry.getValue();
-            var effect = potion.getEffects().isEmpty() ? null : potion.getEffects().get(0);
-            PotionEffectType type = null;
-            if (effect != null) type = PotionEffectType.getById(MobEffect.getId(effect.getEffect()));
-            if (type == null) type = PotionEffectType.NORMAL;
-            try {
-                var potionType = EnumHelper.makeEnum(PotionType.class, enumName, ordinal,
-                        List.of(PotionEffectType.class, boolean.class, boolean.class),
-                        List.of(type, false, false));
-                if (potionType == null) {
-                    Ketting.LOGGER.error("Could not inject potion into Bukkit: " + enumName + ". PotionType is null");
+            if (CraftPotionUtil.toBukkit(location.toString()).getType() == PotionType.UNCRAFTABLE && potion != Potions.EMPTY) {
+                var enumName = standardize(location);
+                var effect = potion.getEffects().isEmpty() ? null : potion.getEffects().get(0);
+
+                var type = effect == null ? null : PotionEffectType.getById(MobEffect.getId(effect.getEffect()));
+                if (type == null) {
+                    Ketting.LOGGER.error("Could not inject Potion into Bukkit: " + enumName + ". " + (effect == null || effect.getEffect() == null ? "Effect is null" : "Missing required effect " + standardize(ForgeRegistries.MOB_EFFECTS.getKey(effect.getEffect()))));
                     continue;
                 }
-                ordinal++;
+
+                PotionType potionType = EnumHelper.makeEnum(PotionType.class, enumName, ordinal++,
+                        Arrays.asList(PotionEffectType.class, boolean.class, boolean.class),
+                        Arrays.asList(type, false, false)
+                );
+
+                if (potionType == null) {
+                    Ketting.LOGGER.error("Could not inject Potion into Bukkit: " + enumName + ". PotionType is null");
+                    continue;
+                }
+
                 values.add(potionType);
-                newRegular.put(potionType, ForgeRegistries.POTIONS.getKey(potion).toString());
+                newRegular.put(potionType, location.toString());
                 debug("Injecting Forge Potion into Bukkit: " + potionType.name());
-            } catch (Throwable e) {
-                Ketting.LOGGER.error("Could not inject potion into Bukkit: " + enumName + ". " + e.getMessage());
             }
         }
         CraftPotionUtil.regular = newRegular;
