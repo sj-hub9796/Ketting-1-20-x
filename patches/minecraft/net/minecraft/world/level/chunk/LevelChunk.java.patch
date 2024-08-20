@@ -11,7 +11,7 @@
        public void tick() {
 @@ -68,6 +_,7 @@
     private final Map<BlockPos, LevelChunk.RebindableTickingBlockEntityWrapper> tickersInLevel = Maps.newHashMap();
-    private boolean loaded;
+    public boolean loaded;
     public final Level level;
 +   public final ServerLevel levelCB; //Ketting
     @Nullable
