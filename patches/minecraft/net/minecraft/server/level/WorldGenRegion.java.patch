@@ -9,7 +9,7 @@
              BlockEntity blockentity = blockstate.hasBlockEntity() ? this.getBlockEntity(p_9550_) : null;
              Block.dropResources(blockstate, this.level, p_9550_, blockentity, p_9552_, ItemStack.EMPTY);
           }
-@@ -296,7 +_,29 @@
+@@ -296,10 +_,42 @@
        this.getChunk(p_9592_).markPosForPostprocessing(p_9592_);
     }
  
@@ -26,6 +26,12 @@
 +      return addFreshEntity(p_9580_);
 +   }
 +
++   //Ketting start - bukkit weirdness
++   private boolean addFreshEntity$result = false;
++   public boolean addFreshEntity$result() {
++      return addFreshEntity$result;
++   }
++
     public boolean addFreshEntity(Entity p_9580_) {
 +      // CraftBukkit start
 +      if (ketting$disabledEntitySpawns.contains(p_9580_)) {
@@ -34,8 +40,15 @@
 +      }
 +      // CraftBukkit end
 +      // Ketting end
-+      if (p_9580_ instanceof net.minecraft.world.entity.Mob mob && mob.isSpawnCancelled()) return false;
++      if (p_9580_ instanceof net.minecraft.world.entity.Mob mob && mob.isSpawnCancelled()) {
++         addFreshEntity$result = false; //Ketting
++         return false;
++      }
 +
        int i = SectionPos.blockToSectionCoord(p_9580_.getBlockX());
        int j = SectionPos.blockToSectionCoord(p_9580_.getBlockZ());
        this.getChunk(i, j).addEntity(p_9580_);
++      addFreshEntity$result = true; //Ketting end - bukkit weirdness
+       return true;
+    }
+ 

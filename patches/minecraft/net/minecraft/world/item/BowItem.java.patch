@@ -42,14 +42,16 @@
                    p_40667_.hurtAndBreak(1, player, (p_289501_) -> {
                       p_289501_.broadcastBreakEvent(player.getUsedItemHand());
                    });
-@@ -63,7 +_,16 @@
+@@ -63,7 +_,18 @@
                       abstractarrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                    }
  
 -                  p_40668_.addFreshEntity(abstractarrow);
 +                  // CraftBukkit start
 +                  if (event.getProjectile() == abstractarrow.getBukkitEntity()) {
-+                     if (!p_40668_.addFreshEntity(abstractarrow)) {
++                     p_40668_.addFreshEntity(abstractarrow);
++
++                     if (!p_40668_.addFreshEntity$result()) {
 +                        if (player instanceof net.minecraft.server.level.ServerPlayer) {
 +                           ((net.minecraft.server.level.ServerPlayer) player).getBukkitEntity().updateInventory();
 +                        }

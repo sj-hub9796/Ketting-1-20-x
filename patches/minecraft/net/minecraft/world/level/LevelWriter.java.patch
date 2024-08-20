@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/LevelWriter.java
 +++ b/net/minecraft/world/level/LevelWriter.java
-@@ -24,6 +_,22 @@
+@@ -24,6 +_,28 @@
  
     boolean destroyBlock(BlockPos p_46957_, boolean p_46958_, @Nullable Entity p_46959_, int p_46960_);
  
@@ -18,6 +18,12 @@
 +   default void prepareAddFreshEntity(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {}
 +
 +   default void disableSpawnFor(Entity entity) {}
++   //Ketting end
++
++   //Ketting start - bukkit weirdness
++   default boolean addFreshEntity$result() {
++      return false;
++   }
 +   //Ketting end
 +
     default boolean addFreshEntity(Entity p_46964_) {

@@ -450,7 +450,7 @@
        }
  
        this.getChunkSource().getDataStorage().save();
-@@ -799,18 +_,58 @@
+@@ -799,18 +_,69 @@
        return list.isEmpty() ? null : list.get(this.random.nextInt(list.size()));
     }
  
@@ -467,16 +467,29 @@
 +      ketting$disabledEntitySpawns.add(entity);
 +   }
 +
++   //Ketting start - bukkit weirdness
++   public boolean addFreshEntity$result = false;
++   public boolean addFreshEntity$result() {
++      return addFreshEntity$result;
++   }
++   //Ketting end
++
     public boolean addFreshEntity(Entity p_8837_) {
+-      return this.addEntity(p_8837_);
+-   }
 +      if (ketting$disabledEntitySpawns.contains(p_8837_)) {
 +         ketting$disabledEntitySpawns.remove(p_8837_);
++         addFreshEntity$result = false; //Ketting - bukkit weirdness
 +         return false;
 +      }
 +      ketting$addEntity$spawnReason.set(ketting$addFreshEntity$spawnReason.getAndSet(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT));
 +   // Ketting end
-       return this.addEntity(p_8837_);
-    }
- 
++      //Ketting start - bukkit weirdness
++      addFreshEntity$result = this.addEntity(p_8837_);
++      return addFreshEntity$result;
++      //Ketting end
++   }
++
 +   //Ketting start
 +   private java.util.concurrent.atomic.AtomicReference<org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason> ketting$addWithUUID$spawnReason = new java.util.concurrent.atomic.AtomicReference<>(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
 +
@@ -485,7 +498,7 @@
 +      return this.addWithUUID(entity);
 +   }
 +   //Ketting end
-+
+ 
     public boolean addWithUUID(Entity p_8848_) {
 +      ketting$addEntity$spawnReason.getAndSet(ketting$addWithUUID$spawnReason.getAndSet(org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT)); //Ketting
        return this.addEntity(p_8848_);
