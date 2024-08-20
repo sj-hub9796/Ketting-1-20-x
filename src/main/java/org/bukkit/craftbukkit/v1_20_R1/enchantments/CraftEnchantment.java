@@ -90,7 +90,6 @@ public class CraftEnchantment extends Enchantment {
 
     @Override
     public String getName() {
-        if (moddedName != null) return moddedName; //Ketting
         // PAIL: migration paths
         switch (BuiltInRegistries.ENCHANTMENT.getId(target)) {
         case 0:
@@ -172,7 +171,7 @@ public class CraftEnchantment extends Enchantment {
         case 38:
             return "VANISHING_CURSE";
         default:
-            return "UNKNOWN_ENCHANT_" + BuiltInRegistries.ENCHANTMENT.getId(target);
+            return moddedName != null ? moddedName : "UNKNOWN_ENCHANT_" + BuiltInRegistries.ENCHANTMENT.getId(target); //Ketting
         }
     }
 

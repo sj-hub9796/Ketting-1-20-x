@@ -38,7 +38,6 @@ public class CraftPotionEffectType extends PotionEffectType {
 
     @Override
     public String getName() {
-        if (moddedName != null) return moddedName; //Ketting
         switch (getId()) {
         case 1:
             return "SPEED";
@@ -107,7 +106,7 @@ public class CraftPotionEffectType extends PotionEffectType {
         case 33:
             return "DARKNESS";
         default:
-            return "UNKNOWN_EFFECT_TYPE_" + getId();
+            return moddedName != null ? moddedName : "UNKNOWN_EFFECT_TYPE_" + getId(); //Ketting
         }
     }
 
