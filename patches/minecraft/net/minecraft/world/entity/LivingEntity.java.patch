@@ -742,7 +742,7 @@
  
        boolean flag = this.lastHurtByPlayerTime > 0;
        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-@@ -1349,15 +_,76 @@
+@@ -1349,15 +_,77 @@
        }
  
        this.dropEquipment();
@@ -753,6 +753,7 @@
 +      Collection<ItemEntity> drops = captureDrops(null);
 +
 +      //Ketting start
++      handlePlayerDeath$cbKeepInv = false; //reset
 +      if (this instanceof ServerPlayer s) {
 +         dropAllDeathLoot$dropsCopy = new java.util.ArrayList<ItemEntity>(drops); //Ketting
 +         handlePlayerDeath(s, drops);
