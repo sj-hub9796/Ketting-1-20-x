@@ -28,7 +28,7 @@
 +   //Ketting start - CraftBukkit Method
 +   public java.util.concurrent.atomic.AtomicBoolean ketting$parse$overridePermissions = new java.util.concurrent.atomic.AtomicBoolean(false);
 +   public EntitySelector parse(boolean overridePermissions) throws CommandSyntaxException {
-+      ketting$parseSelector$overridePermissions.set(overridePermissions);
++      ketting$parse$overridePermissions.set(overridePermissions);
 +      return parse();
 +   }
 +   //Ketting end
