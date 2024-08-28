@@ -87,50 +87,68 @@
                    double d11;
                    if (entity instanceof LivingEntity) {
                       LivingEntity livingentity = (LivingEntity)entity;
-@@ -239,20 +_,76 @@
+@@ -220,6 +_,21 @@
+ 
+    }
+ 
++   private org.bukkit.World ketting$bworld;
++   private org.bukkit.entity.Entity ketting$explode;
++   private org.bukkit.Location ketting$location;
++   private List<org.bukkit.block.Block> ketting$blockList;
++   private BlockPos ketting$cpos;
++   private org.bukkit.block.Block ketting$bblock;
++   private boolean ketting$cancelled;
++   private float ketting$yield;
++   private List<org.bukkit.block.Block> ketting$bukkitBlocks;
++   private BlockPos ketting$coords;
++   private org.bukkit.event.entity.EntityExplodeEvent ketting$event$0;
++   private org.bukkit.event.block.BlockExplodeEvent ketting$event$1;
++   private Entity ketting$sourceEntity;
++   private BlockPos ketting$sourceBlock;
++   
+    public void finalizeExplosion(boolean p_46076_) {
+       if (this.level.isClientSide) {
+          this.level.playLocalSound(this.x, this.y, this.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0F, (1.0F + (this.level.random.nextFloat() - this.level.random.nextFloat()) * 0.2F) * 0.7F, false);
+@@ -239,20 +_,72 @@
           boolean flag1 = this.getIndirectSourceEntity() instanceof Player;
           Util.shuffle(this.toBlow, this.level.random);
  
 +         // CraftBukkit start
-+         org.bukkit.World bworld = this.level.getWorld();
-+         org.bukkit.entity.Entity explode = this.source == null ? null : this.source.getBukkitEntity();
-+         org.bukkit.Location location = new org.bukkit.Location(bworld, this.x, this.y, this.z);
++         ketting$bworld = this.level.getWorld();
++         ketting$explode = this.source == null ? null : this.source.getBukkitEntity();
++         ketting$location = new org.bukkit.Location(ketting$bworld, this.x, this.y, this.z);
 +
-+         List<org.bukkit.block.Block> blockList = new ObjectArrayList<>();
++         ketting$blockList = new ObjectArrayList<>();
 +         for (int i1 = this.toBlow.size() - 1; i1 >= 0; i1--) {
-+            BlockPos cpos = this.toBlow.get(i1);
-+            org.bukkit.block.Block bblock = bworld.getBlockAt(cpos.getX(), cpos.getY(), cpos.getZ());
-+            if (!bblock.getType().isAir()) {
-+               blockList.add(bblock);
++            ketting$cpos = this.toBlow.get(i1);
++            ketting$bblock = ketting$bworld.getBlockAt(ketting$cpos.getX(), ketting$cpos.getY(), ketting$cpos.getZ());
++            if (!ketting$bblock.getType().isAir()) {
++               ketting$blockList.add(ketting$bblock);
 +            }
 +         }
 +
-+         boolean cancelled;
-+         List<org.bukkit.block.Block> bukkitBlocks;
-+         float yield;
-+
-+         if (explode != null) {
-+            org.bukkit.event.entity.EntityExplodeEvent event = new org.bukkit.event.entity.EntityExplodeEvent(explode, location, blockList, this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / this.radius : 1.0F);
-+            this.level.getCraftServer().getPluginManager().callEvent(event);
-+            cancelled = event.isCancelled();
-+            bukkitBlocks = event.blockList();
-+            yield = event.getYield();
++         if (ketting$explode != null) {
++            ketting$event$0 = new org.bukkit.event.entity.EntityExplodeEvent(ketting$explode, ketting$location, ketting$blockList, this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / this.radius : 1.0F);
++            this.level.getCraftServer().getPluginManager().callEvent(ketting$event$0);
++            ketting$cancelled = ketting$event$0.isCancelled();
++            ketting$bukkitBlocks = ketting$event$0.blockList();
++            ketting$yield = ketting$event$0.getYield();
 +         } else {
-+            org.bukkit.event.block.BlockExplodeEvent event = new org.bukkit.event.block.BlockExplodeEvent(location.getBlock(), blockList, this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / this.radius : 1.0F);
-+            this.level.getCraftServer().getPluginManager().callEvent(event);
-+            cancelled = event.isCancelled();
-+            bukkitBlocks = event.blockList();
-+            yield = event.getYield();
++            ketting$event$1 = new org.bukkit.event.block.BlockExplodeEvent(ketting$location.getBlock(), ketting$blockList, this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / this.radius : 1.0F);
++            this.level.getCraftServer().getPluginManager().callEvent(ketting$event$1);
++            ketting$cancelled = ketting$event$1.isCancelled();
++            ketting$bukkitBlocks = ketting$event$1.blockList();
++            ketting$yield = ketting$event$1.getYield();
 +         }
 +
 +         this.toBlow.clear();
 +
-+         for (org.bukkit.block.Block bblock : bukkitBlocks) {
-+            BlockPos coords = new BlockPos(bblock.getX(), bblock.getY(), bblock.getZ());
-+            toBlow.add(coords);
++         for (org.bukkit.block.Block bblock : ketting$bukkitBlocks) {
++            ketting$coords = new BlockPos(bblock.getX(), bblock.getY(), bblock.getZ());
++            toBlow.add(ketting$coords);
 +         }
 +
-+         if (cancelled) {
++         if (ketting$cancelled) {
 +            this.wasCanceled = true;
 +            return;
 +         }
@@ -140,9 +158,9 @@
              Block block = blockstate.getBlock();
 +            // CraftBukkit start - TNTPrimeEvent
 +            if (block instanceof net.minecraft.world.level.block.TntBlock) {
-+               Entity sourceEntity = source == null ? null : source;
-+               BlockPos sourceBlock = sourceEntity == null ? BlockPos.containing(this.x, this.y, this.z) : null;
-+               if (!org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callTNTPrimeEvent(this.level, blockpos, org.bukkit.event.block.TNTPrimeEvent.PrimeCause.EXPLOSION, sourceEntity, sourceBlock)) {
++               ketting$sourceEntity = source == null ? null : source;
++               ketting$sourceBlock = ketting$sourceEntity == null ? BlockPos.containing(this.x, this.y, this.z) : null;
++               if (!org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callTNTPrimeEvent(this.level, blockpos, org.bukkit.event.block.TNTPrimeEvent.PrimeCause.EXPLOSION, ketting$sourceEntity, ketting$sourceBlock)) {
 +                  this.level.sendBlockUpdated(blockpos, Blocks.AIR.defaultBlockState(), blockstate, 3); // Update the block on the client
 +                  continue;
 +               }
@@ -162,8 +180,8 @@
 -                     if (this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY) {
 -                        lootparams$builder.withParameter(LootContextParams.EXPLOSION_RADIUS, this.radius);
 +
-+                     if (yield < 1.0F) { // CraftBukkit - add yield
-+                        lootparams$builder.withParameter(LootContextParams.EXPLOSION_RADIUS, 1.0F / yield); // CraftBukkit - add yield
++                     if (ketting$yield < 1.0F) { // CraftBukkit - add yield
++                        lootparams$builder.withParameter(LootContextParams.EXPLOSION_RADIUS, 1.0F / ketting$yield); // CraftBukkit - add yield
                       }
  
                       blockstate.spawnAfterBreak(serverlevel, blockpos, ItemStack.EMPTY, flag1);
