@@ -12,7 +12,9 @@ import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 import net.minecraft.world.level.storage.ServerLevelData;
+import net.minecraft.world.level.storage.WritableLevelData;
 import net.minecraft.world.level.timers.TimerQueue;
+import org.kettingpowered.ketting.core.Ketting;
 
 import java.util.UUID;
 
@@ -24,6 +26,10 @@ public class DelegateWorldInfo extends PrimaryLevelData {
     public DelegateWorldInfo(LevelSettings p_251081_, WorldOptions p_251666_, SpecialWorldProperty p_252268_, Lifecycle p_251714_, DerivedLevelData derivedLevelData) {
         super(p_251081_, p_251666_, p_252268_, p_251714_);
         this.derivedWorldInfo = derivedLevelData;
+    }
+
+    public void setTypeKey(net.minecraft.resources.ResourceKey<net.minecraft.world.level.dimension.LevelStem> typeKey) {
+        derivedWorldInfo.setTypeKey(typeKey);
     }
 
     @Override
@@ -233,6 +239,25 @@ public class DelegateWorldInfo extends PrimaryLevelData {
 
     public static DelegateWorldInfo wrap(DerivedLevelData worldInfo) {
         return new DelegateWorldInfo(worldSettings(worldInfo), generatorSettings(worldInfo), specialWorldProperty(worldInfo), lifecycle(worldInfo), worldInfo);
+    }
+    
+    public static ServerLevelData getServerLevelData(WritableLevelData levelData) {
+        ServerLevelData serverLevelData = null;
+
+        if (levelData instanceof org.kettingpowered.ketting.utils.DelegateWorldInfo delegate) {
+            serverLevelData = delegate;
+        }else if (levelData instanceof net.minecraft.world.level.storage.PrimaryLevelData primary) {
+            serverLevelData = primary;
+        } else if (levelData instanceof net.minecraft.world.level.storage.DerivedLevelData derived) {
+            serverLevelData = org.kettingpowered.ketting.utils.DelegateWorldInfo.wrap(derived);
+        } else if (levelData instanceof ServerLevelData serverlevelData1) {
+            org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Could not wrap level data, this can cause some problems with bukkit", new UnsupportedOperationException());
+            serverLevelData = serverlevelData1;
+        } else {
+            Ketting.LOGGER.error("Could not get a ServerLevelData from a WritableLevelData in Level constructor", new IllegalArgumentException("A WritableLevelData in the Level constructor wasn't a ServerLevelData"));
+        }
+
+        return serverLevelData;
     }
 
     private static LevelSettings worldSettings(ServerLevelData worldInfo) {

@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -188,24 +_,90 @@
+@@ -188,24 +_,86 @@
     private final List<CustomSpawner> customSpawners;
     @Nullable
     private EndDragonFight dragonFight;
@@ -68,22 +68,18 @@
 +         }
 +      }
 +
-+      if (p_215002_ instanceof net.minecraft.world.level.storage.PrimaryLevelData primary) {
-+         this.serverLevelData = primary;
-+      } else if (p_215002_ instanceof net.minecraft.world.level.storage.DerivedLevelData derived) {
-+         this.serverLevelData = org.kettingpowered.ketting.utils.DelegateWorldInfo.wrap(derived);
-+         derived.setTypeKey(this.typeKey);
++      if (Level.ketting$serverLevelData != null) {
++         this.serverLevelData = Level.ketting$serverLevelData;
++         Level.ketting$serverLevelData = null;
 +      } else {
-+         org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Could not wrap level data, this can cause some problems with bukkit", new UnsupportedOperationException());
-+         this.serverLevelData = p_215002_;
++         this.serverLevelData = org.kettingpowered.ketting.utils.DelegateWorldInfo.getServerLevelData(p_215002_);
++         serverLevelDataDependentInit(serverLevelData);
 +      }
 +
-+      this.spigotConfig = new org.spigotmc.SpigotWorldConfig(serverLevelData.getLevelName());
++      if (serverLevelData instanceof org.kettingpowered.ketting.utils.DelegateWorldInfo delegateWorldInfo) {
++         delegateWorldInfo.setTypeKey(typeKey);
++      }
 +      uuid = org.bukkit.craftbukkit.v1_20_R1.util.WorldUUID.getUUID(p_215001_.getDimensionPath(this.dimension()).toFile());
-+
-+      this.setEntityLimiter(new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime));
-+      this.setTileLimiter(new org.spigotmc.TickLimiter(spigotConfig.tileMaxTickTime));
-+      this.timings.init(serverLevelData.getLevelName());
 +      //Ketting end
 +      ChunkGenerator chunkgenerator = bukkitInit(p_215004_.generator()); //Ketting
        boolean flag = p_214999_.forceSynchronousWrites();
