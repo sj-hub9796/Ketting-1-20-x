@@ -331,7 +331,7 @@
           int i = p_9264_.getCount();
           int j = p_9264_.getDamageValue();
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.use(p_9263_, p_9262_, p_9265_);
-@@ -294,12 +_,65 @@
+@@ -294,12 +_,75 @@
        }
     }
  
@@ -345,12 +345,22 @@
 +   //Ketting end
 +
 +   //Ketting start - mixin vars
++   @SuppressWarnings("FieldCanBeLocal")
 +   private boolean useItemOn$cancelledBlock = false;
-+   private MenuProvider useItemOn$provider = null;
-+   private org.bukkit.event.player.PlayerInteractEvent useItemOn$event = null;
-+   private boolean useItemOn$bottom;
++   @SuppressWarnings("FieldCanBeLocal")
++   private @Nullable MenuProvider useItemOn$provider = null;
++   @SuppressWarnings("FieldCanBeLocal")
++   private @Nullable org.bukkit.event.player.PlayerInteractEvent useItemOn$event = null;
++   @SuppressWarnings("FieldCanBeLocal")
++   private boolean useItemOn$bottom = false;
 +   //Ketting end
     public InteractionResult useItemOn(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_) {
++      //Ketting start - reset variables
++      useItemOn$cancelledBlock = false; 
++      useItemOn$provider = null;
++      useItemOn$event = null;
++      useItemOn$bottom = false;
++      //Ketting end
        BlockPos blockpos = p_9270_.getBlockPos();
        BlockState blockstate = p_9267_.getBlockState(blockpos);
        if (!blockstate.getBlock().isEnabled(p_9267_.enabledFeatures())) {
