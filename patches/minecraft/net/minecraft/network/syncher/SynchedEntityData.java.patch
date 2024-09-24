@@ -31,8 +31,8 @@
     public <T> void set(EntityDataAccessor<T> p_276368_, T p_276363_, boolean p_276370_) {
        SynchedEntityData.DataItem<T> dataitem = this.getItem(p_276368_);
 +      //Ketting start
-+      if (dataitem.getValue() != null && p_276363_ != null && !dataitem.getValue().getClass().isAssignableFrom(p_276363_.getClass())){
-+         org.kettingpowered.ketting.core.Ketting.LOGGER.error("Bad set of EntityDataAccessor value. Ignoring", new IllegalStateException());
++      if (!org.kettingpowered.ketting.utils.EntityDataUtils.classesMatch(dataitem, p_276363_)){
++         org.kettingpowered.ketting.core.Ketting.LOGGER.error("Invalid entity data received (dataitem class was {}, got {})", dataitem.getValue().getClass(), p_276363_.getClass(), new IllegalStateException());
 +         return;
 +      }
 +      //Ketting end
