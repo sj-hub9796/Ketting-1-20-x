@@ -183,51 +183,51 @@ public class ForgeMod
      * Stock biome modifier for adding features to biomes.
      */
     public static final RegistryObject<Codec<AddFeaturesBiomeModifier>> ADD_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_features", () ->
-        RecordCodecBuilder.create(builder -> builder.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddFeaturesBiomeModifier::biomes),
-                PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(AddFeaturesBiomeModifier::features),
-                Decoration.CODEC.fieldOf("step").forGetter(AddFeaturesBiomeModifier::step)
+            RecordCodecBuilder.create(builder -> builder.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddFeaturesBiomeModifier::biomes),
+                    PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(AddFeaturesBiomeModifier::features),
+                    Decoration.CODEC.fieldOf("step").forGetter(AddFeaturesBiomeModifier::step)
             ).apply(builder, AddFeaturesBiomeModifier::new))
-        );
+    );
 
     /**
      * Stock biome modifier for removing features from biomes.
      */
     public static final RegistryObject<Codec<RemoveFeaturesBiomeModifier>> REMOVE_FEATURES_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_features", () ->
-        RecordCodecBuilder.create(builder -> builder.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveFeaturesBiomeModifier::biomes),
-                PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(RemoveFeaturesBiomeModifier::features),
-                new ExtraCodecs.EitherCodec<List<Decoration>, Decoration>(Decoration.CODEC.listOf(), Decoration.CODEC).<Set<Decoration>>xmap(
-                        either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
-                        set -> set.size() == 1 ? Either.right(set.toArray(Decoration[]::new)[0]) : Either.left(List.copyOf(set))
+            RecordCodecBuilder.create(builder -> builder.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveFeaturesBiomeModifier::biomes),
+                    PlacedFeature.LIST_CODEC.fieldOf("features").forGetter(RemoveFeaturesBiomeModifier::features),
+                    new ExtraCodecs.EitherCodec<List<Decoration>, Decoration>(Decoration.CODEC.listOf(), Decoration.CODEC).<Set<Decoration>>xmap(
+                            either -> either.map(Set::copyOf, Set::of), // convert list/singleton to set when decoding
+                            set -> set.size() == 1 ? Either.right(set.toArray(Decoration[]::new)[0]) : Either.left(List.copyOf(set))
                     ).optionalFieldOf("steps", EnumSet.allOf(Decoration.class)).forGetter(RemoveFeaturesBiomeModifier::steps)
             ).apply(builder, RemoveFeaturesBiomeModifier::new))
-        );
+    );
 
     /**
      * Stock biome modifier for adding mob spawns to biomes.
      */
     public static final RegistryObject<Codec<AddSpawnsBiomeModifier>> ADD_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("add_spawns", () ->
-        RecordCodecBuilder.create(builder -> builder.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnsBiomeModifier::biomes),
-                // Allow either a list or single spawner, attempting to decode the list format first.
-                // Uses the better EitherCodec that logs both errors if both formats fail to parse.
-                new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
-                        either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
-                        list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
+            RecordCodecBuilder.create(builder -> builder.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(AddSpawnsBiomeModifier::biomes),
+                    // Allow either a list or single spawner, attempting to decode the list format first.
+                    // Uses the better EitherCodec that logs both errors if both formats fail to parse.
+                    new ExtraCodecs.EitherCodec<>(SpawnerData.CODEC.listOf(), SpawnerData.CODEC).xmap(
+                            either -> either.map(Function.identity(), List::of), // convert list/singleton to list when decoding
+                            list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list) // convert list to singleton/list when encoding
                     ).fieldOf("spawners").forGetter(AddSpawnsBiomeModifier::spawners)
             ).apply(builder, AddSpawnsBiomeModifier::new))
-        );
+    );
 
     /**
      * Stock biome modifier for removing mob spawns from biomes.
      */
     public static final RegistryObject<Codec<RemoveSpawnsBiomeModifier>> REMOVE_SPAWNS_BIOME_MODIFIER_TYPE = BIOME_MODIFIER_SERIALIZERS.register("remove_spawns", () ->
-        RecordCodecBuilder.create(builder -> builder.group(
-                Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
-                RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes)
+            RecordCodecBuilder.create(builder -> builder.group(
+                    Biome.LIST_CODEC.fieldOf("biomes").forGetter(RemoveSpawnsBiomeModifier::biomes),
+                    RegistryCodecs.homogeneousList(ForgeRegistries.Keys.ENTITY_TYPES).fieldOf("entity_types").forGetter(RemoveSpawnsBiomeModifier::entityTypes)
             ).apply(builder, RemoveSpawnsBiomeModifier::new))
-        );
+    );
     /**
      * Noop structure modifier. Can be used in a structure modifier json with "type": "forge:none".
      */
@@ -414,10 +414,10 @@ public class ForgeMod
         enableMilkFluid = true;
     }
 
-    public ForgeMod()
+    public ForgeMod(FMLJavaModLoadingContext context)
     {
         LOGGER.info(FORGEMOD,"Forge mod loading, version {}, for MC {} with MCP {}", ForgeVersion.getVersion(), MCPVersion.getMCVersion(), MCPVersion.getMCPVersion());
-//        ForgeSnapshotsMod.logStartupWarning();
+        ForgeSnapshotsMod.logStartupWarning();
         INSTANCE = this;
         MinecraftForge.initialize();
         CrashReportCallables.registerCrashCallable("Crash Report UUID", ()-> {
@@ -430,7 +430,7 @@ public class ForgeMod
         CrashReportCallables.registerCrashCallable("FML", ForgeVersion::getSpec);
         CrashReportCallables.registerCrashCallable("Forge", ()->ForgeVersion.getGroup()+":"+ForgeVersion.getVersion());
 
-        final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        final IEventBus modEventBus = context.getModEventBus();
         // Forge-provided datapack registries
         modEventBus.addListener((DataPackRegistryEvent.NewRegistry event) -> {
             event.dataPackRegistry(ForgeRegistries.Keys.BIOME_MODIFIERS, BiomeModifier.DIRECT_CODEC);
@@ -452,13 +452,13 @@ public class ForgeMod
         VANILLA_FLUID_TYPES.register(modEventBus);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
         MinecraftForge.EVENT_BUS.addListener(this::missingSoundMapping);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ForgeConfig.clientSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ForgeConfig.serverSpec);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ForgeConfig.commonSpec);
+        context.registerConfig(ModConfig.Type.CLIENT, ForgeConfig.clientSpec);
+        context.registerConfig(ModConfig.Type.SERVER, ForgeConfig.serverSpec);
+        context.registerConfig(ModConfig.Type.COMMON, ForgeConfig.commonSpec);
         modEventBus.register(ForgeConfig.class);
         ForgeDeferredRegistriesSetup.setup(modEventBus);
         // Forge does not display problems when the remote is not matching.
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, ()->new IExtensionPoint.DisplayTest(()->"ANY", (remote, isServer)-> true));
+        context.registerDisplayTest(IExtensionPoint.DisplayTest.IGNORE_ALL_VERSION);
         StartupMessageManager.addModMessage("Forge version "+ForgeVersion.getVersion());
 
         MinecraftForge.EVENT_BUS.addListener(VillagerTradingManager::loadTrades);
