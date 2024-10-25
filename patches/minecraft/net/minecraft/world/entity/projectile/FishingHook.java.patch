@@ -57,21 +57,27 @@
           --i;
        }
  
-@@ -284,6 +_,10 @@
+@@ -284,6 +_,14 @@
              this.timeUntilLured = 0;
              this.timeUntilHooked = 0;
              this.getEntityData().set(DATA_BITING, false);
++            //Ketting start - check if player
++            if (this.getPlayerOwner() != null) {
 +            // CraftBukkit start
 +            org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) this.getPlayerOwner().getBukkitEntity(), null, (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.FAILED_ATTEMPT);
 +            this.level().getCraftServer().getPluginManager().callEvent(playerFishEvent);
 +            // CraftBukkit end
++            }
++            //Ketting end
           }
        } else if (this.timeUntilHooked > 0) {
           this.timeUntilHooked -= i;
-@@ -307,6 +_,13 @@
+@@ -307,6 +_,17 @@
                 serverlevel.sendParticles(ParticleTypes.FISHING, d0, d1, d2, 0, (double)(-f4), 0.01D, (double)f3, 1.0D);
              }
           } else {
++            //Ketting start - check if player
++            if (this.getPlayerOwner() != null) {
 +            // CraftBukkit start
 +            org.bukkit.event.player.PlayerFishEvent playerFishEvent = new org.bukkit.event.player.PlayerFishEvent((org.bukkit.entity.Player) this.getPlayerOwner().getBukkitEntity(), null, (org.bukkit.entity.FishHook) this.getBukkitEntity(), org.bukkit.event.player.PlayerFishEvent.State.BITE);
 +            this.level().getCraftServer().getPluginManager().callEvent(playerFishEvent);
@@ -79,6 +85,8 @@
 +               return;
 +            }
 +            // CraftBukkit end
++            }
++            //Ketting end
              this.playSound(SoundEvents.FISHING_BOBBER_SPLASH, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
              double d3 = this.getY() + 0.5D;
              serverlevel.sendParticles(ParticleTypes.BUBBLE, this.getX(), d3, this.getZ(), (int)(1.0F + this.getBbWidth() * 20.0F), (double)this.getBbWidth(), 0.0D, (double)this.getBbWidth(), (double)0.2F);
