@@ -8,3 +8,11 @@
        List<CommandFunction.Entry> list = Lists.newArrayListWithCapacity(p_77988_.size());
  
        for(int i = 0; i < p_77988_.size(); ++i) {
+@@ -56,6 +_,7 @@
+ 
+                list.add(new CommandFunction.CommandEntry(parseresults));
+             } catch (CommandSyntaxException commandsyntaxexception) {
++               org.kettingpowered.ketting.core.Ketting.LOGGER.warn("Error executing command: {}", s);
+                throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + commandsyntaxexception.getMessage());
+             }
+          }
