@@ -1,6 +1,8 @@
 package org.kettingpowered.ketting.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import net.minecraft.commands.CommandSourceStack;
 import org.kettingpowered.ketting.common.utils.IgnoredClasses;
@@ -27,6 +29,8 @@ public class RoutableCommandDispatcher extends CommandDispatcher<CommandSourceSt
         );
     }
 
+    public static RoutableCommandDispatcher INSTANCE;
+
     private static CommandDispatcher<CommandSourceStack> fallback;
 
     public static void setFallback(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -39,15 +43,20 @@ public class RoutableCommandDispatcher extends CommandDispatcher<CommandSourceSt
 
 
 
-    private final CommandDispatcher<CommandSourceStack> dispatcher;
-
     private RoutableCommandDispatcher(CommandDispatcher<CommandSourceStack> dispatcher) {
-        this.dispatcher = dispatcher;
+        super(getRoot(dispatcher));
     }
 
-    public RootCommandNode<CommandSourceStack> getRoot() {
+    public static RootCommandNode<CommandSourceStack> getRoot(CommandDispatcher<CommandSourceStack> dispatcher) {
         RootCommandNode<CommandSourceStack> root = dispatcher.getRoot();
         fallback.getRoot().getChildren().forEach(root::addChild);
         return root;
+    }
+
+    @Override
+    public LiteralCommandNode<CommandSourceStack> register(LiteralArgumentBuilder<CommandSourceStack> command) {
+        //Register it both in this dispatcher and the fallback
+        super.register(command);
+        return fallback.register(command);
     }
 }

@@ -5,7 +5,15 @@
  
     public CommandDispatcher<CommandSourceStack> getDispatcher() {
 -      return this.server.getCommands().getDispatcher();
-+      return this.server.vanillaCommandDispatcher.getDirectDispatcher(); // CraftBukkit //Ketting - no need for redirecting
++      return org.kettingpowered.ketting.command.RoutableCommandDispatcher.INSTANCE; //Ketting
     }
  
     public void tick() {
+@@ -140,6 +_,7 @@
+       }
+ 
+       private CommandSourceStack wrapSender(CommandSourceStack p_282848_) {
++         p_282848_.withBukkitSender(ServerFunctionManager.this.server.console); //Ketting
+          IntConsumer intconsumer = p_282848_.getReturnValueConsumer();
+          return intconsumer instanceof ServerFunctionManager.ExecutionContext.AbortingReturnValueConsumer ? p_282848_ : p_282848_.withReturnValueConsumer(new ServerFunctionManager.ExecutionContext.AbortingReturnValueConsumer(intconsumer));
+       }

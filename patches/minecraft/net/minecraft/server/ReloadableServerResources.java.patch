@@ -15,10 +15,12 @@
     private final ServerFunctionLibrary functionLibrary;
  
     public ReloadableServerResources(RegistryAccess.Frozen p_206857_, FeatureFlagSet p_250695_, Commands.CommandSelection p_206858_, int p_206859_) {
-@@ -41,6 +_,10 @@
+@@ -40,7 +_,11 @@
+       this.commandBuildContext = CommandBuildContext.configurable(p_206857_, p_250695_);
        this.commands = new Commands(p_206858_, this.commandBuildContext);
        this.commandBuildContext.missingTagAccessPolicy(CommandBuildContext.MissingTagAccessPolicy.CREATE_NEW);
-       this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
+-      this.functionLibrary = new ServerFunctionLibrary(p_206859_, this.commands.getDispatcher());
++      this.functionLibrary = new ServerFunctionLibrary(p_206859_, org.kettingpowered.ketting.command.RoutableCommandDispatcher.INSTANCE); //Ketting
 +      // Forge: Create context object and pass it to the recipe manager.
 +      this.context = new net.minecraftforge.common.crafting.conditions.ConditionContext(this.tagManager);
 +      this.recipes = new RecipeManager(context);

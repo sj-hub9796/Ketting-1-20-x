@@ -1,6 +1,6 @@
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -128,8 +_,10 @@
+@@ -128,11 +_,13 @@
     public static final int LEVEL_ADMINS = 3;
     public static final int LEVEL_OWNERS = 4;
     private final CommandDispatcher<CommandSourceStack> dispatcher = new CommandDispatcher<>();
@@ -10,7 +10,11 @@
 +      this(); // CraftBukkit
        AdvancementCommands.register(this.dispatcher);
        AttributeCommand.register(this.dispatcher, p_230944_);
-       ExecuteCommand.register(this.dispatcher, p_230944_);
+-      ExecuteCommand.register(this.dispatcher, p_230944_);
++      // ExecuteCommand.register(this.dispatcher, p_230944_); //Ketting - moved down
+       BossBarCommands.register(this.dispatcher);
+       ClearInventoryCommands.register(this.dispatcher, p_230944_);
+       CloneCommands.register(this.dispatcher, p_230944_);
 @@ -193,7 +_,7 @@
           JfrCommand.register(this.dispatcher);
        }
@@ -20,13 +24,17 @@
           TestCommand.register(this.dispatcher);
           SpawnArmorTrimsCommand.register(this.dispatcher);
        }
-@@ -219,9 +_,23 @@
+@@ -219,9 +_,27 @@
           PublishCommand.register(this.dispatcher);
        }
  
-+      org.kettingpowered.ketting.command.RoutableCommandDispatcher.setFallback(this.dispatcher); //Ketting
++      //Ketting start - use forgeDispatcher for registering commands, then init routable dispatcher
++      org.kettingpowered.ketting.command.RoutableCommandDispatcher.setFallback(this.dispatcher);
++      net.minecraftforge.event.ForgeEventFactory.onCommandRegister(this.forgeDispatcher, p_230943_, p_230944_);
++      org.kettingpowered.ketting.command.RoutableCommandDispatcher.INSTANCE = org.kettingpowered.ketting.command.RoutableCommandDispatcher.of(this.forgeDispatcher);
++      //Ketting end
 +
-+      net.minecraftforge.event.ForgeEventFactory.onCommandRegister(this.forgeDispatcher, p_230943_, p_230944_); //Ketting
++      ExecuteCommand.register(org.kettingpowered.ketting.command.RoutableCommandDispatcher.INSTANCE, p_230944_); //Ketting - from above - use routable dispatcher
 +      // CraftBukkit start
 +   }
 +

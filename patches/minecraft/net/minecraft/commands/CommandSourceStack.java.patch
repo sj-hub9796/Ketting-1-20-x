@@ -58,14 +58,22 @@
           this.server.sendSystemMessage(component);
        }
  
-@@ -363,4 +_,10 @@
+@@ -363,4 +_,18 @@
     public FeatureFlagSet enabledFeatures() {
        return this.level.enabledFeatures();
     }
 +
++   //Ketting start - custom source
++   private @Nullable org.bukkit.command.CommandSender senderOverride;
++   public void withBukkitSender(org.bukkit.command.CommandSender sender) {
++      this.senderOverride = sender;
++   }
++
 +   // CraftBukkit start
 +   public org.bukkit.command.CommandSender getBukkitSender() {
-+      return source.getBukkitSender(this);
++      if (senderOverride != null) System.out.println("Using sender override");
++      return this.senderOverride != null ? this.senderOverride : this.source.getBukkitSender(this);
++      //Ketting end
 +   }
 +   // CraftBukkit end
  }

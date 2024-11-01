@@ -1,0 +1,10 @@
+--- a/net/minecraft/commands/CommandFunction.java
++++ b/net/minecraft/commands/CommandFunction.java
+@@ -31,6 +_,7 @@
+    }
+ 
+    public static CommandFunction fromLines(ResourceLocation p_77985_, CommandDispatcher<CommandSourceStack> p_77986_, CommandSourceStack p_77987_, List<String> p_77988_) {
++      p_77986_ = org.kettingpowered.ketting.command.RoutableCommandDispatcher.INSTANCE; //Ketting - override dispatcher
+       List<CommandFunction.Entry> list = Lists.newArrayListWithCapacity(p_77988_.size());
+ 
+       for(int i = 0; i < p_77988_.size(); ++i) {
