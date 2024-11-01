@@ -239,31 +239,75 @@
           int i = serverchunkcache.getGenerator().getSpawnHeight(p_177897_);
           if (i < p_177897_.getMinBuildHeight()) {
              BlockPos blockpos = chunkpos.getWorldPosition();
-@@ -442,8 +_,24 @@
+@@ -442,7 +_,68 @@
        serverleveldata.setGameType(GameType.SPECTATOR);
     }
  
-+   //Ketting Start
-+   private @Nullable ServerLevel worldserver = null;
-+   public void prepareLevels(ChunkProgressListener p_129941_, ServerLevel worldserver){
-+      this.worldserver = worldserver;
-+      prepareLevels(p_129941_);
++   //Ketting start - cb impl
++   public void prepareLevels(ChunkProgressListener worldloadlistener, ServerLevel worldserver) {
++      this.markWorldsDirty(); //Ketting - force level update
++      // WorldServer worldserver = this.overworld();
++      this.forceTicks = true;
++
++      MinecraftServer.LOGGER.info("Preparing start region for dimension {}", worldserver.dimension().location());
++      BlockPos blockposition = worldserver.getSharedSpawnPos();
++
++      worldloadlistener.updateSpawnPos(new ChunkPos(blockposition));
++      ServerChunkCache chunkproviderserver = worldserver.getChunkSource();
++
++      this.nextTickTime = Util.getMillis();
++      // CraftBukkit start
++      if (worldserver.getWorld().getKeepSpawnInMemory()) {
++         chunkproviderserver.addRegionTicket(TicketType.START, new ChunkPos(blockposition), 11, Unit.INSTANCE);
++
++         while (chunkproviderserver.getTickingGenerated() != 441) {
++            // this.nextTickTime = SystemUtils.getMillis() + 10L;
++            this.executeModerately();
++         }
++      }
++
++      // this.nextTickTime = SystemUtils.getMillis() + 10L;
++      this.executeModerately();
++      // Iterator iterator = this.levels.values().iterator();
++
++      if (true) {
++         ServerLevel worldserver1 = worldserver;
++         // CraftBukkit end
++         ForcedChunksSavedData forcedchunk = (ForcedChunksSavedData) worldserver1.getDataStorage().get(ForcedChunksSavedData::load, "chunks");
++
++         if (forcedchunk != null) {
++            LongIterator longiterator = forcedchunk.getChunks().iterator();
++
++            while (longiterator.hasNext()) {
++               long i = longiterator.nextLong();
++               ChunkPos chunkcoordintpair = new ChunkPos(i);
++
++               worldserver1.getChunkSource().updateChunkForced(chunkcoordintpair, true);
++            }
++            net.minecraftforge.common.world.ForgeChunkManager.reinstatePersistentChunks(worldserver1, forcedchunk); //Ketting - reinstate modded persistent chunks
++         }
++      }
++
++      // CraftBukkit start
++      // this.nextTickTime = SystemUtils.getMillis() + 10L;
++      this.executeModerately();
++      // CraftBukkit end
++      worldloadlistener.stop();
++      // CraftBukkit start
++      // this.updateMobSpawningFlags();
++      worldserver.setSpawnSettings(this.isSpawningMonsters(), this.isSpawningAnimals());
++
++      this.forceTicks = false;
++      // CraftBukkit end
 +   }
-+   //Ketting End
++   //Ketting end
 +
     private void prepareLevels(ChunkProgressListener p_129941_) {
 +      this.markWorldsDirty(); //Ketting - force level update
 +      this.forceTicks = true; // CraftBukkit
        ServerLevel serverlevel = this.overworld();
-+      //Ketting Start
-+      if (worldserver != null) {
-+         serverlevel = worldserver;
-+         worldserver = null;
-+      }
-+      //Ketting End
        LOGGER.info("Preparing start region for dimension {}", (Object)serverlevel.dimension().location());
        BlockPos blockpos = serverlevel.getSharedSpawnPos();
-       p_129941_.updateSpawnPos(new ChunkPos(blockpos));
 @@ -451,13 +_,11 @@
        this.nextTickTime = Util.getMillis();
        serverchunkcache.addRegionTicket(TicketType.START, new ChunkPos(blockpos), 11, Unit.INSTANCE);
