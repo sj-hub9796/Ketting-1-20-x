@@ -409,7 +409,7 @@
     public ServerPlayer getPlayerForLogin(GameProfile p_215625_) {
        UUID uuid = UUIDUtil.getOrCreatePlayerUUID(p_215625_);
        List<ServerPlayer> list = Lists.newArrayList();
-@@ -409,18 +_,44 @@
+@@ -409,30 +_,59 @@
        }
  
        for(ServerPlayer serverplayer1 : list) {
@@ -425,6 +425,7 @@
 +   public final java.util.concurrent.atomic.AtomicReference<org.bukkit.Location> ketting$respawn$location = new java.util.concurrent.atomic.AtomicReference<>(null);
 +   public final java.util.concurrent.atomic.AtomicReference<ServerLevel> ketting$respawn$level = new java.util.concurrent.atomic.AtomicReference<>(null);
 +   public final java.util.concurrent.atomic.AtomicBoolean ketting$respawn$avoidSuffocation = new java.util.concurrent.atomic.AtomicBoolean(true);
++   private ServerLevel ketting$level;
 +   public ServerPlayer respawn(ServerPlayer p_11237_, boolean p_11238_, org.bukkit.event.player.PlayerRespawnEvent.RespawnReason reason) {
 +      ketting$respawn$reason.set(reason);
 +      return respawn(p_11237_, p_11238_);
@@ -441,8 +442,8 @@
 +   }
 +   //Ketting end
     public ServerPlayer respawn(ServerPlayer p_11237_, boolean p_11238_) {
-+      ServerLevel level = ketting$respawn$level.getAndSet(null);
-+      if (level == null) level = this.server.getLevel(p_11237_.getRespawnDimension());
++      ketting$level = ketting$respawn$level.getAndSet(null);
++      if (ketting$level == null) ketting$level = this.server.getLevel(p_11237_.getRespawnDimension());
 +      p_11237_.stopRiding(); // CraftBukkit
        this.players.remove(p_11237_);
 +      this.playersByName.remove(p_11237_.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
@@ -450,27 +451,28 @@
        BlockPos blockpos = p_11237_.getRespawnPosition();
        float f = p_11237_.getRespawnAngle();
        boolean flag = p_11237_.isRespawnForced();
-+      /* CraftBukkit start
        ServerLevel serverlevel = this.server.getLevel(p_11237_.getRespawnDimension());
        Optional<Vec3> optional;
-       if (serverlevel != null && blockpos != null) {
-@@ -431,8 +_,15 @@
- 
-       ServerLevel serverlevel1 = serverlevel != null && optional.isPresent() ? serverlevel : this.server.overworld();
-       ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel1, p_11237_.getGameProfile());
-+      */
-+
+-      if (serverlevel != null && blockpos != null) {
++      if (blockpos != null && serverlevel != null) {
+          optional = Player.findRespawnPositionAndUseSpawnBlock(serverlevel, blockpos, f, flag, p_11238_);
+       } else {
+          optional = Optional.empty();
+       }
++      
 +      ServerPlayer serverplayer = p_11237_;
 +      org.bukkit.World fromWorld = p_11237_.getBukkitEntity().getWorld();
 +      serverplayer.wonGame = false;
-+
+ 
+-      ServerLevel serverlevel1 = serverlevel != null && optional.isPresent() ? serverlevel : this.server.overworld();
+-      ServerPlayer serverplayer = new ServerPlayer(this.server, serverlevel1, p_11237_.getGameProfile());
        serverplayer.connection = p_11237_.connection;
        serverplayer.restoreFrom(p_11237_, p_11238_);
 +      serverplayer.reviveCaps();
        serverplayer.setId(p_11237_.getId());
        serverplayer.setMainArm(p_11237_.getMainArm());
  
-@@ -441,6 +_,21 @@
+@@ -441,8 +_,14 @@
        }
  
        boolean flag2 = false;
@@ -479,19 +481,13 @@
 +      org.bukkit.Location location = ketting$respawn$location.getAndSet(null);
 +      if (location == null) {
 +         boolean isBedSpawn = false;
-+         ServerLevel serverlevel1 = this.server.getLevel(p_11237_.getRespawnDimension());
-+         if (serverlevel1 != null) {
-+            Optional<Vec3> optional;
-+
-+            if (blockpos != null) {
-+               optional = Player.findRespawnPositionAndUseSpawnBlock(serverlevel1, blockpos, f, flag, p_11238_);
-+            } else {
-+               optional = Optional.empty();
-+            }
-+
++         if (serverlevel != null) {
        if (optional.isPresent()) {
-          BlockState blockstate = serverlevel1.getBlockState(blockpos);
+-         BlockState blockstate = serverlevel1.getBlockState(blockpos);
++         BlockState blockstate = serverlevel.getBlockState(blockpos);
           boolean flag1 = blockstate.is(Blocks.RESPAWN_ANCHOR);
+          Vec3 vec3 = optional.get();
+          float f1;
 @@ -453,34 +_,94 @@
              f1 = (float)Mth.wrapDegrees(Mth.atan2(vec31.z, vec31.x) * (double)(180F / (float)Math.PI) - 90.0D);
           }
@@ -501,7 +497,7 @@
 +         // entityplayer1.setRespawnPosition(serverlevel1.dimension(), blockposition, f, flag, false); // CraftBukkit - not required, just copies old location into reused entity
           flag2 = !p_11238_ && flag1;
 +         isBedSpawn = true;
-+         location = org.bukkit.craftbukkit.v1_20_R1.util.CraftLocation.toBukkit(vec3, serverlevel1.getWorld(), f1, 0.0F);
++         location = org.bukkit.craftbukkit.v1_20_R1.util.CraftLocation.toBukkit(vec3, serverlevel.getWorld(), f1, 0.0F);
        } else if (blockpos != null) {
           serverplayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.NO_RESPAWN_BLOCK_AVAILABLE, 0.0F));
 +               serverplayer.setRespawnPosition(null, null, 0f, false, false, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.RESET); // CraftBukkit - SPIGOT-5988: Clear respawn location when obstructed
@@ -509,9 +505,9 @@
 +         }
 +
 +         if (location == null) {
-+            serverlevel1 = this.server.overworld();
-+            blockpos = serverplayer.getSpawnPoint(serverlevel1);
-+            location = org.bukkit.craftbukkit.v1_20_R1.util.CraftLocation.toBukkit(blockpos, serverlevel1.getWorld()).add(0.5F, 0.1F, 0.5F);
++            serverlevel = this.server.overworld();
++            blockpos = serverplayer.getSpawnPoint(serverlevel);
++            location = org.bukkit.craftbukkit.v1_20_R1.util.CraftLocation.toBukkit(blockpos, serverlevel.getWorld()).add(0.5F, 0.1F, 0.5F);
 +         }
 +
 +         org.bukkit.entity.Player respawnPlayer = serverplayer.getBukkitEntity();
@@ -528,7 +524,7 @@
 +         if (!p_11238_) p_11237_.reset(); // SPIGOT-4785
 +      } else {
 +         ketting$respawn$reason.set(org.bukkit.event.player.PlayerRespawnEvent.RespawnReason.OTHER);
-+         location.setWorld(level.getWorld());
++         location.setWorld(ketting$level.getWorld());
        }
 +      ServerLevel serverlevel1 = ((org.bukkit.craftbukkit.v1_20_R1.CraftWorld) location.getWorld()).getHandle();
 +      serverplayer.spawnIn(serverlevel1);
@@ -537,7 +533,7 @@
 +      serverplayer.forceSetPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
  
 -      while(!serverlevel1.noCollision(serverplayer) && serverplayer.getY() < (double)serverlevel1.getMaxBuildHeight()) {
-+      while (ketting$respawn$avoidSuffocation.get() && !level.noCollision((Entity) serverplayer) && serverplayer.getY() < (double) serverlevel1.getMaxBuildHeight()) {
++      while (ketting$respawn$avoidSuffocation.get() && !ketting$level.noCollision((Entity) serverplayer) && serverplayer.getY() < (double) serverlevel1.getMaxBuildHeight()) {
 +         // CraftBukkit end
           serverplayer.setPos(serverplayer.getX(), serverplayer.getY() + 1.0D, serverplayer.getZ());
        }
