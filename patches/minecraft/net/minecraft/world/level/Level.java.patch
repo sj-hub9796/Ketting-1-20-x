@@ -9,7 +9,7 @@
     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
     public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
     public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));
-@@ -110,8 +_,122 @@
+@@ -110,8 +_,123 @@
     private final RegistryAccess registryAccess;
     private final DamageSources damageSources;
     private long subTickCount;
@@ -124,7 +124,8 @@
 +      // CraftBukkit Ticks things
 +      for (org.bukkit.entity.SpawnCategory spawnCategory : org.bukkit.entity.SpawnCategory.values()) {
 +         if (org.bukkit.craftbukkit.v1_20_R1.util.CraftSpawnCategory.isValidForLimits(spawnCategory)) {
-+            this.ticksPerSpawnCategory.put(spawnCategory, (long) this.getCraftServer().getTicksPerSpawns(spawnCategory));
++            this.ticksPerSpawnCategory.put(spawnCategory,
++                    this.getCraftServer() == null ? 400L : (long) this.getCraftServer().getTicksPerSpawns(spawnCategory)); //Ketting - null check for fake worlds
 +         }
 +      }
 +
@@ -425,6 +426,19 @@
        }
     }
  
+@@ -445,8 +_,11 @@
+       return this.shouldTickBlocksAt(ChunkPos.asLong(p_220394_));
+    }
+ 
++   //Ketting start - mixin inject
++   public java.util.concurrent.atomic.AtomicBoolean explode$fire = new java.util.concurrent.atomic.AtomicBoolean(false);
+    public Explosion explode(@Nullable Entity p_256599_, double p_255914_, double p_255684_, double p_255843_, float p_256310_, Level.ExplosionInteraction p_256178_) {
+-      return this.explode(p_256599_, (DamageSource)null, (ExplosionDamageCalculator)null, p_255914_, p_255684_, p_255843_, p_256310_, false, p_256178_);
++      return this.explode(p_256599_, (DamageSource)null, (ExplosionDamageCalculator)null, p_255914_, p_255684_, p_255843_, p_256310_, explode$fire.getAndSet(false), p_256178_);
++      //Ketting end
+    }
+ 
+    public Explosion explode(@Nullable Entity p_255682_, double p_255803_, double p_256403_, double p_256538_, float p_255674_, boolean p_256634_, Level.ExplosionInteraction p_256111_) {
 @@ -471,7 +_,7 @@
              explosion$blockinteraction1 = this.getDestroyType(GameRules.RULE_BLOCK_EXPLOSION_DROP_DECAY);
              break;

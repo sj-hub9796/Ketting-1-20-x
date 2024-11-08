@@ -21,7 +21,7 @@
     protected InteractionResult mobInteract(Player p_32301_, InteractionHand p_32302_) {
        ItemStack itemstack = p_32301_.getItemInHand(p_32302_);
        if (itemstack.is(ItemTags.CREEPER_IGNITERS)) {
-@@ -224,10 +_,19 @@
+@@ -224,10 +_,22 @@
     public void explodeCreeper() {
        if (!this.level().isClientSide) {
           float f = this.isPowered() ? 2.0F : 1.0F;
@@ -31,7 +31,10 @@
           this.dead = true;
 -         this.level().explode(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, Level.ExplosionInteraction.MOB);
 +            // CraftBukkit end
-+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), event.getRadius(), event.getFire(), Level.ExplosionInteraction.MOB); // CraftBukkit
++            //Ketting start - mixin inject
++            this.level().explode$fire.set(event.getFire());
++            this.level().explode(this, this.getX(), this.getY(), this.getZ(), event.getRadius(), Level.ExplosionInteraction.MOB);
++            //Ketting end
 +            // CraftBukkit start
           this.discard();
           this.spawnLingeringCloud();

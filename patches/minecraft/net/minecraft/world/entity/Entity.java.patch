@@ -95,7 +95,7 @@
        this.blockPosition = BlockPos.ZERO;
        this.chunkPosition = ChunkPos.ZERO;
 +      // Spigot start
-+      if (p_19871_ != null) {
++      if (p_19871_ != null && p_19871_.spigotConfig != null) { //Ketting - null check
 +         this.defaultActivationState = org.spigotmc.ActivationRange.initializeEntityActivationState(this, p_19871_.spigotConfig);
 +      } else {
 +         this.defaultActivationState = false;
