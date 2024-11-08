@@ -115,7 +115,7 @@
              BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
  
              for(int l = -1; l <= 1; ++l) {
-@@ -189,7 +_,15 @@
+@@ -189,7 +_,19 @@
  
                             if (i2 > 0 && p_221163_.nextInt(k1) <= i2 && (!p_221161_.isRaining() || !this.isNearRain(p_221161_, blockpos$mutableblockpos))) {
                                int j2 = Math.min(15, i + p_221163_.nextInt(5) / 4);
@@ -126,7 +126,11 @@
 +                                    continue;
 +                                 }
 +
-+                                 org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockSpreadEvent(p_221161_, p_221162_, blockpos$mutableblockpos, this.getStateWithAge(p_221161_, blockpos$mutableblockpos, j2), 3); // CraftBukkit
++                                 //Ketting start - mixin inject
++                                 org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockSpreadUpdate.set(false); //handle updates here
++                                 if (org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.handleBlockSpreadEvent(p_221161_, p_221162_, blockpos$mutableblockpos, this.getStateWithAge(p_221161_, blockpos$mutableblockpos, j2), 3)) // CraftBukkit
++                                    p_221161_.setBlock(blockpos$mutableblockpos, this.getStateWithAge(p_221161_, blockpos$mutableblockpos, j2), 3);
++                                 //Ketting end
 +                              }
 +                              // CraftBukkit end
                             }
