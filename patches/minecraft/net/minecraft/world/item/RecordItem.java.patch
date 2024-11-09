@@ -43,14 +43,27 @@
     }
  
     public InteractionResult useOn(UseOnContext p_43048_) {
-@@ -42,6 +_,7 @@
-       if (blockstate.is(Blocks.JUKEBOX) && !blockstate.getValue(JukeboxBlock.HAS_RECORD)) {
+@@ -43,6 +_,10 @@
           ItemStack itemstack = p_43048_.getItemInHand();
           if (!level.isClientSide) {
-+            if (true) return InteractionResult.SUCCESS; // CraftBukkit - handled in ItemStack
              Player player = p_43048_.getPlayer();
++            if (player != null) {
++               player.awardStat(Stats.PLAY_RECORD);
++            }
++            if (true) return InteractionResult.SUCCESS; // CraftBukkit - handled in ItemStack
              BlockEntity blockentity = level.getBlockEntity(blockpos);
              if (blockentity instanceof JukeboxBlockEntity) {
+                JukeboxBlockEntity jukeboxblockentity = (JukeboxBlockEntity)blockentity;
+@@ -51,9 +_,6 @@
+             }
+ 
+             itemstack.shrink(1);
+-            if (player != null) {
+-               player.awardStat(Stats.PLAY_RECORD);
+-            }
+          }
+ 
+          return InteractionResult.sidedSuccess(level.isClientSide);
 @@ -80,7 +_,7 @@
     }
  
