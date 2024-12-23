@@ -72,9 +72,9 @@ dependencyResolutionManagement {
             bundle('jarjar', ['jarjar-fs', 'jarjar-selector', 'jarjar-meta'])
 
             //Ketting start - Ketting libs
-            library('kettingcore',     'org.kettingpowered', 'kettingcore').version('1.5.2')
-            library('kettingcommon',   'org.kettingpowered', 'kettingcommon').version('2.4.0')
-            library('kettinglauncher', 'org.kettingpowered', 'kettinglauncher').version('1.4.1')
+            library('kettingcore',     'org.kettingpowered', 'kettingcore').version('1.5.3')
+            library('kettingcommon',   'org.kettingpowered', 'kettingcommon').version('2.4.1')
+            library('kettinglauncher', 'org.kettingpowered', 'kettinglauncher').version('1.5.0')
             library('terminalcolors',  'org.kettingpowered', 'terminal-colors').version('1.0.2')
             library('mavenmodelcombined', 'org.kettingpowered', 'maven-model-combined').version('1.0.0')
 
