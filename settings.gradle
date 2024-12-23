@@ -33,8 +33,8 @@ dependencyResolutionManagement {
             library('unsafe', 'net.minecraftforge:unsafe:0.2.+')
             library('accesstransformers', 'net.minecraftforge:accesstransformers:8.0.4')
             library('antlr-runtime', 'org.antlr:antlr4-runtime:4.9.1') // Needed by Access Transformer because parsing a simple text file was too complicated
-            library('coremods', 'net.minecraftforge:coremods:5.1.6')
-            library('nashorn', 'org.openjdk.nashorn:nashorn-core:15.3') // Needed by coremods, because the JRE no longer ships JS
+            library('coremods', 'net.minecraftforge:coremods:5.2.1')
+            library('nashorn', 'org.openjdk.nashorn:nashorn-core:15.4') // Needed by coremods, because the JRE no longer ships JS
             library('eventbus', 'net.minecraftforge:eventbus:6.0.5')
             library('typetools', 'net.jodah:typetools:0.6.3') // Needed by EventBus because of lambdas
             library('mergetool-api', 'net.minecraftforge:mergetool-api:1.0')
@@ -50,7 +50,7 @@ dependencyResolutionManagement {
             bundle('jimfs', ['guava', 'failureaccess'])
 
             // ASM it's used for so many of our hacks
-            version('asm', '9.7')
+            version('asm', '9.7.1')
             library('asm',          'org.ow2.asm', 'asm'         ).versionRef('asm')
             library('asm-tree',     'org.ow2.asm', 'asm-tree'    ).versionRef('asm')
             library('asm-util',     'org.ow2.asm', 'asm-util'    ).versionRef('asm')
