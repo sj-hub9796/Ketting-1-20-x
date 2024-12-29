@@ -1,5 +1,13 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
+@@ -11,7 +_,6 @@
+ import com.mojang.datafixers.util.Pair;
+ import com.mojang.logging.LogUtils;
+ import java.util.Collection;
+-import java.util.Collections;
+ import java.util.Comparator;
+ import java.util.List;
+ import java.util.Map;
 @@ -37,9 +_,17 @@
     public Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes = ImmutableMap.of();
     private Map<ResourceLocation, Recipe<?>> byName = ImmutableMap.of();
@@ -121,7 +129,7 @@
     }
  
     public void replaceRecipes(Iterable<Recipe<?>> p_44025_) {
-@@ -164,8 +_,28 @@
+@@ -164,8 +_,40 @@
           }
        });
        this.recipes = ImmutableMap.copyOf(map);
@@ -132,9 +140,20 @@
 +
 +   // CraftBukkit start
 +   public boolean removeRecipe(ResourceLocation resourceLocation) {
++      //Ketting start - gotta love mutable maps
++      /*
 +      for (Map<ResourceLocation, Recipe<?>> recipes : recipes.values()) {
 +         recipes.remove(resourceLocation);
 +      }
++      */
++      Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> mutableRecipes = Maps.newHashMap(this.recipes);
++      for (Map.Entry<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> recipes : this.recipes.entrySet()) {
++         Map<ResourceLocation, Recipe<?>> recipeList = Maps.newHashMap(recipes.getValue());
++         recipeList.remove(resourceLocation);
++         mutableRecipes.put(recipes.getKey(), ImmutableMap.copyOf(recipeList));
++      }
++      this.recipes = ImmutableMap.copyOf(mutableRecipes);
++      //Ketting end
 +
 +      return byName.remove(resourceLocation) != null;
 +   }
@@ -143,8 +162,9 @@
 +      this.recipes = Maps.newHashMap();
 +
 +      for (RecipeType<?> recipeType : BuiltInRegistries.RECIPE_TYPE) {
-+         this.recipes.put(recipeType, new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>());
++         this.recipes.put(recipeType, ImmutableMap.of()); //Ketting - type
 +      }
++      this.recipes = ImmutableMap.copyOf(this.recipes); //Ketting
 +
 +      this.byName = Maps.newHashMap();
 +   }
