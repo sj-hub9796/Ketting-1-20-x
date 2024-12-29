@@ -1501,7 +1501,7 @@
        ItemStack itemstack = this.getItemInHand(p_21159_);
        if (!itemstack.isEmpty() && !this.isUsingItem()) {
 +         int duration = net.minecraftforge.event.ForgeEventFactory.onItemUseStart(this, itemstack, itemstack.getUseDuration());
-+         if (duration <= 0) return;
++         if (duration < net.minecraftforge.common.ForgeConfig.SERVER.getUseItemDuration()) return;
           this.useItem = itemstack;
 -         this.useItemRemaining = itemstack.getUseDuration();
 +         this.useItemRemaining = duration;
@@ -1523,12 +1523,12 @@
              if (!this.useItem.isEmpty() && this.isUsingItem()) {
                 this.triggerItemUseEffects(this.useItem, 16);
 -               ItemStack itemstack = this.useItem.finishUsingItem(this.level(), this);
-+               ItemStack copy = this.useItem.copy(); //Ketting - maintain mixin compat
++               ItemStack copy = this.useItem.copy();
 +               // CraftBukkit start - fire PlayerItemConsumeEvent
 +               ItemStack forgeResult = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(this, copy, getUseItemRemainingTicks(), this.useItem.finishUsingItem(this.level(), this));
 +               ItemStack itemstack;
 +               if (this instanceof ServerPlayer) {
-+                  org.bukkit.inventory.ItemStack craftItem = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(this.useItem);
++                  org.bukkit.inventory.ItemStack craftItem = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asBukkitCopy(copy); //Ketting - use copy instead of useItem
 +                  org.bukkit.inventory.EquipmentSlot hand = org.bukkit.craftbukkit.v1_20_R1.CraftEquipmentSlot.getHand(interactionhand);
 +                  org.bukkit.event.player.PlayerItemConsumeEvent event = new org.bukkit.event.player.PlayerItemConsumeEvent((org.bukkit.entity.Player) this.getBukkitEntity(), craftItem, hand);
 +                  this.level().getCraftServer().getPluginManager().callEvent(event);

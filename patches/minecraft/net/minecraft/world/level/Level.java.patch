@@ -372,7 +372,7 @@
 +      timings.tileEntityTick.startTiming(); // Spigot
 +
 +      // Spigot start
-+      // Iterator<TickingBlockEntity> iterator = this.blockEntityTickers.iterator();
++      Iterator<TickingBlockEntity> iterator = this.blockEntityTickers.iterator(); //Ketting - keep this here for mixin compat
 +
 +      int tilesThisCycle = 0;
 +      for (tileLimiter.initTick();

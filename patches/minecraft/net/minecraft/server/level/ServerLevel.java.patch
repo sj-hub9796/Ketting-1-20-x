@@ -38,7 +38,7 @@
 +      } else if (serverLevelData instanceof net.minecraft.world.level.storage.DerivedLevelData derived) {
 +         return org.kettingpowered.ketting.utils.DelegateWorldInfo.wrap(derived);
 +      } else {
-+         throw new UnsupportedOperationException("Could not wrap level data");
++         return org.kettingpowered.ketting.utils.DummyLevelData.from(serverLevelData);
 +      }
 +   }
 +   //Ketting end
