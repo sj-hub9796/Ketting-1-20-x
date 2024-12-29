@@ -1501,7 +1501,7 @@
        ItemStack itemstack = this.getItemInHand(p_21159_);
        if (!itemstack.isEmpty() && !this.isUsingItem()) {
 +         int duration = net.minecraftforge.event.ForgeEventFactory.onItemUseStart(this, itemstack, itemstack.getUseDuration());
-+         if (duration <= 0) return;
++         if (duration < net.minecraftforge.common.ForgeConfig.SERVER.getUseItemDuration()) return;
           this.useItem = itemstack;
 -         this.useItemRemaining = itemstack.getUseDuration();
 +         this.useItemRemaining = duration;
