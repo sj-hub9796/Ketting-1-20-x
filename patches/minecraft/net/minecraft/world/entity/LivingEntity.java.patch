@@ -964,7 +964,6 @@
 +      if (!this.isInvulnerableTo(damagesource)) {
 +         // Check if entity is a "human" aka player
 +         final boolean human = this instanceof ServerPlayer;
-+         float originalDamage = f;
 +         // Cauldron start - apply forge damage hook
 +         f = net.minecraftforge.common.ForgeHooks.onLivingHurt(this, damagesource, f);
 +         // If the damage is negative return true
@@ -972,6 +971,7 @@
 +         // Thermos detect null damage
 +         final boolean nulldmg = f == 0;
 +         // Cauldron end
++         float originalDamage = f;
 +         com.google.common.base.Function<Double, Double> hardHat = new com.google.common.base.Function<Double, Double>() {
 +            @Override
 +            public Double apply(Double f) {
