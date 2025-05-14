@@ -9,3 +9,50 @@
        return this.tags.put(p_128366_, p_128367_);
     }
  
+@@ -186,18 +_,34 @@
+       this.tags.put(p_128357_, LongTag.valueOf(p_128358_));
+    }
+ 
+-   public void putUUID(String p_128363_, UUID p_128364_) {
+-      this.tags.put(p_128363_, NbtUtils.createUUID(p_128364_));
+-   }
+-
+-   public UUID getUUID(String p_128343_) {
+-      return NbtUtils.loadUUID(this.get(p_128343_));
+-   }
+-
+-   public boolean hasUUID(String p_128404_) {
+-      Tag tag = this.get(p_128404_);
+-      return tag != null && tag.getType() == IntArrayTag.TYPE && ((IntArrayTag)tag).getAsIntArray().length == 4;
+-   }
++    public void putUUID(String key, UUID value) {
++        // Paper start - support old format
++        if (this.contains(key + "Most", 99) && this.contains(key + "Least", 99)) {
++            this.tags.remove(key + "Most");
++            this.tags.remove(key + "Least");
++        }
++        // Paper end
++        this.tags.put(key, NbtUtils.createUUID(value));
++    }
++
++    public UUID getUUID(String key) {
++        // Paper start - support old format
++        if (!contains(key, 11) && this.contains(key + "Most", 99) && this.contains(key + "Least", 99)) {
++            return new UUID(this.getLong(key + "Most"), this.getLong(key + "Least"));
++        }
++        // Paper end
++        return NbtUtils.loadUUID(this.get(key));
++    }
++
++    public boolean hasUUID(String key) {
++        // Paper start - support old format
++        if (this.contains(key + "Most", 99) && this.contains(key + "Least", 99)) {
++            return true;
++        }
++        // Paper end
++        Tag tag = this.get(key);
++        return tag != null && tag.getType() == IntArrayTag.TYPE && ((IntArrayTag)tag).getAsIntArray().length == 4;
++    }
+ 
+    public void putFloat(String p_128351_, float p_128352_) {
+       this.tags.put(p_128351_, FloatTag.valueOf(p_128352_));

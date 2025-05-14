@@ -1,0 +1,15 @@
+--- a/net/minecraft/nbt/NbtUtils.java
++++ b/net/minecraft/nbt/NbtUtils.java
+@@ -77,6 +_,12 @@
+          s = p_129229_.getString("Name");
+       }
+ 
++       // Paper start - support string UUID's
++       if (p_129229_.contains("Id", 8)) {
++           uuid = UUID.fromString(p_129229_.getString("Id"));
++       }
++       // Paper end
++
+       if (p_129229_.hasUUID("Id")) {
+          uuid = p_129229_.getUUID("Id");
+       }
