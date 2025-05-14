@@ -2006,6 +2006,59 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
         }
     }
 
+    // Paper start - brand support
+    /**
+     * Returns player's client brand name. If the client didn't send this information, the brand name will be null.<br>
+     * For the Notchian client this name defaults to <code>vanilla</code>. Some modified clients report other names such as <code>forge</code>.<br>
+     * @return client brand name
+     */
+    @Nullable
+    String getClientBrandName();
+    // Paper end
+
+    // Paper start - Teleport API
+    /**
+     * Sets the player's rotation.
+     *
+     * @param yaw the yaw
+     * @param pitch the pitch
+     */
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    void setRotation(float yaw, float pitch);
+
+    /**
+     * Causes the player to look towards the given position.
+     *
+     * @param x x coordinate
+     * @param y y coordinate
+     * @param z z coordinate
+     * @param playerAnchor What part of the player should face the given position
+     */
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    void lookAt(double x, double y, double z, @NotNull io.papermc.paper.entity.LookAnchor playerAnchor);
+
+    /**
+     * Causes the player to look towards the given position.
+     *
+     * @param position Position to look at in the player's current world
+     * @param playerAnchor What part of the player should face the given position
+     */
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    default void lookAt(@NotNull io.papermc.paper.math.Position position, @NotNull io.papermc.paper.entity.LookAnchor playerAnchor) {
+        this.lookAt(position.x(), position.y(), position.z(), playerAnchor);
+    }
+
+    /**
+     * Causes the player to look towards the given entity.
+     *
+     * @param entity Entity to look at
+     * @param playerAnchor What part of the player should face the entity
+     * @param entityAnchor What part of the entity the player should face
+     */
+    @org.jetbrains.annotations.ApiStatus.Experimental
+    void lookAt(@NotNull org.bukkit.entity.Entity entity, @NotNull io.papermc.paper.entity.LookAnchor playerAnchor, @NotNull io.papermc.paper.entity.LookAnchor entityAnchor);
+    // Paper end - Teleport API
+
     @NotNull
     @Override
     Spigot spigot();
