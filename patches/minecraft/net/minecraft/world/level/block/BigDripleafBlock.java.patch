@@ -57,7 +57,7 @@
     private void setTiltAndScheduleTick(BlockState p_152283_, Level p_152284_, BlockPos p_152285_, Tilt p_152286_, @Nullable SoundEvent p_152287_) {
 +      ketting$setTilt$entity.set(ketting$setTiltAndScheduleTick$entity.getAndSet(null)); //Ketting
        setTilt(p_152283_, p_152284_, p_152285_, p_152286_);
-+      if (ketting$setTilt$returnValue) return; //Ketting - CraftBukkit
++      if (!ketting$setTilt$returnValue) return; //Ketting - CraftBukkit
 +      // CraftBukkit end
 +      // Ketting end
        if (p_152287_ != null) {
