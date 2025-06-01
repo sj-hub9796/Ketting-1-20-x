@@ -17,7 +17,7 @@
        }
  
     }
-@@ -63,18 +_,46 @@
+@@ -63,18 +_,52 @@
        lowerFillLevel(p_153556_, p_153557_, p_153558_);
     }
  
@@ -60,6 +60,12 @@
 +      return true;
 +   }
 +   // CraftBukkit end
++
++   //Ketting start
++   public IntegerProperty getLevelProperty() {
++      return LEVEL;
++   }
++   //Ketting end
  
     public void handlePrecipitation(BlockState p_153539_, Level p_153540_, BlockPos p_153541_, Biome.Precipitation p_153542_) {
        if (CauldronBlock.shouldHandlePrecipitation(p_153540_, p_153542_) && p_153539_.getValue(LEVEL) != 3 && this.fillPredicate.test(p_153542_)) {

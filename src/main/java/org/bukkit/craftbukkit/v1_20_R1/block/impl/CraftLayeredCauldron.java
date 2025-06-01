@@ -21,16 +21,25 @@ public final class CraftLayeredCauldron extends CraftBlockData implements org.bu
 
     @Override
     public int getLevel() {
-        return get(LEVEL);
+        if (getState() != null && getState().getBlock() instanceof net.minecraft.world.level.block.LayeredCauldronBlock layeredCauldron)
+            return getOrFallback(LEVEL, layeredCauldron.getLevelProperty());
+        else
+            return get(LEVEL);
     }
 
     @Override
     public void setLevel(int level) {
-        set(LEVEL, level);
+        if (getState() != null && getState().getBlock() instanceof net.minecraft.world.level.block.LayeredCauldronBlock layeredCauldron)
+            setOrFallback(LEVEL, layeredCauldron.getLevelProperty(), level);
+        else
+            set(LEVEL, level);
     }
 
     @Override
     public int getMaximumLevel() {
-        return getMax(LEVEL);
+        if (getState() != null && getState().getBlock() instanceof net.minecraft.world.level.block.LayeredCauldronBlock layeredCauldron)
+            return layeredCauldron.getLevelProperty().max;
+        else
+            return getMax(LEVEL);
     }
 }
