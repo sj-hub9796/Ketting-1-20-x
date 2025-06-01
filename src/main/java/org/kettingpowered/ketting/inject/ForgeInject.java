@@ -9,6 +9,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.SpellcasterIllager;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.block.Block;
@@ -32,10 +33,7 @@ import org.bukkit.craftbukkit.v1_20_R1.util.CraftMagicNumbers;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftNamespacedKey;
 import org.bukkit.craftbukkit.v1_20_R1.util.CraftSpawnCategory;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Pose;
-import org.bukkit.entity.SpawnCategory;
-import org.bukkit.entity.Villager;
+import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
@@ -136,6 +134,8 @@ public class ForgeInject {
         addForgeSpawnCategories();
         debug("Injecting Forge VillagerProfessions into Bukkit");
         addForgeVillagerProfessions();
+        debug("Injecting Forge Illager spells into Bukkit");
+        addForgeIllagerSpells();
         debug("Injecting Forge statistics into bukkit");
         addForgeStatistics();
         debug("Injecting Forge into Bukkit: DONE");
@@ -543,6 +543,25 @@ public class ForgeInject {
         }
         EnumHelper.addEnums(EntityType.class, values);
         debug("Injecting Forge Entity into Bukkit: DONE");
+    }
+
+    private static void addForgeIllagerSpells() {
+        int ordinal = Spellcaster.Spell.values().length;
+        List<Spellcaster.Spell> values = new ArrayList<>();
+        for (var entry : SpellcasterIllager.IllagerSpell.values()) {
+            if (SpellcasterIllager.IllagerSpell.VANILLA_VALUES.contains(entry)) continue;
+            var enumName = entry.name();
+            try {
+                var spell = EnumHelper.makeEnum(Spellcaster.Spell.class, enumName, ordinal, List.of(), List.of());
+                ordinal++;
+                values.add(spell);
+                debug("Injecting Forge Illager Spell into Bukkit: " + spell.name());
+            } catch (Throwable e) {
+                Ketting.LOGGER.error("Could not inject Illager Spell into Bukkit: " + enumName + ". " + e.getMessage());
+            }
+        }
+        EnumHelper.addEnums(Spellcaster.Spell.class, values);
+        debug("Injecting Forge Illager Spell into Bukkit: DONE");
     }
 
     //Credit goes to Arclight for this fix

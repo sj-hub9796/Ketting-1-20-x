@@ -13,6 +13,7 @@ public class CaptureExclusions {
 
     static {
         captureExclusions.add("net.p3pp3rf1y.sophisticatedstorage.item.");
+        captureExclusions.add("com.progwml6.ironchest.common.item.");
     }
 
     public static boolean isExcluded(Class<?> clazz) {

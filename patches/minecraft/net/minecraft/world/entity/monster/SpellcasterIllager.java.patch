@@ -1,5 +1,15 @@
 --- a/net/minecraft/world/entity/monster/SpellcasterIllager.java
 +++ b/net/minecraft/world/entity/monster/SpellcasterIllager.java
+@@ -103,6 +_,9 @@
+       DISAPPEAR(4, 0.3D, 0.3D, 0.8D),
+       BLINDNESS(5, 0.1D, 0.1D, 0.2D);
+ 
++      public static final java.util.List<net.minecraft.world.entity.monster.SpellcasterIllager.IllagerSpell> VANILLA_VALUES =
++              java.util.List.of(NONE, SUMMON_VEX, FANGS, WOLOLO, DISAPPEAR, BLINDNESS); //Ketting
++
+       private static final IntFunction<SpellcasterIllager.IllagerSpell> BY_ID = ByIdMap.continuous((p_263091_) -> {
+          return p_263091_.id;
+       }, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
 @@ -183,6 +_,11 @@
        public void tick() {
           --this.attackWarmupDelay;

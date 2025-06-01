@@ -733,7 +733,7 @@
 +      Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
 +      Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
 +      newLevels.put(level.dimension(), level);
-+      this.levels = Collections.unmodifiableMap(newLevels);
++      this.levels = Maps.newLinkedHashMap(newLevels); //Ketting - modifiable
 +      this.markWorldsDirty(); //Ketting - force level update
 +   }
 +
@@ -741,7 +741,7 @@
 +      Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
 +      Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
 +      newLevels.remove(level.dimension());
-+      this.levels = Collections.unmodifiableMap(newLevels);
++      this.levels = Maps.newLinkedHashMap(newLevels); //Ketting - modifiable
 +      this.markWorldsDirty(); //Ketting - force level update
 +   }
 +   // CraftBukkit end
