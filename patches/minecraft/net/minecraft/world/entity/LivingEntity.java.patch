@@ -742,12 +742,14 @@
  
        boolean flag = this.lastHurtByPlayerTime > 0;
        if (this.shouldDropLoot() && this.level().getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
-@@ -1349,15 +_,77 @@
+@@ -1348,16 +_,80 @@
+          this.dropCustomDeathLoot(p_21192_, i, flag);
        }
  
-       this.dropEquipment();
+-      this.dropEquipment();
 -      this.dropExperience();
 -   }
++      // this.dropEquipment(); // Ketting - moved down
 +      // this.dropExperience(); //Ketting - moved down
 +
 +      Collection<ItemEntity> drops = captureDrops(null);
@@ -759,6 +761,8 @@
 +         handlePlayerDeath(s, drops);
 +      }
 +      //Ketting end
++
++      this.dropEquipment(); // Ketting
 +
 +      if (!handlePlayerDeath$cbKeepInv && !net.minecraftforge.common.ForgeHooks.onLivingDrops(this, p_21192_, drops, i, lastHurtByPlayerTime > 0)) //Ketting
 +         drops.forEach(e -> level().addFreshEntity(e));
