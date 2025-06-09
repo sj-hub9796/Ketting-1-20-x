@@ -1921,10 +1921,10 @@
  
     public void handleCustomPayload(ServerboundCustomPayloadPacket p_9860_) {
 -   }
-+      PacketUtils.ensureRunningOnSameThread(p_9860_, bukkitPacketListener, this.player.serverLevel()); //CraftBukkit
 +      //Ketting - don't parse a packet with bukkit, if forge has already handled it.
 +      if (net.minecraftforge.network.NetworkHooks.onCustomPayload(p_9860_, this.connection)) return;
 +      //Ketting - move this to a separate listener, so that the forge hook is not called twice
++      PacketUtils.ensureRunningOnSameThread(p_9860_, bukkitPacketListener, this.player.serverLevel()); //CraftBukkit
 +  }
 +
 +  public final boolean isDisconnected() {
