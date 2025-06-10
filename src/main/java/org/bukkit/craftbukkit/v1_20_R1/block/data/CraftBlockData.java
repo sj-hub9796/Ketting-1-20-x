@@ -345,7 +345,9 @@ public class CraftBlockData implements BlockData {
         Property<?> state = null;
 
         for (Block instance : BuiltInRegistries.BLOCK) {
-            if (instance.getClass() == block) {
+            if (instance.getClass() == block
+                    || (block == net.minecraft.world.level.block.LayeredCauldronBlock.class && instance.getClass().getName().equals("net.mehvahdjukaar.amendments.common.block.BoilingWaterCauldronBlock")) //Ketting - thanks amendments for overriding the vanilla cauldron block...
+            ) {
                 if (state == null) {
                     state = instance.getStateDefinition().getProperty(name);
                 } else {

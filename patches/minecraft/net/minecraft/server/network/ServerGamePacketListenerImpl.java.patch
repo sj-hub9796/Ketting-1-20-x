@@ -24,19 +24,6 @@
     private int dropSpamTickCount;
     private double firstGoodX;
     private double firstGoodY;
-@@ -231,7 +_,12 @@
-    private final MessageSignatureCache messageSignatureCache = MessageSignatureCache.createDefault();
-    private final FutureChain chatMessageChain;
- 
-+   //Ketting start - move bukkit custom packet handling to a separate class
-+   private final ServerGamePacketListener bukkitPacketListener;
-+
-    public ServerGamePacketListenerImpl(MinecraftServer p_9770_, Connection p_9771_, ServerPlayer p_9772_) {
-+      bukkitPacketListener = new org.kettingpowered.ketting.craftbukkit.BukkitGamePacketListenerImpl(this);
-+      //Ketting end
-       this.server = p_9770_;
-       this.connection = p_9771_;
-       p_9771_.setListener(this);
 @@ -240,10 +_,34 @@
        this.keepAliveTime = Util.getMillis();
        p_9772_.getTextFilter().join();
@@ -1916,18 +1903,64 @@
     }
  
     public void handleClientInformation(ServerboundClientInformationPacket p_9845_) {
-@@ -1659,7 +_,15 @@
+@@ -1659,7 +_,61 @@
     }
  
     public void handleCustomPayload(ServerboundCustomPayloadPacket p_9860_) {
 -   }
-+      //Ketting - don't parse a packet with bukkit, if forge has already handled it.
-+      if (net.minecraftforge.network.NetworkHooks.onCustomPayload(p_9860_, this.connection)) return;
-+      //Ketting - move this to a separate listener, so that the forge hook is not called twice
-+      PacketUtils.ensureRunningOnSameThread(p_9860_, bukkitPacketListener, this.player.serverLevel()); //CraftBukkit
-+  }
++      handleCustomBukkitPayload(p_9860_); //Ketting
++      net.minecraftforge.network.NetworkHooks.onCustomPayload(p_9860_, this.connection);
++   }
++   //Ketting start - bukkit custom payload handling
++   private static final ResourceLocation CUSTOM_REGISTER = new ResourceLocation("register");
++   private static final ResourceLocation CUSTOM_UNREGISTER = new ResourceLocation("unregister");
++   private void handleCustomBukkitPayload(ServerboundCustomPayloadPacket packet) {
++      int index = packet.data.readerIndex();
++      byte[] data = new byte[packet.data.readableBytes()];
++      packet.data.readBytes(data);
++      packet.data.readerIndex(index);
++      if (packet.identifier.equals(CUSTOM_REGISTER)) {
++         try {
++            String channels = new String(data, com.google.common.base.Charsets.UTF_8);
++            for (String channel : channels.split("\0")) {
++               if (filterChannel(channel, packet)) continue;
++               getCraftPlayer().addChannel(channel);
++            }
++         } catch (Exception ex) {
++            PacketUtils.LOGGER.error("Couldn\'t register custom payload", ex);
++            this.disconnect("Invalid payload REGISTER!");
++         }
++      } else if (packet.identifier.equals(CUSTOM_UNREGISTER)) {
++         try {
++            String channels = new String(data, com.google.common.base.Charsets.UTF_8);
++            for (String channel : channels.split("\0")) {
++               if (filterChannel(channel, packet)) continue;
++               getCraftPlayer().removeChannel(channel);
++            }
++         } catch (Exception ex) {
++            PacketUtils.LOGGER.error("Couldn\'t unregister custom payload", ex);
++            this.disconnect("Invalid payload UNREGISTER!");
++         }
++      } else {
++         try {
++            cserver.getMessenger().dispatchIncomingMessage(player.getBukkitEntity(), packet.identifier.toString(), data);
++         } catch (Exception ex) {
++            PacketUtils.LOGGER.error("Couldn\'t dispatch custom payload", ex);
++            this.disconnect("Invalid custom payload!");
++         }
++      }
++   }
 +
-+  public final boolean isDisconnected() {
++   private boolean filterChannel(@Nullable String channel, ServerboundCustomPayloadPacket packet) {
++      if (channel == null || channel.isBlank()) {
++         PacketUtils.LOGGER.warn("Received empty channel from {}: {}", this.player.getGameProfile().getName(), packet.identifier);
++         return true;
++      }
++      return false;
++   }
++   //Ketting end
++
++   public final boolean isDisconnected() {
 +      return !this.player.joining && !this.connection.isConnected();
 +  }
  
