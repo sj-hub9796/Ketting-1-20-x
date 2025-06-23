@@ -151,4 +151,18 @@ public interface PersistentDataContainer {
      */
     @NotNull
     PersistentDataAdapterContext getAdapterContext();
+
+    // Paper start
+    /**
+     * Returns if the persistent metadata provider has metadata registered
+     * matching the provided key.
+     * 
+     * @param key the key for which existence should be checked.
+     * 
+     * @return whether the key exists
+     * 
+     * @throws NullPointerException if the key to look up is null
+     */
+    boolean has(@NotNull NamespacedKey key);
+    // Paper end
 }
