@@ -48,6 +48,17 @@
     protected AbstractContainerMenu(@Nullable MenuType<?> p_38851_, int p_38852_) {
        this.menuType = p_38851_;
        this.containerId = p_38852_;
+@@ -67,7 +_,9 @@
+ 
+    protected static boolean stillValid(ContainerLevelAccess p_38890_, Player p_38891_, Block p_38892_) {
+       return p_38890_.evaluate((p_38916_, p_38917_) -> {
+-         return !p_38916_.getBlockState(p_38917_).is(p_38892_) ? false : p_38891_.distanceToSqr((double)p_38917_.getX() + 0.5D, (double)p_38917_.getY() + 0.5D, (double)p_38917_.getZ() + 0.5D) <= 64.0D;
++         // Vanilla uses 64 which is 8*8. Default reach is 4.5 so add 3.5 padding
++         double reach = p_38891_.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get()) + 3.5;
++         return !p_38916_.getBlockState(p_38917_).is(p_38892_) ? false : p_38891_.distanceToSqr((double)p_38917_.getX() + 0.5D, (double)p_38917_.getY() + 0.5D, (double)p_38917_.getZ() + 0.5D) <= reach * reach;
+       }, true);
+    }
+ 
 @@ -150,6 +_,15 @@
  
     }

@@ -10,3 +10,11 @@
           if (p_219950_ != null) {
              lootparams$builder.withLuck(p_219950_.getLuck()).withParameter(LootContextParams.THIS_ENTITY, p_219950_);
           }
+@@ -171,6 +_,6 @@
+    }
+ 
+    default boolean isChestVehicleStillValid(Player p_219955_) {
+-      return !this.isRemoved() && this.position().closerThan(p_219955_.position(), 8.0D);
++      return !this.isRemoved() && this.position().closerThan(p_219955_.position(), p_219955_.getAttributeValue(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get()) + 5.0); // Vanilla uses 8 default reach is 3.0 so add 5.0 padding
+    }
+ }

@@ -24,6 +24,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.SkullBlock;
 import net.minecraft.world.level.block.SkullBlock.Type;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -47,9 +48,9 @@ import java.util.function.Supplier;
  * <p>These events are fired on the {@linkplain FMLJavaModLoadingContext#getModEventBus() mod-specific event bus},
  * only on the {@linkplain LogicalSide#CLIENT logical client}.</p>
  *
- * @see RegisterLayerDefinitions
- * @see RegisterRenderers
- * @see AddLayers
+ * @see EntityRenderersEvent.RegisterLayerDefinitions
+ * @see EntityRenderersEvent.RegisterRenderers
+ * @see EntityRenderersEvent.AddLayers
  */
 public abstract class EntityRenderersEvent extends Event implements IModBusEvent
 {
@@ -171,11 +172,18 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @return the skin renderer, or {@code null} if no renderer is registered for that skin name
          * @see #getSkins()
          */
+        @SuppressWarnings("unchecked")
+        public <R extends EntityRenderer<? extends Player>> @Nullable R getPlayerSkin(String skinName)
+        {
+            return (R) skinMap.get(skinName);
+        }
+
+        /** @deprecated Use getEntitySkin, return type down graded to EntityRenderer instead of LivingEntityRenderer */
         @Nullable
         @SuppressWarnings("unchecked")
         public <R extends LivingEntityRenderer<? extends Player, ? extends EntityModel<? extends Player>>> R getSkin(String skinName)
         {
-            return (R) skinMap.get(skinName);
+            return skinMap.get(skinName) instanceof LivingEntityRenderer<?,?> renderer ? (R) renderer : null;
         }
 
         /**
@@ -186,11 +194,18 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          * @param <R>        the type of the renderer
          * @return the renderer, or {@code null} if no renderer is registered for that entity type
          */
+        @SuppressWarnings("unchecked")
+        public <T extends Entity, R extends EntityRenderer<T>> @Nullable R getEntityRenderer(EntityType<? extends T> entityType)
+        {
+            return (R) renderers.get(entityType);
+        }
+
+        /** @deprecated Use getEntityRenderer, return type down graded to EntityRenderer instead of LivingEntityRenderer */
         @Nullable
         @SuppressWarnings("unchecked")
         public <T extends LivingEntity, R extends LivingEntityRenderer<T, ? extends EntityModel<T>>> R getRenderer(EntityType<? extends T> entityType)
         {
-            return (R) renderers.get(entityType);
+            return renderers.get(entityType) instanceof LivingEntityRenderer<?,?> renderer ? (R) renderer : null;
         }
 
         /**
@@ -211,7 +226,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
     }
 
     /**
-     * Fired for registering additional {@linkplain SkullModelBase skull models} at the appropriate time.
+     * Fired for registering additional {@linkplain net.minecraft.client.model.SkullModelBase skull models} at the appropriate time.
      *
      * <p>This event is not {@linkplain Cancelable cancellable}, and does not {@linkplain HasResult have a result}.</p>
      *
@@ -239,7 +254,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
         }
 
         /**
-         * Registers the constructor for a skull block with the given {@link Type}.
+         * Registers the constructor for a skull block with the given {@link SkullBlock.Type}.
          * These will be inserted into the maps used by the item, entity, and block model renderers at the appropriate
          * time.
          *
@@ -249,7 +264,7 @@ public abstract class EntityRenderersEvent extends Event implements IModBusEvent
          *              {@link EntityModelSet#bakeLayer(ModelLayerLocation)} and pass it to the constructor for
          *              {@link SkullModel}.
          */
-        public void registerSkullModel(Type type, SkullModelBase model)
+        public void registerSkullModel(SkullBlock.Type type, SkullModelBase model)
         {
             builder.put(type, model);
         }

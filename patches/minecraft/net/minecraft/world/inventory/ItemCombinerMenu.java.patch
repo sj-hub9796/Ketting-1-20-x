@@ -1,10 +1,13 @@
 --- a/net/minecraft/world/inventory/ItemCombinerMenu.java
 +++ b/net/minecraft/world/inventory/ItemCombinerMenu.java
-@@ -107,6 +_,7 @@
-    }
+@@ -108,7 +_,9 @@
  
     public boolean stillValid(Player p_39780_) {
-+      if (!this.checkReachable) return true; // CraftBukkit
        return this.access.evaluate((p_39785_, p_39786_) -> {
-          return !this.isValidBlock(p_39785_.getBlockState(p_39786_)) ? false : p_39780_.distanceToSqr((double)p_39786_.getX() + 0.5D, (double)p_39786_.getY() + 0.5D, (double)p_39786_.getZ() + 0.5D) <= 64.0D;
+-         return !this.isValidBlock(p_39785_.getBlockState(p_39786_)) ? false : p_39780_.distanceToSqr((double)p_39786_.getX() + 0.5D, (double)p_39786_.getY() + 0.5D, (double)p_39786_.getZ() + 0.5D) <= 64.0D;
++         // Vanilla uses 64 which is 8*8. Default reach is 4.5 so add 3.5 padding
++         double reach = p_39780_.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get()) + 3.5;
++         return !this.isValidBlock(p_39785_.getBlockState(p_39786_)) ? false : p_39780_.distanceToSqr((double)p_39786_.getX() + 0.5D, (double)p_39786_.getY() + 0.5D, (double)p_39786_.getZ() + 0.5D) <= reach * reach;
        }, true);
+    }
+ 
