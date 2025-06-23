@@ -6,7 +6,6 @@
 package net.minecraftforge.common.extensions;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -14,30 +13,29 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
-public interface IForgePlayer
-{
-
-    private Player self()
-    {
-        return (Player) this;
+public interface IForgePlayer {
+    private Player self() {
+        return (Player)this;
     }
 
     /**
      * The entity reach is increased by 3 for creative players, unless it is currently zero, which disables attacks and entity interactions.
+     * This comes from {@link net.minecraft.client.multiplayer.MultiPlayerGameMode#getPickRange() MultiPlayerGameMode.getPickRange()}
+     * If you want the raw value, get the attribute yourself.
      * @return The entity reach of this player.
      */
-    default double getEntityReach()
-    {
+    default double getEntityReach() {
         double range = self().getAttributeValue(ForgeMod.ENTITY_REACH.get());
         return range == 0 ? 0 : range + (self().isCreative() ? 3 : 0);
     }
 
     /**
      * The reach distance is increased by 0.5 for creative players, unless it is currently zero, which disables interactions.
+     * This comes from {@link net.minecraft.client.multiplayer.MultiPlayerGameMode#getPickRange() MultiPlayerGameMode.getPickRange()}
+     * If you want the raw value, get the attribute yourself.
      * @return The reach distance of this player.
      */
-    default double getBlockReach()
-    {
+    default double getBlockReach() {
         double reach = self().getAttributeValue(ForgeMod.BLOCK_REACH.get());
         return reach == 0 ? 0 : reach + (self().isCreative() ? 0.5 : 0);
     }
@@ -50,8 +48,7 @@ public interface IForgePlayer
      * @return If the player can attack the entity.
      * @apiNote Do not use for block checks, as this method uses {@link #getEntityReach()}
      */
-    default boolean canReach(Vec3 entityHitVec, double padding)
-    {
+    default boolean canReach(Vec3 entityHitVec, double padding) {
         return self().getEyePosition().closerThan(entityHitVec, getEntityReach() + padding);
     }
 
@@ -63,9 +60,25 @@ public interface IForgePlayer
      * @return If the player can attack the passed entity.
      * @apiNote Prefer using {@link #canReach(Vec3, double)} if you have a {@link HitResult} available.
      */
-    default boolean canReach(Entity entity, double padding)
-    {
+    default boolean canReach(Entity entity, double padding) {
         return isCloseEnough(entity, getEntityReach() + padding);
+    }
+
+    /**
+     * Checks if the player can reach an entity.<br>
+     * On the server, additional padding is added to account for movement/lag.
+     *
+     * Unlike {@link #getEntityReach()} or {@link #canReach(Entity,double)} this does not
+     * add the 3.0 creative mode implicit padding.
+     *
+     * @param entity The entity being range-checked.
+     * @param padding Extra validation distance.
+     * @return If the player can attack the passed entity.
+     * @apiNote Prefer using {@link #canReach(Vec3, double)} if you have a {@link HitResult} available.
+     */
+    default boolean canReachRaw(Entity entity, double padding) {
+        double range = self().getAttributeValue(ForgeMod.ENTITY_REACH.get()) + padding;
+        return isCloseEnough(entity, range);
     }
 
     /**
@@ -75,10 +88,25 @@ public interface IForgePlayer
      * @param padding Extra validation distance.
      * @return If the player can interact with this location.
      */
-    default boolean canReach(BlockPos pos, double padding)
-    {
+    default boolean canReach(BlockPos pos, double padding) {
         double reach = this.getBlockReach() + padding;
-        return self().getEyePosition().distanceToSqr(Vec3.atCenterOf(pos)) < reach * reach;
+        return self().getEyePosition().distanceToSqr(Vec3.atCenterOf(pos)) <= reach * reach;
+    }
+
+    /**
+     * Checks if the player can reach a block.<br>
+     * On the server, additional padding is added to account for movement/lag.
+     *
+     * Unlike {@link #getBlockReach()} or {@link #canReach(BlockPos,double)} this does not
+     * add the 0.5 creative mode implicit padding.
+     *
+     * @param pos The position being range-checked.
+     * @param padding Extra validation distance.
+     * @return If the player can interact with this location.
+     */
+    default boolean canReachRaw(BlockPos pos, double padding) {
+        double reach = self().getAttributeValue(ForgeMod.BLOCK_REACH.get()) + padding;
+        return self().getEyePosition().distanceToSqr(Vec3.atCenterOf(pos)) <= reach * reach;
     }
 
     /**
@@ -88,8 +116,12 @@ public interface IForgePlayer
      * @return If the eye-to-center distance between this player and the passed entity is less than dist.
      * @implNote This method inflates the bounding box by the pick radius, which differs from vanilla. But vanilla doesn't use the pick radius, the only entity with > 0 is AbstractHurtingProjectile.
      */
-    default boolean isCloseEnough(Entity entity, double dist)
-    {
+    default boolean isCloseEnough(Entity entity, double dist) {
+        // This cuses the "eye-to-closest-corner" checks, which can cause issues with servers.
+        // https://github.com/MinecraftForge/MinecraftForge/issues/9309
+        // But to not break expectations of others, its staying until a config can be set.
+        // The vanilla code is:
+        //    return entity.getBoundingBox().distanceToSqr(self().getEyePosition()) < dist * dist;
         Vec3 eye = self().getEyePosition();
         AABB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
         return aabb.distanceToSqr(eye) < dist * dist;

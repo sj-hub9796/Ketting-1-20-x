@@ -135,3 +135,14 @@
        if (!(p_150074_ <= 0.0F)) {
           p_150074_ /= 4.0F;
           if (p_150074_ < 1.0F) {
+@@ -530,7 +_,9 @@
+       if (this.player.isRemoved()) {
+          return false;
+       } else {
+-         return !(p_36009_.distanceToSqr(this.player) > 64.0D);
++         // Vanilla uses 64 which is 8*8. Default reach is 3.0 so add 5.0 padding
++         double reach = p_36009_.getAttributeValue(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get()) + 5.0;
++         return !(p_36009_.distanceToSqr(this.player) > reach * reach);
+       }
+    }
+ 

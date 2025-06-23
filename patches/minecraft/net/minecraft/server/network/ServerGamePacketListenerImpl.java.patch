@@ -783,7 +783,7 @@
           BlockPos blockpos = blockhitresult.getBlockPos();
           Vec3 vec31 = Vec3.atCenterOf(blockpos);
 -         if (!(this.player.getEyePosition().distanceToSqr(vec31) > MAX_INTERACTION_DISTANCE)) {
-+         if (this.player.canReach(blockpos, 1.5)) { // Vanilla uses eye-to-center distance < 6, which implies a padding of 1.5
++         if (this.player.canReachRaw(blockpos, 1.5)) { // Vanilla uses eye-to-center distance < ServerGamePacketListenerImpl which is 6*6, default block reach is 4.5, so add 1.5 padding
              Vec3 vec32 = vec3.subtract(vec31);
              double d0 = 1.0000001D;
              if (Math.abs(vec32.x()) < 1.0000001D && Math.abs(vec32.y()) < 1.0000001D && Math.abs(vec32.z()) < 1.0000001D) {
@@ -1346,7 +1346,7 @@
  
           AABB aabb = entity.getBoundingBox();
 -         if (aabb.distanceToSqr(this.player.getEyePosition()) < MAX_INTERACTION_DISTANCE) {
-+         if (this.player.canReach(entity, 3)) { // Vanilla padding is 3.0 (distSq < 6.0 * 6.0)
++         if (this.player.canReachRaw(entity, 3.0)) { // Vanilla uses MAX_INTERACTION_DISTANCE which is 6*6 default entity reach is 3.0 so add 3.0 padding
              p_9866_.dispatch(new ServerboundInteractPacket.Handler() {
 -               private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_) {
 +               private void performInteraction(InteractionHand p_143679_, ServerGamePacketListenerImpl.EntityInteraction p_143680_, org.bukkit.event.player.PlayerInteractEntityEvent event) { // CraftBukkit
