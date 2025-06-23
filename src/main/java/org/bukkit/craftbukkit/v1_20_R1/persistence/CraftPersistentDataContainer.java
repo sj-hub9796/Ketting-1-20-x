@@ -158,6 +158,10 @@ public class CraftPersistentDataContainer implements PersistentDataContainer {
     }
 
     // Paper start
+    public void clear() {
+        this.customDataTags.clear();
+    }
+
     @Override
     public boolean has(NamespacedKey key) {
         Preconditions.checkArgument(key != null, "The provided key for the custom value was null");
