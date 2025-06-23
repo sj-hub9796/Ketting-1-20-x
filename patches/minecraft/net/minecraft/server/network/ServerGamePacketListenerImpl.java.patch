@@ -1434,6 +1434,43 @@
                       }
                    } else {
                       ServerGamePacketListenerImpl.this.disconnect(Component.translatable("multiplayer.disconnect.invalid_entity_attacked"));
+@@ -1481,8 +_,36 @@
+             });
+          }
+       }
++      else {
++          p_9866_.dispatch(new net.minecraft.network.protocol.game.ServerboundInteractPacket.Handler() {
++              @Override
++              public void onInteraction(net.minecraft.world.InteractionHand hand) {
++                  ServerGamePacketListenerImpl.this.callPlayerUseUnknownEntityEvent(p_9866_, hand, null);
++              }
++
++              @Override
++              public void onInteraction(net.minecraft.world.InteractionHand hand, net.minecraft.world.phys.Vec3 pos) {
++                  ServerGamePacketListenerImpl.this.callPlayerUseUnknownEntityEvent(p_9866_, hand, pos);
++              }
++
++              @Override
++              public void onAttack() {
++                  ServerGamePacketListenerImpl.this.callPlayerUseUnknownEntityEvent(p_9866_, net.minecraft.world.InteractionHand.MAIN_HAND, null);
++              }
++          });
++      }
+ 
+    }
++    private void callPlayerUseUnknownEntityEvent(ServerboundInteractPacket packet, InteractionHand hand, @Nullable net.minecraft.world.phys.Vec3 vector) {
++        this.cserver.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerUseUnknownEntityEvent(
++                this.getCraftPlayer(),
++                packet.getEntityId(),
++                packet.isAttack(),
++                hand == InteractionHand.MAIN_HAND ? org.bukkit.inventory.EquipmentSlot.HAND : org.bukkit.inventory.EquipmentSlot.OFF_HAND,
++                vector != null ? new org.bukkit.util.Vector(vector.x, vector.y, vector.z) : null)
++        );
++    }
++    // Paper end - PlayerUseUnknownEntityEvent
+ 
+    public void handleClientCommand(ServerboundClientCommandPacket p_9843_) {
+       PacketUtils.ensureRunningOnSameThread(p_9843_, this, this.player.serverLevel());
 @@ -1492,14 +_,14 @@
           case PERFORM_RESPAWN:
              if (this.player.wonGame) {
