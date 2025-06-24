@@ -2469,4 +2469,11 @@ public final class CraftServer implements Server {
         return !getServer().isRunning();
     }
     //Ketting stop
+
+    // Paper start
+    @Override
+    public int getCurrentTick() {
+        return net.minecraft.server.MinecraftServer.currentTick;
+    }
+    // Paper end
 }
