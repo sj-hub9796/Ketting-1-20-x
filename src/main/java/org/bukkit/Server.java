@@ -1765,4 +1765,13 @@ public interface Server extends PluginMessageRecipient {
     @Deprecated(forRemoval = true) //reason: only provided for compatibility purposes
     boolean isStopping();
     // Ketting end
+
+    // Paper start
+    /**
+     * Get the current internal server tick
+     *
+     * @return Current tick
+     */
+    int getCurrentTick();
+    // Paper end
 }

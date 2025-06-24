@@ -2031,4 +2031,10 @@ public final class Bukkit {
     public static Server.Spigot spigot() {
         return server.spigot();
     }
+
+    // Paper start
+    public static int getCurrentTick() {
+        return server.getCurrentTick();
+    }
+    // Paper end
 }
