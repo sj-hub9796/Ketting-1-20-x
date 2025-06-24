@@ -11010,8 +11010,8 @@ public enum Material implements Keyed, Translatable {
     public static Material addMaterial(String name, int id, @Nullable Class<?> data, NamespacedKey key, boolean block, boolean item) {
         try {
             var types = data == null ? CTOR_ARGS_WITHOUT_DATA : CTOR_ARGS_WITH_DATA;
-            var args = data == null ? List.of(id, key, block, item) : List.of(id, 64, 0, data, key, block, item);
-            var material = EnumHelper.makeEnum(Material.class, name, id, types, args);
+            List args = data == null ? List.of(id, key, block, item) : List.of(id, 64, 0, data, key, block, item);
+            Material material = EnumHelper.makeEnum(Material.class, name, id, types, args);
             BY_NAME.put(name, material);
             return material;
         } catch (Throwable e) {
