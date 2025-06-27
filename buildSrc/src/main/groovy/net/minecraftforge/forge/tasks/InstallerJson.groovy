@@ -57,8 +57,11 @@ abstract class InstallerJson extends DefaultTask {
             def dep = Util.getMavenDep(child)
             def path = Util.getMavenPath(child)
             def url = "https://reposilite.c0d3m4513r.com/Forge/$path"
+            if (!Util.checkExists(url)) url = "https://repo.kettingpowered.org/Forge/$path"
             if (!Util.checkExists(url)) url = "https://reposilite.c0d3m4513r.com/Ketting-Server-Releases/$path"
+            if (!Util.checkExists(url)) url = "https://repo.kettingpowered.org/Ketting-Server-Releases/$path"
             if (!Util.checkExists(url)) url = "https://reposilite.c0d3m4513r.com/Ketting/$path"
+            if (!Util.checkExists(url)) url = "https://repo.kettingpowered.org/Ketting/$path"
             libs.put(dep.toString(), [
                 name: dep,
                 downloads: [

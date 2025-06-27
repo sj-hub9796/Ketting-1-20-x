@@ -38,8 +38,10 @@ abstract class SetupCheckJarCompatibility extends DefaultTask {
         }
 
         def baseForgeUserdev = project.layout.buildDirectory.dir(name).map { it.file("forge-${inputVersion}-userdev.jar") }.get().asFile
+        var url = "https://reposilite.c0d3m4513r.com/Forge/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-userdev.jar"
+        if (!Util.checkExists(url)) url = "https://repo.kettingpowered.org/Forge/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-userdev.jar"
         project.rootProject.extensions.download.run {
-            src "https://reposilite.c0d3m4513r.com/Forge/net/minecraftforge/forge/${inputVersion}/forge-${inputVersion}-userdev.jar"
+            src url
             dest baseForgeUserdev
         }
 

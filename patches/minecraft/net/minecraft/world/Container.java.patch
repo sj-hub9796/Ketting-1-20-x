@@ -16,28 +16,29 @@
        Level level = p_272877_.getLevel();
        BlockPos blockpos = p_272877_.getBlockPos();
        if (level == null) {
-@@ -92,4 +_,42 @@
+@@ -92,4 +_,43 @@
           return p_272670_.distanceToSqr((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D) <= (double)(p_273411_ * p_273411_);
        }
     }
 +
 +   // CraftBukkit start
-+   java.util.List<org.bukkit.entity.HumanEntity> transaction = new java.util.ArrayList<org.bukkit.entity.HumanEntity>(); //Ketting - adding a new field like this is not ideal, but this provides the most correctness
 +   default java.util.List<ItemStack> getContents() {
 +      return java.util.Collections.emptyList();
 +   }
 +
++   //Ketting start - transactions
 +   default void onOpen(org.bukkit.craftbukkit.v1_20_R1.entity.CraftHumanEntity who){
-+      transaction.add(who);
++      org.kettingpowered.ketting.utils.InventoryViewHelper.getContainerTransactions(this).add(who);
 +   }
 +
 +   default void onClose(org.bukkit.craftbukkit.v1_20_R1.entity.CraftHumanEntity who){
-+      transaction.remove(who);
++      org.kettingpowered.ketting.utils.InventoryViewHelper.getContainerTransactions(this).remove(who);
 +   }
 +
 +   default java.util.List<org.bukkit.entity.HumanEntity> getViewers(){
-+      return transaction;
++      return org.kettingpowered.ketting.utils.InventoryViewHelper.getContainerTransactions(this);
 +   }
++   //Ketting end
 +
 +   default @javax.annotation.Nullable org.bukkit.inventory.InventoryHolder getOwner(){
 +      return null;

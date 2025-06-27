@@ -7,14 +7,23 @@ import net.minecraft.world.item.ItemStack;
 import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryView;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.InventoryView;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class InventoryViewHelper {
+
+    private static Map<Container, List<HumanEntity>> containerTransactions = new HashMap<>();
+
+    public static List<HumanEntity> getContainerTransactions(Container container) {
+        return containerTransactions.computeIfAbsent(container, k -> new java.util.ArrayList<>());
+    }
 
     private static Player containerOwner;
 
