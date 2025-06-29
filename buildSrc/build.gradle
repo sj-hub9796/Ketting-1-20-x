@@ -1,4 +1,5 @@
 repositories {
+    maven { url = 'https://reposilite.c0d3m4513r.com/Forge/'}
     maven { url = 'https://repo.kettingpowered.org/Forge/' }
 	mavenCentral()
 }
