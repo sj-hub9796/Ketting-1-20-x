@@ -1210,6 +1210,7 @@ public class CraftEventFactory {
         return handleBlockGrowEvent(world, pos, block, 3);
     }
 
+    public static AtomicBoolean handleBlockGrowUpdate = new AtomicBoolean(true); // Ketting
     public static boolean handleBlockGrowEvent(Level world, BlockPos pos, net.minecraft.world.level.block.state.BlockState newData, int flag) {
         Block block = world.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
         CraftBlockState state = (CraftBlockState) block.getState();
@@ -1219,7 +1220,11 @@ public class CraftEventFactory {
         Bukkit.getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            state.update(true);
+            // ketting start - Possibility to move the handle to the vanilla method
+            if (handleBlockGrowUpdate.getAndSet(true)) {
+                state.update(true);
+            }
+            // Ketting end
         }
 
         return !event.isCancelled();
