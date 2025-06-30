@@ -48,6 +48,19 @@ public class PlayerDeathEvent extends EntityDeathEvent {
         this.deathMessage = deathMessage;
     }
 
+    // Paper start
+    /**
+     * Clarity method for getting the player. Not really needed except
+     * for reasons of clarity.
+     *
+     * @return Player who is involved in this event
+     */
+    @NotNull
+    public Player getPlayer() {
+        return getEntity();
+    }
+    // Paper end
+
     /**
      * Get the death message that will appear to everyone on the server.
      *
