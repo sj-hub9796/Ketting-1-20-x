@@ -3,6 +3,7 @@ package org.kettingpowered.ketting.inject;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
 import io.izzel.arclight.api.EnumHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.Stats;
@@ -39,7 +40,9 @@ import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.kettingpowered.ketting.config.KettingConfig;
 import org.kettingpowered.ketting.core.Ketting;
+import org.kettingpowered.ketting.internal.hacks.Unsafe;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -138,6 +141,8 @@ public class ForgeInject {
         addForgeIllagerSpells();
         debug("Injecting Forge statistics into bukkit");
         addForgeStatistics();
+        debug("Injecting Forge Arts into bukkit");
+        addForgeArts();
         debug("Injecting Forge into Bukkit: DONE");
 
         try {
@@ -625,5 +630,57 @@ public class ForgeInject {
         EnumHelper.addEnums(Statistic.class, values);
         CraftStatistic.statistics = statistics;
         debug("Injecting Forge Statistic into Bukkit: DONE");
+    }
+
+    public static void addForgeArts() {
+        int ordinal = Art.values().length;
+        List<Art> values = new ArrayList<>();
+
+        Field keyField = Arrays.stream(Art.class.getDeclaredFields())
+                .filter(field -> field.getName().equals("key"))
+                .findFirst()
+                .orElse(null);
+
+        if (keyField == null) {
+            Ketting.LOGGER.error("Could not find key field in Art class");
+            return;
+        }
+
+        long keyOffset = Unsafe.objectFieldOffset(keyField);
+
+        for (var entry : ForgeRegistries.PAINTING_VARIANTS.getEntries()) {
+            var location = entry.getKey().location();
+            var paintingVariant = entry.getValue();
+
+            String lookupName = location.getPath().toLowerCase(Locale.ROOT);
+            Art existingArt = Art.getByName(lookupName);
+
+            if (existingArt == null && !location.getNamespace().equals(NamespacedKey.MINECRAFT)) {
+                String enumName = standardize(location);
+
+                try {
+                    Art art = EnumHelper.makeEnum(Art.class, enumName, ordinal,
+                            List.of(int.class, int.class, int.class),
+                            List.of(ordinal, paintingVariant.getWidth(), paintingVariant.getHeight())
+                    );
+
+                    if (art == null) {
+                        Ketting.LOGGER.error("Could not inject Art into Bukkit: " + enumName);
+                        continue;
+                    }
+
+                    Unsafe.putObject(art, keyOffset, CraftNamespacedKey.fromMinecraft(location));
+
+                    ordinal++;
+                    values.add(art);
+                    debug("Injecting Forge Art into Bukkit: " + art.name());
+                } catch (Throwable e) {
+                    Ketting.LOGGER.error("Could not inject art into Bukkit: " + enumName, e);
+                }
+            }
+        }
+
+        EnumHelper.addEnums(Art.class, values);
+        debug("Injecting Forge Art into Bukkit: DONE");
     }
 }
