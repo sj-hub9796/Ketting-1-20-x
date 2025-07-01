@@ -331,15 +331,15 @@
           int i = p_9264_.getCount();
           int j = p_9264_.getDamageValue();
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.use(p_9263_, p_9262_, p_9265_);
-@@ -294,12 +_,75 @@
+@@ -294,12 +_,76 @@
        }
     }
  
 +   // CraftBukkit start - whole method
 +   public boolean interactResult = false;
 +   public boolean firedInteract = false;
++   public BlockPos interactPosition;
 +   //Ketting start - we don't need these anymore
-+   //public BlockPos interactPosition;
 +   //public InteractionHand interactHand;
 +   //public ItemStack interactItemStack;
 +   //Ketting end
@@ -382,6 +382,7 @@
 +      useItemOn$event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerInteractEvent(p_9266_, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.getDirection(), p_9268_, useItemOn$cancelledBlock, p_9269_, p_9270_.getLocation());
 +      firedInteract = true;
 +      interactResult = useItemOn$event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
++      interactPosition = blockpos.immutable();
 +
 +      if (useItemOn$event.useInteractedBlock() == org.bukkit.event.Event.Result.DENY) {
 +         // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
