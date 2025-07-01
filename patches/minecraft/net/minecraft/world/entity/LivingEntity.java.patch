@@ -1604,7 +1604,7 @@
              return false;
           } else {
              return item.getUseDuration(this.useItem) - this.useItemRemaining >= 5;
-@@ -3026,6 +_,20 @@
+@@ -3026,6 +_,51 @@
     public int getFallFlyingTicks() {
        return this.fallFlyTicks;
     }
@@ -1621,7 +1621,38 @@
 +
 +       return this.level().clip(raytrace);
 +   }
-+   // Paper end
++    public @Nullable net.minecraft.world.phys.EntityHitResult getTargetEntity(int maxDistance) {
++        if (maxDistance < 1 || maxDistance > 120) {
++            throw new IllegalArgumentException("maxDistance must be between 1-120");
++        }
++
++        Vec3 start = this.getEyePosition(1.0F);
++        Vec3 direction = this.getLookAngle();
++        Vec3 end = start.add(direction.x * maxDistance, direction.y * maxDistance, direction.z * maxDistance);
++
++        List<Entity> entityList = this.level().getEntities(this, getBoundingBox().expandTowards(direction.x * maxDistance, direction.y * maxDistance, direction.z * maxDistance).inflate(1.0D, 1.0D, 1.0D), EntitySelector.NO_SPECTATORS.and(Entity::isPickable));
++
++        double distance = 0.0D;
++        net.minecraft.world.phys.EntityHitResult result = null;
++
++        for (Entity entity : entityList) {
++            final double inflationAmount = (double) entity.getPickRadius();
++            AABB aabb = entity.getBoundingBox().inflate(inflationAmount, inflationAmount, inflationAmount);
++            Optional<Vec3> rayTraceResult = aabb.clip(start, end);
++
++            if (rayTraceResult.isPresent()) {
++                Vec3 rayTrace = rayTraceResult.get();
++                double distanceTo = start.distanceToSqr(rayTrace);
++                if (distanceTo < distance || distance == 0.0D) {
++                    result = new net.minecraft.world.phys.EntityHitResult(entity, rayTrace);
++                    distance = distanceTo;
++                }
++            }
++        }
++
++        return result;
++    }
++    // Paper end
  
     public boolean randomTeleport(double p_20985_, double p_20986_, double p_20987_, boolean p_20988_) {
        double d0 = this.getX();

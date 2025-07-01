@@ -1,5 +1,6 @@
 package org.bukkit.craftbukkit.v1_20_R1.entity;
 
+import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import java.util.ArrayList;
@@ -218,6 +219,39 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
             return new com.destroystokyo.paper.block.TargetBlockInfo(result.getHitBlock(), result.getHitBlockFace());
         }
         return null;
+    }
+
+    public Entity getTargetEntity(int maxDistance, boolean ignoreBlocks) {
+        net.minecraft.world.phys.EntityHitResult rayTrace = rayTraceEntity(maxDistance, ignoreBlocks);
+        return rayTrace == null ? null : rayTrace.getEntity().getBukkitEntity();
+    }
+
+    public TargetEntityInfo getTargetEntityInfo(int maxDistance, boolean ignoreBlocks) {
+        net.minecraft.world.phys.EntityHitResult rayTrace = rayTraceEntity(maxDistance, ignoreBlocks);
+        return rayTrace == null ? null : new TargetEntityInfo(rayTrace.getEntity().getBukkitEntity(), new org.bukkit.util.Vector(rayTrace.getLocation().x, rayTrace.getLocation().y, rayTrace.getLocation().z));
+    }
+
+    @Override
+    public RayTraceResult rayTraceEntities(int maxDistance, boolean ignoreBlocks) {
+        net.minecraft.world.phys.EntityHitResult rayTrace = this.rayTraceEntity(maxDistance, ignoreBlocks);
+        return rayTrace == null ? null : new org.bukkit.util.RayTraceResult(org.bukkit.craftbukkit.v1_20_R1.util.CraftVector.toBukkit(rayTrace.getLocation()), rayTrace.getEntity().getBukkitEntity());
+    }
+
+    public net.minecraft.world.phys.EntityHitResult rayTraceEntity(int maxDistance, boolean ignoreBlocks) {
+        net.minecraft.world.phys.EntityHitResult rayTrace = getHandle().getTargetEntity(maxDistance);
+        if (rayTrace == null) {
+            return null;
+        }
+        if (!ignoreBlocks) {
+            net.minecraft.world.phys.HitResult rayTraceBlocks = getHandle().getRayTrace(maxDistance, net.minecraft.world.level.ClipContext.Fluid.NONE);
+            if (rayTraceBlocks != null) {
+                net.minecraft.world.phys.Vec3 eye = getHandle().getEyePosition(1.0F);
+                if (eye.distanceToSqr(rayTraceBlocks.getLocation()) <= eye.distanceToSqr(rayTrace.getLocation())) {
+                    return null;
+                }
+            }
+        }
+        return rayTrace;
     }
     // Paper end
 
