@@ -40,6 +40,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.ticks.LevelTickAccess;
 import net.minecraft.world.ticks.BlackholeTickAccess;
+import org.jetbrains.annotations.Nullable;
 
 public class DummyGeneratorAccess implements WorldGenLevel {
 
@@ -95,6 +96,11 @@ public class DummyGeneratorAccess implements WorldGenLevel {
 
     @Override
     public ChunkSource getChunkSource() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public @Nullable ChunkAccess getChunkIfLoadedImmediately(int x, int z) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

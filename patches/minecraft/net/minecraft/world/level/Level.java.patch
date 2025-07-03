@@ -9,7 +9,18 @@
     public static final Codec<ResourceKey<Level>> RESOURCE_KEY_CODEC = ResourceKey.codec(Registries.DIMENSION);
     public static final ResourceKey<Level> OVERWORLD = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("overworld"));
     public static final ResourceKey<Level> NETHER = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("the_nether"));
-@@ -110,8 +_,123 @@
+@@ -96,7 +_,9 @@
+    public float oThunderLevel;
+    public float thunderLevel;
+    public final RandomSource random = RandomSource.create();
+-   /** @deprecated */
++   /**
++    * @deprecated
++    */
+    @Deprecated
+    private final RandomSource threadSafeRandom = RandomSource.createThreadSafe();
+    private final ResourceKey<DimensionType> dimensionTypeId;
+@@ -110,8 +_,133 @@
     private final RegistryAccess registryAccess;
     private final DamageSources damageSources;
     private long subTickCount;
@@ -26,10 +37,18 @@
 +   public org.bukkit.generator.ChunkGenerator generator;
 +   public org.bukkit.World.Environment environment; //Ketting
 +   public org.bukkit.generator.BiomeProvider biomeProvider; //Ketting
-+   @Nullable @org.jetbrains.annotations.ApiStatus.Internal public static org.bukkit.World.Environment init$env = null;
-+   @Nullable @org.jetbrains.annotations.ApiStatus.Internal public static net.minecraft.world.level.storage.ServerLevelData ketting$serverLevelData = null;
-+   @Nullable @org.jetbrains.annotations.ApiStatus.Internal public static org.bukkit.generator.ChunkGenerator init$gen = null;
-+   @Nullable @org.jetbrains.annotations.ApiStatus.Internal public static org.bukkit.generator.BiomeProvider init$biomeProvider = null;
++   @Nullable
++   @org.jetbrains.annotations.ApiStatus.Internal
++   public static org.bukkit.World.Environment init$env = null;
++   @Nullable
++   @org.jetbrains.annotations.ApiStatus.Internal
++   public static net.minecraft.world.level.storage.ServerLevelData ketting$serverLevelData = null;
++   @Nullable
++   @org.jetbrains.annotations.ApiStatus.Internal
++   public static org.bukkit.generator.ChunkGenerator init$gen = null;
++   @Nullable
++   @org.jetbrains.annotations.ApiStatus.Internal
++   public static org.bukkit.generator.BiomeProvider init$biomeProvider = null;
 +
 +   public boolean preventPoiUpdated = false; // CraftBukkit - SPIGOT-5710
 +   public boolean captureBlockStates = false;
@@ -95,7 +114,8 @@
 +   public ResourceKey<net.minecraft.world.level.dimension.LevelStem> getTypeKey() {
 +      return Registries.levelToLevelStem(this.dimension);
 +   }
-+   protected void bukkitInit(WritableLevelData p_270739_){
++
++   protected void bukkitInit(WritableLevelData p_270739_) {
 +      this.generator = init$gen;
 +      this.environment = init$env;
 +      this.biomeProvider = init$biomeProvider;
@@ -107,7 +127,8 @@
 +         serverLevelDataDependentInit(ketting$serverLevelData);
 +      }
 +   }
-+   protected void serverLevelDataDependentInit(net.minecraft.world.level.storage.ServerLevelData serverLevelData){
++
++   protected void serverLevelDataDependentInit(net.minecraft.world.level.storage.ServerLevelData serverLevelData) {
 +      spigotConfig = new org.spigotmc.SpigotWorldConfig(serverLevelData.getLevelName());
 +
 +      this.setEntityLimiter(new org.spigotmc.TickLimiter(spigotConfig.entityMaxTickTime));
@@ -133,7 +154,7 @@
        this.profiler = p_270692_;
        this.levelData = p_270739_;
        this.dimensionTypeRegistration = p_270240_;
-@@ -141,6 +_,46 @@
+@@ -141,6 +_,48 @@
        this.neighborUpdater = new CollectingNeighborUpdater(this, p_270466_);
        this.registryAccess = p_270200_;
        this.damageSources = new DamageSources(p_270200_);
@@ -167,10 +188,12 @@
 +         }
 +
 +         @Override
-+         public void onBorderSetDamagePerBlock(WorldBorder worldborder, double d0) {}
++         public void onBorderSetDamagePerBlock(WorldBorder worldborder, double d0) {
++         }
 +
 +         @Override
-+         public void onBorderSetDamageSafeZOne(WorldBorder worldborder, double d0) {}
++         public void onBorderSetDamageSafeZOne(WorldBorder worldborder, double d0) {
++         }
 +      });
 +      // CraftBukkit end
 +      timings = new org.bukkit.craftbukkit.v1_20_R1.SpigotTimings.WorldTimingsHandler(this); // Spigot - code below can generate new world and access timings
@@ -180,7 +203,20 @@
     }
  
     public boolean isClientSide() {
-@@ -191,6 +_,17 @@
+@@ -173,7 +_,7 @@
+       }
+    }
+ 
++   // Paper start - if loaded
++   @Nullable
++   @Override
++   public final ChunkAccess getChunkIfLoadedImmediately(int x, int z) {
++      return ((net.minecraft.server.level.ServerLevel) this).chunkSource.getChunkAtIfLoadedImmediately(x, z);
++   }
++   // Paper end - if loaded
++
+    public boolean setBlock(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {
+       return this.setBlock(p_46601_, p_46602_, p_46603_, 512);
     }
  
     public boolean setBlock(BlockPos p_46605_, BlockState p_46606_, int p_46607_, int p_46608_) {

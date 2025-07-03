@@ -1,5 +1,14 @@
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
+@@ -167,7 +_,7 @@
+    private static final int EMPTY_TIME_NO_TICK = 300;
+    private static final int MAX_SCHEDULED_TICKS_PER_TICK = 65536;
+    final List<ServerPlayer> players = Lists.newArrayList();
+-   private final ServerChunkCache chunkSource;
++   public final ServerChunkCache chunkSource; // Paper
+    private final MinecraftServer server;
+    public final ServerLevelData serverLevelData;
+    final EntityTickList entityTickList = new EntityTickList();
 @@ -188,24 +_,86 @@
     private final List<CustomSpawner> customSpawners;
     @Nullable

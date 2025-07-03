@@ -52,3 +52,17 @@
        return true;
     }
  
+@@ -349,6 +_,13 @@
+    public ChunkSource getChunkSource() {
+       return this.level.getChunkSource();
+    }
++
++   // Paper start - if loaded util
++   @Override
++   public @org.jetbrains.annotations.Nullable ChunkAccess getChunkIfLoadedImmediately(int x, int z) {
++      return this.getChunk(x, z, ChunkStatus.FULL, false);
++   }
++   // Paper end - if loaded util
+ 
+    public long getSeed() {
+       return this.seed;

@@ -1,19 +1,24 @@
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -67,6 +_,13 @@
+@@ -66,6 +_,18 @@
+    @Nullable
     @VisibleForDebug
     private NaturalSpawner.SpawnState lastSpawnState;
- 
++   // Paper start
++   final com.destroystokyo.paper.util.concurrent.WeakSeqLock loadedChunkMapSeqLock = new com.destroystokyo.paper.util.concurrent.WeakSeqLock();
++   final it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap<LevelChunk> loadedChunkMap = new it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap<>(8192, 0.5f);
++   private final LevelChunk[] lastLoadedChunks = new LevelChunk[4 * 4];
++   // Paper end
++
 +   //Ketting start
 +   @Override
 +   public void setChunkGenerator(ChunkGenerator chunkGenerator) {
 +      this.chunkMap.setChunkGenerator(chunkGenerator);
 +   }
 +   //Ketting end
-+
+ 
     public ServerChunkCache(ServerLevel p_214982_, LevelStorageSource.LevelStorageAccess p_214983_, DataFixer p_214984_, StructureTemplateManager p_214985_, Executor p_214986_, ChunkGenerator p_214987_, int p_214988_, int p_214989_, boolean p_214990_, ChunkProgressListener p_214991_, ChunkStatusUpdateListener p_214992_, Supplier<DimensionDataStorage> p_214993_) {
        this.level = p_214982_;
-       this.mainThreadProcessor = new ServerChunkCache.MainThreadExecutor(p_214982_);
 @@ -81,6 +_,16 @@
        this.clearCache();
     }
@@ -31,6 +36,109 @@
     public ThreadedLevelLightEngine getLightEngine() {
        return this.lightEngine;
     }
+@@ -106,6 +_,102 @@
+       this.lastChunk[0] = p_8368_;
+    }
+ 
++   // Paper start - "real" get chunk if loaded
++   // Note: Partially copied from the getChunkAt method below
++   @Nullable
++   public LevelChunk getChunkAtIfCachedImmediately(int x, int z) {
++      long k = ChunkPos.asLong(x, z);
++
++      // Note: Bypass cache since we need to check ticket level, and to make this MT-Safe
++
++      ChunkHolder playerChunk = this.getVisibleChunkIfPresent(k);
++      if (playerChunk == null) {
++         return null;
++      }
++
++      return playerChunk.getFullChunkNowUnchecked();
++   }
++
++   private static int getChunkCacheKey(int x, int z) {
++      return x & 3 | ((z & 3) << 2);
++   }
++
++   public void addLoadedChunk(LevelChunk chunk) {
++      this.loadedChunkMapSeqLock.acquireWrite();
++      try {
++         this.loadedChunkMap.put(chunk.coordinateKey, chunk);
++      } finally {
++         this.loadedChunkMapSeqLock.releaseWrite();
++      }
++
++      // rewrite cache if we have to
++      // we do this since we also cache null chunks
++      int cacheKey = getChunkCacheKey(chunk.locX, chunk.locZ);
++
++      this.lastLoadedChunks[cacheKey] = chunk;
++   }
++
++   public void removeLoadedChunk(LevelChunk chunk) {
++      this.loadedChunkMapSeqLock.acquireWrite();
++      try {
++         this.loadedChunkMap.remove(chunk.coordinateKey);
++      } finally {
++         this.loadedChunkMapSeqLock.releaseWrite();
++      }
++
++      // rewrite cache if we have to
++      // we do this since we also cache null chunks
++      int cacheKey = getChunkCacheKey(chunk.locX, chunk.locZ);
++
++      LevelChunk cachedChunk = this.lastLoadedChunks[cacheKey];
++      if (cachedChunk != null && cachedChunk.coordinateKey == chunk.coordinateKey) {
++         this.lastLoadedChunks[cacheKey] = null;
++      }
++   }
++
++   public final LevelChunk getChunkAtIfLoadedMainThread(int x, int z) {
++      int cacheKey = getChunkCacheKey(x, z);
++
++      LevelChunk cachedChunk = this.lastLoadedChunks[cacheKey];
++      if (cachedChunk != null && cachedChunk.locX == x & cachedChunk.locZ == z) {
++         return cachedChunk;
++      }
++
++      long chunkKey = ChunkPos.asLong(x, z);
++
++      cachedChunk = this.loadedChunkMap.get(chunkKey);
++      // Skipping a null check to avoid extra instructions to improve inline capability
++      this.lastLoadedChunks[cacheKey] = cachedChunk;
++      return cachedChunk;
++   }
++
++   @Nullable
++   public LevelChunk getChunkAtIfLoadedImmediately(int x, int z) {
++      long k = ChunkPos.asLong(x, z);
++
++      if (io.papermc.paper.util.TickThread.isTickThread()) { // Paper - rewrite chunk system
++         return this.getChunkAtIfLoadedMainThread(x, z);
++      }
++
++      LevelChunk ret = null;
++      long readlock;
++      do {
++         readlock = this.loadedChunkMapSeqLock.acquireRead();
++         try {
++            ret = this.loadedChunkMap.get(k);
++         } catch (Throwable thr) {
++            if (thr instanceof ThreadDeath) {
++               throw (ThreadDeath)thr;
++            }
++            // re-try, this means a CME occurred...
++            continue;
++         }
++      } while (!this.loadedChunkMapSeqLock.tryReleaseRead(readlock));
++
++      return ret;
++   }
++   // Paper end
++
+    @Nullable
+    public ChunkAccess getChunk(int p_8360_, int p_8361_, ChunkStatus p_8362_, boolean p_8363_) {
+       if (Thread.currentThread() != this.mainThread) {
 @@ -120,15 +_,19 @@
           for(int j = 0; j < 4; ++j) {
              if (i == this.lastChunkPos[j] && p_8362_ == this.lastChunkStatus[j]) {

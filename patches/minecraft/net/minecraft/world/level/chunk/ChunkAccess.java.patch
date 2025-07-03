@@ -1,6 +1,15 @@
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
-@@ -80,6 +_,11 @@
+@@ -60,7 +_,7 @@
+    protected final ShortList[] postProcessing;
+    protected volatile boolean unsaved;
+    private volatile boolean isLightCorrect;
+-   protected final ChunkPos chunkPos;
++   protected final ChunkPos chunkPos; public final long coordinateKey; public final int locX; public final int locZ; // Paper - cache coordinate key
+    private long inhabitedTime;
+    /** @deprecated */
+    @Nullable
+@@ -80,8 +_,14 @@
     protected final LevelHeightAccessor levelHeightAccessor;
     protected final LevelChunkSection[] sections;
  
@@ -10,8 +19,12 @@
 +   // CraftBukkit end
 +
     public ChunkAccess(ChunkPos p_187621_, UpgradeData p_187622_, LevelHeightAccessor p_187623_, Registry<Biome> p_187624_, long p_187625_, @Nullable LevelChunkSection[] p_187626_, @Nullable BlendingData p_187627_) {
-       this.chunkPos = p_187621_;
+-      this.chunkPos = p_187621_;
++      this.locX = p_187621_.x; this.locZ = p_187621_.z; // Paper - reduce need for field lookups
++      this.chunkPos = p_187621_; this.coordinateKey = ChunkPos.asLong(locX, locZ); // Paper - cache long key
        this.upgradeData = p_187622_;
+       this.levelHeightAccessor = p_187623_;
+       this.sections = new LevelChunkSection[p_187623_.getSectionsCount()];
 @@ -98,7 +_,11 @@
        }
  

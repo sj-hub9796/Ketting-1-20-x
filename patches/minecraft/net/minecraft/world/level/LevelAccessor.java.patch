@@ -1,5 +1,18 @@
 --- a/net/minecraft/world/level/LevelAccessor.java
 +++ b/net/minecraft/world/level/LevelAccessor.java
+@@ -72,6 +_,12 @@
+ 
+    ChunkSource getChunkSource();
+ 
++   // Paper start - if loaded util
++   @Nullable
++   net.minecraft.world.level.chunk.ChunkAccess getChunkIfLoadedImmediately(int x, int z); // Paper - ifLoaded api (we need this since current impl blocks if the chunk is loading)
++   @Nullable default net.minecraft.world.level.chunk.ChunkAccess getChunkIfLoadedImmediately(BlockPos pos) { return this.getChunkIfLoadedImmediately(pos.getX() >> 4, pos.getZ() >> 4);}
++   // Paper end - if loaded util
++
+    default boolean hasChunk(int p_46794_, int p_46795_) {
+       return this.getChunkSource().hasChunk(p_46794_, p_46795_);
+    }
 @@ -112,4 +_,6 @@
     default void gameEvent(GameEvent p_220408_, BlockPos p_220409_, GameEvent.Context p_220410_) {
        this.gameEvent(p_220408_, Vec3.atCenterOf(p_220409_), p_220410_);
