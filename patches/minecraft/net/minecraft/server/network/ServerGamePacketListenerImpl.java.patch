@@ -753,7 +753,7 @@
           case ABORT_DESTROY_BLOCK:
           case STOP_DESTROY_BLOCK:
 +            // Paper start - Don't allow digging in unloaded chunks
-+            if (!this.player.level().isLoaded(blockpos)) {
++            if (this.player.level().getChunkIfLoadedImmediately(blockpos.getX() >> 4, blockpos.getZ() >> 4) == null) {
 +               this.player.connection.ackBlockChangesUpTo(p_9889_.getSequence());
 +               return;
 +            }
