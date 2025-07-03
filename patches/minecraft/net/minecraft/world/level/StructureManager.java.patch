@@ -1,0 +1,40 @@
+--- a/net/minecraft/world/level/StructureManager.java
++++ b/net/minecraft/world/level/StructureManager.java
+@@ -43,8 +_,13 @@
+       }
+    }
+ 
+-   public List<StructureStart> startsForStructure(ChunkPos p_220478_, Predicate<Structure> p_220479_) {
+-      Map<Structure, LongSet> map = this.level.getChunk(p_220478_.x, p_220478_.z, ChunkStatus.STRUCTURE_REFERENCES).getAllReferences();
++    public List<StructureStart> startsForStructure(ChunkPos p_220478_, Predicate<Structure> p_220479_) {
++       // Paper start
++        return this.startsForStructure(p_220478_, p_220479_, null);
++    }
++   public List<StructureStart> startsForStructure(ChunkPos p_220478_, Predicate<Structure> p_220479_, @Nullable ServerLevelAccessor levelAccessor) {
++       Map<Structure, LongSet> map = (levelAccessor == null ? this.level : levelAccessor).getChunk(p_220478_.x, p_220478_.z, ChunkStatus.STRUCTURE_REFERENCES).getAllReferences();
++      // Paper end
+       ImmutableList.Builder<StructureStart> builder = ImmutableList.builder();
+ 
+       for(Map.Entry<Structure, LongSet> entry : map.entrySet()) {
+@@ -107,14 +_,19 @@
+       return structure == null ? StructureStart.INVALID_START : this.getStructureWithPieceAt(p_220489_, structure);
+    }
+ 
+-   public StructureStart getStructureWithPieceAt(BlockPos p_220492_, TagKey<Structure> p_220493_) {
++    public StructureStart getStructureWithPieceAt(BlockPos p_220492_, TagKey<Structure> p_220493_) {
++       // Paper start
++        return this.getStructureWithPieceAt(p_220492_, p_220493_, null);
++    }
++   public StructureStart getStructureWithPieceAt(BlockPos p_220492_, TagKey<Structure> p_220493_, @Nullable ServerLevelAccessor levelAccessor) {
++       // Paper end
+       Registry<Structure> registry = this.registryAccess().registryOrThrow(Registries.STRUCTURE);
+ 
+       for(StructureStart structurestart : this.startsForStructure(new ChunkPos(p_220492_), (p_258967_) -> {
+          return registry.getHolder(registry.getId(p_258967_)).map((p_248425_) -> {
+             return p_248425_.is(p_220493_);
+          }).orElse(false);
+-      })) {
++      }, levelAccessor)) { // Paper
+          if (this.structureHasPieceAt(p_220492_, structurestart)) {
+             return structurestart;
+          }

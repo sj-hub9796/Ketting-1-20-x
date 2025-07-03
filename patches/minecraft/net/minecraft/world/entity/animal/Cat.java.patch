@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/animal/Cat.java
 +++ b/net/minecraft/world/entity/animal/Cat.java
+@@ -343,7 +_,7 @@
+          this.setVariant(p_262565_.value());
+       });
+       ServerLevel serverlevel = p_28134_.getLevel();
+-      if (serverlevel.structureManager().getStructureWithPieceAt(this.blockPosition(), StructureTags.CATS_SPAWN_AS_BLACK).isValid()) {
++      if (serverlevel.structureManager().getStructureWithPieceAt(this.blockPosition(), StructureTags.CATS_SPAWN_AS_BLACK, p_28134_).isValid()) {
+          this.setVariant(BuiltInRegistries.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));
+          this.setPersistenceRequired();
+       }
 @@ -365,8 +_,8 @@
              if (this.isOwnedBy(p_28153_)) {
                 if (!(item instanceof DyeItem)) {
