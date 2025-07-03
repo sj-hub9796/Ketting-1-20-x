@@ -213,6 +213,25 @@
 +   public final ChunkAccess getChunkIfLoadedImmediately(int x, int z) {
 +      return ((net.minecraft.server.level.ServerLevel) this).chunkSource.getChunkAtIfLoadedImmediately(x, z);
 +   }
++
++   @Nullable
++   public final BlockState getBlockStateIfLoaded(BlockPos pos) {
++      // CraftBukkit start - tree generation
++      if (this.captureTreeGeneration) {
++         org.bukkit.craftbukkit.v1_20_R1.block.CraftBlockState previous = this.capturedBlockStates.get(pos);
++         if (previous != null) {
++            return previous.getHandle();
++         }
++      }
++      // CraftBukkit end
++      if (this.isOutsideBuildHeight(pos)) {
++         return Blocks.VOID_AIR.defaultBlockState();
++      } else {
++         ChunkAccess chunk = this.getChunkIfLoadedImmediately(pos.getX() >> 4, pos.getZ() >> 4);
++
++         return chunk == null ? null : chunk.getBlockState(pos);
++      }
++   }
 +   // Paper end - if loaded
 +
     public boolean setBlock(BlockPos p_46601_, BlockState p_46602_, int p_46603_) {

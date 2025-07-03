@@ -36,7 +36,7 @@
     public ThreadedLevelLightEngine getLightEngine() {
        return this.lightEngine;
     }
-@@ -106,6 +_,102 @@
+@@ -106,6 +_,106 @@
        this.lastChunk[0] = p_8368_;
     }
  
@@ -107,6 +107,10 @@
 +      // Skipping a null check to avoid extra instructions to improve inline capability
 +      this.lastLoadedChunks[cacheKey] = cachedChunk;
 +      return cachedChunk;
++   }
++
++   public final LevelChunk getChunkAtIfLoadedMainThreadNoCache(int x, int z) {
++      return this.loadedChunkMap.get(ChunkPos.asLong(x, z));
 +   }
 +
 +   @Nullable
