@@ -53,7 +53,7 @@
     public boolean isDirty() {
        return this.isDirty;
     }
-@@ -209,6 +_,18 @@
+@@ -209,6 +_,33 @@
     public boolean isEmpty() {
        return this.itemsById.isEmpty();
     }
@@ -69,6 +69,21 @@
 +      }
 +   }
 +   // CraftBukkit end
++   // Paper start
++   // This method allows you to specifically resend certain data accessor keys to the client
++   public void resendPossiblyDesyncedDataValues(List<EntityDataAccessor<?>> keys, net.minecraft.server.level.ServerPlayer to) {
++      if (!to.getBukkitEntity().canSee(this.entity.getBukkitEntity())) {
++         return;
++      }
++      List<SynchedEntityData.DataValue<?>> values = new ArrayList<>(keys.size());
++      for (EntityDataAccessor<?> key : keys) {
++         SynchedEntityData.DataItem<?> synchedValue = this.getItem(key);
++         values.add(synchedValue.value());
++      }
++
++      to.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket(this.entity.getId(), values));
++   }
++   // Paper end
  
     public static class DataItem<T> {
        final EntityDataAccessor<T> accessor;

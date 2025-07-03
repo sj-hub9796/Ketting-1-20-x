@@ -346,7 +346,7 @@
           int i = p_9264_.getCount();
           int j = p_9264_.getDamageValue();
           InteractionResultHolder<ItemStack> interactionresultholder = p_9264_.use(p_9263_, p_9262_, p_9265_);
-@@ -294,12 +_,76 @@
+@@ -294,12 +_,79 @@
        }
     }
  
@@ -362,6 +362,7 @@
 +   //Ketting start - mixin vars
 +   @SuppressWarnings("FieldCanBeLocal")
 +   private boolean useItemOn$cancelledBlock = false;
++   private boolean useItemOn$cancelledItem = false; // Paper - correctly handle items on cooldown
 +   @SuppressWarnings("FieldCanBeLocal")
 +   private @Nullable MenuProvider useItemOn$provider = null;
 +   @SuppressWarnings("FieldCanBeLocal")
@@ -371,7 +372,8 @@
 +   //Ketting end
     public InteractionResult useItemOn(ServerPlayer p_9266_, Level p_9267_, ItemStack p_9268_, InteractionHand p_9269_, BlockHitResult p_9270_) {
 +      //Ketting start - reset variables
-+      useItemOn$cancelledBlock = false; 
++      useItemOn$cancelledBlock = false;
++      useItemOn$cancelledItem = false; // Paper - correctly handle items on cooldown
 +      useItemOn$provider = null;
 +      useItemOn$event = null;
 +      useItemOn$bottom = false;
@@ -389,12 +391,12 @@
 +      }
 +
 +      if (p_9266_.getCooldowns().isOnCooldown(p_9268_.getItem())) {
-+         useItemOn$cancelledBlock = true;
++         useItemOn$cancelledItem = true; // Paper - correctly handle items on cooldown
 +      }
 +      //Ketting end
 +
 +      //Ketting start - bukkit event
-+      useItemOn$event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerInteractEvent(p_9266_, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.getDirection(), p_9268_, useItemOn$cancelledBlock, p_9269_, p_9270_.getLocation());
++      useItemOn$event = org.bukkit.craftbukkit.v1_20_R1.event.CraftEventFactory.callPlayerInteractEvent(p_9266_, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK, blockpos, p_9270_.getDirection(), p_9268_, useItemOn$cancelledBlock, useItemOn$cancelledItem, p_9269_, p_9270_.getLocation()); // Paper
 +      firedInteract = true;
 +      interactResult = useItemOn$event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
 +      interactPosition = blockpos.immutable();
@@ -414,6 +416,7 @@
 +            p_9266_.connection.send(new ClientboundBlockUpdatePacket(p_9267_, blockpos.above()));
 +         }
 +         p_9266_.getBukkitEntity().updateInventory(); // SPIGOT-2867
++         this.player.resyncUsingItem(this.player); // Paper - Resend player's using item status
 +         return ((useItemOn$event.useItemInHand() != org.bukkit.event.Event.Result.ALLOW) ? InteractionResult.SUCCESS : InteractionResult.PASS);
 +      }
 +      //Ketting end
@@ -455,12 +458,20 @@
              InteractionResult interactionresult1;
              if (this.isCreative()) {
                 int i = p_9268_.getCount();
-@@ -336,7 +_,7 @@
+@@ -335,9 +_,13 @@
+             }
  
              return interactionresult1;
-          } else {
+-         } else {
 -            return InteractionResult.PASS;
-+            return interactionresult; //Ketting
-          }
+-         }
++         }
++         // Paper start - Cancel only if cancelled + if the interact result is different from default response
++         else if (this.interactResult && this.interactResult != useItemOn$cancelledItem) {
++            this.player.resyncUsingItem(this.player);
++         }
++         // Paper end
++         return interactionresult; // Ketting
        }
     }
+ 

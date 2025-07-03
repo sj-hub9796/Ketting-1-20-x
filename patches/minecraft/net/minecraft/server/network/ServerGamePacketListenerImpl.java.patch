@@ -810,7 +810,7 @@
                       InteractionResult interactionresult = this.player.gameMode.useItemOn(this.player, serverlevel, itemstack, interactionhand, blockhitresult);
                       if (direction == Direction.UP && !interactionresult.consumesAction() && blockpos.getY() >= i - 1 && wasBlockPlacementAttempt(this.player, itemstack)) {
                          Component component = Component.translatable("build.tooHigh", i - 1).withStyle(ChatFormatting.RED);
-@@ -1068,12 +_,57 @@
+@@ -1068,12 +_,58 @@
  
     public void handleUseItem(ServerboundUseItemPacket p_9932_) {
        PacketUtils.ensureRunningOnSameThread(p_9932_, this, this.player.serverLevel());
@@ -858,6 +858,7 @@
 +
 +         if (cancelled) {
 +            this.player.getBukkitEntity().updateInventory(); // SPIGOT-2524
++            this.player.resyncUsingItem(this.player); // Paper - Resend player's using item status
 +            return;
 +         }
 +         itemstack = this.player.getItemInHand(interactionhand); // Update in case it was changed in the event

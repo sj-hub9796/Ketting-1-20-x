@@ -512,7 +512,13 @@ public class CraftEventFactory {
         return callPlayerInteractEvent(who, action, position, direction, itemstack, false, hand, null);
     }
 
+    // Paper start - cancelledItem param
     public static PlayerInteractEvent callPlayerInteractEvent(net.minecraft.world.entity.player.Player who, Action action, BlockPos position, Direction direction, ItemStack itemstack, boolean cancelledBlock, InteractionHand hand, Vec3 targetPos) {
+        return callPlayerInteractEvent(who, action, position, direction, itemstack, cancelledBlock, false, hand, targetPos);
+    }
+
+    public static PlayerInteractEvent callPlayerInteractEvent(net.minecraft.world.entity.player.Player who, Action action, BlockPos position, Direction direction, ItemStack itemstack, boolean cancelledBlock, boolean cancelledItem, InteractionHand hand, Vec3 targetPos) {
+        // Paper end - cancelledItem param
         Player player = (who == null) ? null : (Player) who.getBukkitEntity();
         CraftItemStack itemInHand = CraftItemStack.asCraftMirror(itemstack);
 
@@ -547,6 +553,11 @@ public class CraftEventFactory {
         if (cancelledBlock) {
             event.setUseInteractedBlock(Event.Result.DENY);
         }
+        // Paper start
+        if (cancelledItem) {
+            event.setUseItemInHand(Result.DENY);
+        }
+        // Paper end
         craftServer.getPluginManager().callEvent(event);
 
         return event;
