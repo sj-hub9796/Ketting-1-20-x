@@ -354,10 +354,8 @@
 +   public boolean interactResult = false;
 +   public boolean firedInteract = false;
 +   public BlockPos interactPosition;
-+   //Ketting start - we don't need these anymore
-+   //public InteractionHand interactHand;
-+   //public ItemStack interactItemStack;
-+   //Ketting end
++   public InteractionHand interactHand;
++   public ItemStack interactItemStack;
 +
 +   //Ketting start - mixin vars
 +   @SuppressWarnings("FieldCanBeLocal")
@@ -400,6 +398,8 @@
 +      firedInteract = true;
 +      interactResult = useItemOn$event.useItemInHand() == org.bukkit.event.Event.Result.DENY;
 +      interactPosition = blockpos.immutable();
++      interactHand = p_9269_;
++      interactItemStack = p_9268_.copy();
 +
 +      if (useItemOn$event.useInteractedBlock() == org.bukkit.event.Event.Result.DENY) {
 +         // If we denied a door from opening, we need to send a correcting update to the client, as it already opened the door.
