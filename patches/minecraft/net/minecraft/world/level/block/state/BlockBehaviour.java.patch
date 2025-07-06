@@ -86,18 +86,25 @@
        private final BlockBehaviour.StatePredicate isRedstoneConductor;
        private final BlockBehaviour.StatePredicate isSuffocating;
        private final BlockBehaviour.StatePredicate isViewBlocking;
-@@ -548,12 +_,14 @@
+@@ -544,16 +_,18 @@
+          return this.cache == null || this.cache.largeCollisionShape;
+       }
+ 
+-      public boolean useShapeForLightOcclusion() {
++       public final boolean useShapeForLightOcclusion() { // Paper
           return this.useShapeForLightOcclusion;
        }
  
+-      public int getLightEmission() {
 +      /** @deprecated Forge: Use {@link BlockState#getLightEmission(BlockGetter, BlockPos)} instead */
 +      @Deprecated
-       public int getLightEmission() {
++      public final int getLightEmission() { // Paper
           return this.lightEmission;
        }
  
-       public boolean isAir() {
+-      public boolean isAir() {
 -         return this.isAir;
++       public final boolean isAir() { // Paper
 +         return this.getBlock().isAir((BlockState)this);
        }
  
@@ -122,6 +129,29 @@
 +         PushReaction reaction = getBlock().getPistonPushReaction(asState());
 +         if (reaction != null) return reaction;
           return this.pushReaction;
+       }
+ 
+@@ -635,7 +_,7 @@
+          }
+       }
+ 
+-      public boolean canOcclude() {
++       public final boolean canOcclude() { // Paper
+          return this.canOcclude;
+       }
+ 
+@@ -827,11 +_,11 @@
+          return this.getBlock() == p_60714_;
+       }
+ 
+-      public FluidState getFluidState() {
++       public final FluidState getFluidState() { // Paper
+          return this.fluidState;
+       }
+ 
+-      public boolean isRandomlyTicking() {
++       public final boolean isRandomlyTicking() { // Paper
+          return this.isRandomlyTicking;
        }
  
 @@ -972,8 +_,9 @@
