@@ -24,11 +24,13 @@
        this.horseContainer = p_39658_;
        this.horse = p_39659_;
        int i = 3;
-@@ -62,7 +_,9 @@
+@@ -62,7 +_,11 @@
     }
  
     public boolean stillValid(Player p_39661_) {
 -      return !this.horse.hasInventoryChanged(this.horseContainer) && this.horseContainer.stillValid(p_39661_) && this.horse.isAlive() && this.horse.distanceTo(p_39661_) < 8.0F;
++      // Make pehkui's mixin happy so we stop getting crash reports. It requires the magic float 8.0F
++      float magic_number = 8.0F;
 +      // Default reach is 3 vanilla uses 8 here so add 5 padding
 +      double reach = p_39661_.getAttributeValue(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get()) + 5;
 +      return !this.horse.hasInventoryChanged(this.horseContainer) && this.horseContainer.stillValid(p_39661_) && this.horse.isAlive() && this.horse.distanceTo(p_39661_) < reach;

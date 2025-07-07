@@ -643,8 +643,10 @@ public class ForgeHooks
 
                     level.markAndNotifyBlock(snap.getPos(), level.getChunkAt(snap.getPos()), oldBlock, newBlock, updateFlag, 512);
                 }
+                /* Ketting - handled by bukkit in ItemStack#onItemUse
                 if (player != null)
                     player.awardStat(Stats.ITEM_USED.get(item));
+                */
             }
         }
         level.capturedBlockSnapshots.clear();

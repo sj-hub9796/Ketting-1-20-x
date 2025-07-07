@@ -104,22 +104,6 @@ public class ForgeInject {
         return type == null ? EntityType.UNKNOWN : type;
     }
 
-    //Credit goes to Arclight for this fix
-    public static Pose getBukkitEntityPose(net.minecraft.world.entity.Pose nms) {
-        if (Pose.values().length <= nms.ordinal()) {
-            var newTypes = new ArrayList<Pose>();
-            var forgeCount = net.minecraft.world.entity.Pose.values().length;
-            for (var id = Pose.values().length; id < forgeCount; id++) {
-                var name = net.minecraft.world.entity.Pose.values()[id].name();
-                var newPhase = EnumHelper.makeEnum(Pose.class, name, id, List.of(), List.of());
-                newTypes.add(newPhase);
-                debug("Registering NMS pose {} as pose {}", name, newPhase);
-            }
-            EnumHelper.addEnums(Pose.class, newTypes);
-        }
-        return org.bukkit.entity.Pose.values()[nms.ordinal()];
-    }
-
     public static void doInjectingMagic() {
         debug("Injecting Forge Materials into Bukkit");
         addForgeMaterials();
@@ -133,6 +117,8 @@ public class ForgeInject {
         addForgeBiomes();
         debug("Injecting Forge Entities into Bukkit");
         addForgeEntities();
+        debug("Injecting Forge Entity Poses into Bukkit");
+        addForgeEntityPoses();
         debug("Injecting Forge Spawn Categories into Bukkit");
         addForgeSpawnCategories();
         debug("Injecting Forge VillagerProfessions into Bukkit");
@@ -548,6 +534,29 @@ public class ForgeInject {
         }
         EnumHelper.addEnums(EntityType.class, values);
         debug("Injecting Forge Entity into Bukkit: DONE");
+    }
+
+    private static void addForgeEntityPoses() {
+        if (org.bukkit.entity.Pose.values().length < net.minecraft.world.entity.Pose.values().length) {
+            int ordinal = org.bukkit.entity.Pose.values().length;
+            List<org.bukkit.entity.Pose> values = new ArrayList<>();
+            for (var entry : net.minecraft.world.entity.Pose.values()) {
+                try {
+                    org.bukkit.entity.Pose.valueOf(entry == net.minecraft.world.entity.Pose.CROUCHING ? "SNEAKING" : entry.name());
+                } catch (IllegalArgumentException ignored) {
+                    try {
+                        var pose = EnumHelper.makeEnum(org.bukkit.entity.Pose.class, entry.name(), ordinal, List.of(), List.of());
+                        ordinal++;
+                        values.add(pose);
+                        debug("Injecting Forge Entity Pose into Bukkit: " + pose.name());
+                    } catch (Throwable e) {
+                        Ketting.LOGGER.error("Could not inject entity pose into Bukkit: " + entry.name() + ". " + e.getMessage());
+                    }
+                }
+            }
+            EnumHelper.addEnums(org.bukkit.entity.Pose.class, values);
+        }
+        debug("Injecting Forge Entity Pose into Bukkit: DONE");
     }
 
     private static void addForgeIllagerSpells() {
