@@ -47,6 +47,7 @@ import org.bukkit.craftbukkit.v1_20_R1.block.impl.CraftRotatable;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.kettingpowered.ketting.core.Ketting;
+import org.kettingpowered.ketting.craftbukkit.StateExclusions;
 
 public class CraftBlockData implements BlockData {
 
@@ -345,9 +346,7 @@ public class CraftBlockData implements BlockData {
         Property<?> state = null;
 
         for (Block instance : BuiltInRegistries.BLOCK) {
-            if (instance.getClass() == block
-                    || (block == net.minecraft.world.level.block.LayeredCauldronBlock.class && instance.getClass().getName().equals("net.mehvahdjukaar.amendments.common.block.BoilingWaterCauldronBlock")) //Ketting - thanks amendments for overriding the vanilla cauldron block...
-            ) {
+            if (instance.getClass() == block || StateExclusions.isExcluded(block, instance)) { // Ketting
                 if (state == null) {
                     state = instance.getStateDefinition().getProperty(name);
                 } else {
