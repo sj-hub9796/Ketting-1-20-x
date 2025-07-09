@@ -75,3 +75,13 @@
     }
  
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> p_53283_) {
+@@ -118,4 +_,9 @@
+    public boolean isPathfindable(BlockState p_53267_, BlockGetter p_53268_, BlockPos p_53269_, PathComputationType p_53270_) {
+       return false;
+    }
++   // Ketting start
++   public IntegerProperty getMoistureProperty() {
++      return MOISTURE;
++   }
++   // Ketting end
+ }

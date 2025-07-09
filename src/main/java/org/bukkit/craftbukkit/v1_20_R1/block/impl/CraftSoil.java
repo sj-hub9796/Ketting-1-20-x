@@ -21,16 +21,28 @@ public final class CraftSoil extends CraftBlockData implements org.bukkit.block.
 
     @Override
     public int getMoisture() {
-        return get(MOISTURE);
+        if (getState() != null && getState().getBlock() instanceof net.minecraft.world.level.block.FarmBlock farmBlock) {
+            return getOrFallback(MOISTURE, farmBlock.getMoistureProperty());
+        } else {
+            return get(MOISTURE);
+        }
     }
 
     @Override
     public void setMoisture(int moisture) {
-        set(MOISTURE, moisture);
+        if (getState() != null && getState().getBlock() instanceof net.minecraft.world.level.block.FarmBlock farmBlock) {
+            setOrFallback(MOISTURE, farmBlock.getMoistureProperty(), moisture);
+        } else {
+            set(MOISTURE, moisture);
+        }
     }
 
     @Override
     public int getMaximumMoisture() {
-        return getMax(MOISTURE);
+        if (getState() != null && getState().getBlock() instanceof net.minecraft.world.level.block.FarmBlock farmBlock) {
+            return farmBlock.getMoistureProperty().max;
+        } else {
+            return getMax(MOISTURE);
+        }
     }
 }
