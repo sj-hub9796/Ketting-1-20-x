@@ -50,6 +50,10 @@ public interface CraftRecipe extends Recipe {
             return new CraftModdedRecipeChoice(list);
         //Ketting end
 
+        if (list.itemStacks == null) {
+            return null;
+        }
+
         if (list.itemStacks.length == 0) {
             return null;
         }
