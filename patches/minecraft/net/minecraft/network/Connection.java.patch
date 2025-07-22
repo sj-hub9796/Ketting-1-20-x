@@ -48,17 +48,61 @@
  
        try {
           this.setProtocol(ConnectionProtocol.HANDSHAKING);
-@@ -111,8 +_,10 @@
+@@ -111,9 +_,53 @@
     public void setProtocol(ConnectionProtocol p_129499_) {
        this.channel.attr(ATTRIBUTE_PROTOCOL).set(p_129499_);
        this.channel.attr(BundlerInfo.BUNDLER_PROVIDER).set(p_129499_);
 +      this.channel.eventLoop().execute(()-> {
        this.channel.config().setAutoRead(true);
        LOGGER.debug("Enabled auto read");
+-   }
 +      });
-    }
++   }
++   // Paper start - NetworkClient implementation
++   public int protocolVersion;
++   public java.net.InetSocketAddress virtualHost;
++   private static boolean enableExplicitFlush = Boolean.getBoolean("paper.explicit-flush");
++   // Optimize network
++   public boolean isPending = true;
++   public boolean queueImmunity = false;
++   public ConnectionProtocol protocol;
++   // Paper end
++
++   // Paper start - allow controlled flushing
++   volatile boolean canFlush = true;
++   private final java.util.concurrent.atomic.AtomicInteger packetWrites = new java.util.concurrent.atomic.AtomicInteger();
++   private int flushPacketsStart;
++   private final Object flushLock = new Object();
++
++   public void disableAutomaticFlush() {
++      synchronized (this.flushLock) {
++         this.flushPacketsStart = this.packetWrites.get(); // must be volatile and before canFlush = false
++         this.canFlush = false;
++      }
++   }
++
++   public void enableAutomaticFlush() {
++      synchronized (this.flushLock) {
++         this.canFlush = true;
++         if (this.packetWrites.get() != this.flushPacketsStart) { // must be after canFlush = true
++            this.flush(); // only make the flush call if we need to
++         }
++      }
++   }
++
++   private final void flush() {
++      if (this.channel.eventLoop().inEventLoop()) {
++         this.channel.flush();
++      } else {
++         this.channel.eventLoop().execute(() -> {
++            this.channel.flush();
++         });
++      }
++   }
++   // Paper end - allow controlled flushing
  
     public void channelInactive(ChannelHandlerContext p_129527_) {
+       this.disconnect(Component.translatable("disconnect.endOfStream"));
 @@ -147,6 +_,10 @@
  
           }
@@ -70,6 +114,151 @@
     }
  
     protected void channelRead0(ChannelHandlerContext p_129487_, Packet<?> p_129488_) {
+@@ -174,6 +_,51 @@
+       Validate.notNull(p_129506_, "packetListener");
+       this.packetListener = p_129506_;
+    }
++   // Paper start
++   public @Nullable net.minecraft.server.level.ServerPlayer getPlayer() {
++      if (packetListener instanceof net.minecraft.server.network.ServerGamePacketListenerImpl serverGamePacketListener) {
++         return serverGamePacketListener.player;
++      } else {
++         return null;
++      }
++   }
++   private static class InnerUtil { // Attempt to hide these methods from ProtocolLib so it doesn't accidently pick them up.
++      private static java.util.List<Packet> buildExtraPackets(Packet packet) {
++         java.util.List<Packet> extra = packet.getExtraPackets();
++         if (extra == null || extra.isEmpty()) {
++            return null;
++         }
++         java.util.List<Packet> ret = new java.util.ArrayList<>(1 + extra.size());
++         buildExtraPackets0(extra, ret);
++         return ret;
++      }
++
++      private static void buildExtraPackets0(java.util.List<Packet> extraPackets, java.util.List<Packet> into) {
++         for (Packet extra : extraPackets) {
++            into.add(extra);
++            java.util.List<Packet> extraExtra = extra.getExtraPackets();
++            if (extraExtra != null && !extraExtra.isEmpty()) {
++               buildExtraPackets0(extraExtra, into);
++            }
++         }
++      }
++      // Paper start
++      private static boolean canSendImmediate(Connection networkManager, Packet<?> packet) {
++         return networkManager.isPending || networkManager.protocol != ConnectionProtocol.PLAY ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundKeepAlivePacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundSystemChatPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundCommandSuggestionsPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundClearTitlesPacket ||
++                 packet instanceof net.minecraft.network.protocol.game.ClientboundBossEventPacket;
++      }
++      // Paper end
++   }
++   // Paper end
+ 
+    public void send(Packet<?> p_129513_) {
+       this.send(p_129513_, (PacketSendListener)null);
+@@ -188,8 +_,19 @@
+       }
+ 
+    }
++   // Paper start - add flush parameter
++   private Boolean ketting$flushConditional; // Ketting - paper patch. but mixin friendly
++   private void sendPacket(Packet<?> p_129521_, @Nullable PacketSendListener p_243246_, Boolean flushConditional) {
++      ketting$flushConditional = flushConditional;
++      sendPacket(p_129521_, p_243246_);
++      ketting$flushConditional = null;
++   }
+ 
+    private void sendPacket(Packet<?> p_129521_, @Nullable PacketSendListener p_243246_) {
++      this.packetWrites.getAndIncrement(); // must be befeore using canFlush
++      boolean effectiveFlush = ketting$flushConditional == null ? this.canFlush : ketting$flushConditional.booleanValue();
++      final boolean flush = effectiveFlush || p_129521_ instanceof net.minecraft.network.protocol.game.ClientboundKeepAlivePacket || p_129521_ instanceof ClientboundDisconnectPacket; // no delay for certain packets
++   // Paper end - add flush parameter
+       ConnectionProtocol connectionprotocol = ConnectionProtocol.getProtocolForPacket(p_129521_);
+       ConnectionProtocol connectionprotocol1 = this.getCurrentProtocol();
+       ++this.sentPackets;
+@@ -203,21 +_,48 @@
+       }
+ 
+       if (this.channel.eventLoop().inEventLoop()) {
+-         this.doSendPacket(p_129521_, p_243246_, connectionprotocol, connectionprotocol1);
++         this.doSendPacket(p_129521_, p_243246_, connectionprotocol, connectionprotocol1, flush);
+       } else {
++         // Paper start - optimise packets that are not flushed
++         // note: since the type is not dynamic here, we need to actually copy the old executor code
++         // into two branches. On conflict, just re-copy - no changes were made inside the executor code.
++         if (!flush) {
++            io.netty.util.concurrent.AbstractEventExecutor.LazyRunnable run = () -> {
++               this.doSendPacket(p_129521_, p_243246_, connectionprotocol, connectionprotocol1, flush); // Paper - add flush parameter
++            };
++            this.channel.eventLoop().execute(run);
++         } else { // Paper end - optimise packets that are not flushed
+          this.channel.eventLoop().execute(() -> {
+-            this.doSendPacket(p_129521_, p_243246_, connectionprotocol, connectionprotocol1);
++            this.doSendPacket(p_129521_, p_243246_, connectionprotocol, connectionprotocol1, flush); // Paper - add flush parameter // Paper - diff on change
+          });
++         }
+       }
+ 
+    }
+ 
++   // Paper start - add flush parameter
++   private boolean ketting$flush; // Ketting - paper patch. but mixin friendly
++   private void doSendPacket(Packet<?> p_243260_, @Nullable PacketSendListener p_243290_, ConnectionProtocol p_243203_, ConnectionProtocol p_243307_, boolean flush) {
++      ketting$flush = flush;
++      doSendPacket(p_243260_, p_243290_, p_243203_, p_243307_);
++      ketting$flush = false;
++   }
+    private void doSendPacket(Packet<?> p_243260_, @Nullable PacketSendListener p_243290_, ConnectionProtocol p_243203_, ConnectionProtocol p_243307_) {
++   // Paper end - add flush parameter
+       if (p_243203_ != p_243307_) {
+          this.setProtocol(p_243203_);
+       }
+ 
+-      ChannelFuture channelfuture = this.channel.writeAndFlush(p_243260_);
++      // Paper start
++      net.minecraft.server.level.ServerPlayer player = getPlayer();
++      if (!isConnected()) {
++         p_243260_.onPacketDispatchFinish(player, null);
++         return;
++      }
++
++      try {
++         // Paper end
++         ChannelFuture channelfuture = ketting$flush ? this.channel.writeAndFlush(p_243260_) : this.channel.write(p_243260_); // Paper - add flush parameter
+       if (p_243290_ != null) {
+          channelfuture.addListener((p_243167_) -> {
+             if (p_243167_.isSuccess()) {
+@@ -232,8 +_,20 @@
+ 
+          });
+       }
++      // Paper start
++      if (p_243260_.hasFinishListener()) {
++         channelfuture.addListener((ChannelFutureListener) channelFuture -> p_243260_.onPacketDispatchFinish(player, channelFuture));
++      }
++      // Paper end
+ 
+       channelfuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
++      // Paper start
++      } catch (Exception e) {
++         LOGGER.error("NetworkException: " + player, e);
++         disconnect(Component.translatable("disconnect.genericReason", "Internal Exception: " + e.getMessage()));
++         p_243260_.onPacketDispatchFinish(player, null);
++      }
++      // Paper end
+    }
+ 
+    private ConnectionProtocol getCurrentProtocol() {
 @@ -285,6 +_,9 @@
     }
  
