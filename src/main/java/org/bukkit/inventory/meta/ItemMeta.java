@@ -31,6 +31,24 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable, Persiste
      */
     boolean hasDisplayName();
 
+    // Paper start
+    /**
+     * Gets the display name.
+     *
+     * <p>Plugins should check that {@link #hasDisplayName()} returns <code>true</code> before calling this method.</p>
+     *
+     * @return the display name
+     */
+    net.kyori.adventure.text.@Nullable Component displayName();
+
+    /**
+     * Sets the display name.
+     *
+     * @param displayName the display name to set
+     */
+    void displayName(final net.kyori.adventure.text.@Nullable Component displayName);
+    // Paper end
+
     /**
      * Gets the display name that is set.
      * <p>
@@ -80,6 +98,24 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable, Persiste
      * @return true if this has lore
      */
     boolean hasLore();
+
+    // Paper start
+    /**
+     * Gets the lore.
+     *
+     * <p>Plugins should check that {@link #hasLore()} returns <code>true</code> before calling this method.</p>
+     *
+     * @return the lore
+     */
+    @Nullable List<net.kyori.adventure.text.Component> lore();
+
+    /**
+     * Sets the lore.
+     *
+     * @param lore the lore to set
+     */
+    void lore(final @Nullable List<? extends net.kyori.adventure.text.Component> lore);
+    // Paper end
 
     /**
      * Gets the lore that is set.
