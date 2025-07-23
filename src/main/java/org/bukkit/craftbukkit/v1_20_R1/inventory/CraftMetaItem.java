@@ -897,12 +897,12 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
     // Paper start
     @Override
     public List<net.kyori.adventure.text.Component> lore() {
-        return this.lore != null ? io.papermc.paper.adventure.PaperAdventure.asAdventureFromJson(this.lore) : null;
+        return this.lore != null ? org.kettingpowered.ketting.adventure.PaperAdventure.asAdventureFromJson(this.lore) : null;
     }
 
     @Override
     public void lore(final List<? extends net.kyori.adventure.text.Component> lore) {
-        this.lore = lore != null ? io.papermc.paper.adventure.PaperAdventure.asJson(lore) : null;
+        this.lore = lore != null ? org.kettingpowered.ketting.adventure.PaperAdventure.asJson(lore) : null;
     }
     // Paper end
 
