@@ -1370,11 +1370,10 @@
     public float maxUpStep() {
        return this.maxUpStep;
     }
-@@ -3319,6 +_,109 @@
-    public boolean mayInteract(Level p_146843_, BlockPos p_146844_) {
+@@ -3320,6 +_,109 @@
        return true;
     }
-+
+ 
 +   /* ================================== Forge Start =====================================*/
 +
 +   private boolean canUpdate = true;
@@ -1477,6 +1476,24 @@
 +
 +   /* ================================== Forge End =====================================*/
 +
- 
++
     public Level level() {
        return this.level;
+    }
+@@ -3336,6 +_,16 @@
+    public interface MoveFunction {
+       void accept(Entity p_20373_, double p_20374_, double p_20375_, double p_20376_);
+    }
++
++   // Paper start
++   public static int nextEntityId() {
++      return ENTITY_COUNTER.incrementAndGet();
++   }
++
++   public boolean isTicking() {
++      return ((net.minecraft.server.level.ServerChunkCache) level.getChunkSource()).isPositionTicking(this);
++   }
++   // Paper end
+ 
+    public static enum MovementEmission {
+       NONE(false, false),
