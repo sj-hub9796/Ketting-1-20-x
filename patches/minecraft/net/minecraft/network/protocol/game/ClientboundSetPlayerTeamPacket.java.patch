@@ -1,0 +1,15 @@
+--- a/net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundSetPlayerTeamPacket.java
+@@ -42,6 +_,12 @@
+       return new ClientboundSetPlayerTeamPacket(p_179329_.getName(), p_179331_ == ClientboundSetPlayerTeamPacket.Action.ADD ? 3 : 4, Optional.empty(), ImmutableList.of(p_179330_));
+    }
+ 
++   // Paper start
++   public static ClientboundSetPlayerTeamPacket createMultiplePlayerPacket(PlayerTeam team, Collection<String> players, ClientboundSetPlayerTeamPacket.Action operation) {
++      return new ClientboundSetPlayerTeamPacket(team.getName(), operation == ClientboundSetPlayerTeamPacket.Action.ADD ? 3 : 4, Optional.empty(), players);
++   }
++   // Paper end
++
+    public ClientboundSetPlayerTeamPacket(FriendlyByteBuf p_179323_) {
+       this.name = p_179323_.readUtf();
+       this.method = p_179323_.readByte();
