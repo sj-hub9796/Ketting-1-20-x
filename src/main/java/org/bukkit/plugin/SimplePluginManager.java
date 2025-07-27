@@ -429,7 +429,7 @@ public final class SimplePluginManager implements PluginManager {
     @Override
     @Nullable
     public synchronized Plugin getPlugin(@NotNull String name) {
-        return lookupNames.get(name.replace(' ', '_'));
+        return lookupNames.get(name.replace(' ', '_').toLowerCase(java.util.Locale.ENGLISH)); // Paper
     }
 
     @Override
