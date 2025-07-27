@@ -398,9 +398,9 @@ public final class SimplePluginManager implements PluginManager {
 
         if (result != null) {
             plugins.add(result);
-            lookupNames.put(result.getDescription().getName(), result);
+            lookupNames.put(result.getDescription().getName().toLowerCase(java.util.Locale.ENGLISH), result); // Paper
             for (String provided : result.getDescription().getProvides()) {
-                lookupNames.putIfAbsent(provided, result);
+                lookupNames.putIfAbsent(provided.toLowerCase(java.util.Locale.ENGLISH), result); // Paper
             }
         }
 
