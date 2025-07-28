@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
+@@ -77,7 +_,7 @@
+ 
+ public abstract class BlockBehaviour implements FeatureElement {
+    protected static final Direction[] UPDATE_SHAPE_ORDER = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+-   protected final boolean hasCollision;
++   public final boolean hasCollision; // Paper -> public
+    protected final float explosionResistance;
+    protected final boolean isRandomlyTicking;
+    protected final SoundType soundType;
 @@ -102,6 +_,17 @@
        this.dynamicShape = p_60452_.dynamicShape;
        this.requiredFeatures = p_60452_.requiredFeatures;
