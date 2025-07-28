@@ -231,6 +231,11 @@ public class KettingReflectionHandler extends ClassLoader {
     public static Class<?> redirectClassForName(String cl, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException {
         if (cl.isEmpty())
             throw new ClassNotFoundException();
+
+        if (shouldBlockMojangMappingAccess(cl, classLoader)) {
+            throw new ClassNotFoundException("Blocked mojang mapping access from plugin: " + cl);
+        }
+
         try {
             String replace = remapper.mapType(cl.replace('.', '/')).replace('/', '.');
             return Class.forName(replace, initialize, classLoader);
@@ -241,6 +246,62 @@ public class KettingReflectionHandler extends ClassLoader {
                 replace = remapper.mapType(replace).replace('/', '.').replace('$', '.');
                 return Class.forName(replace, initialize, classLoader);
             } else throw e;
+        }
+    }
+
+    private static boolean shouldBlockMojangMappingAccess(String className, ClassLoader classLoader) {
+        if (!isMojangMappingClass(className)) {
+            return false;
+        }
+
+        return isSpigotPluginContext(classLoader);
+    }
+
+    private static boolean isMojangMappingClass(String className) {
+        if (!className.startsWith("net.minecraft.")) {
+            return false;
+        }
+
+        String bukkitMapped = remapper.toBukkitRemapper().mapType(className.replace('.', '/')).replace('/', '.');
+        return !bukkitMapped.equals(className);
+    }
+
+    private static boolean isSpigotPluginContext(ClassLoader classLoader) {
+        ClassLoader current = classLoader;
+        while (current != null) {
+            String className = current.getClass().getName();
+            if (className.equals("org.bukkit.plugin.java.PluginClassLoader")) {
+                return true;
+            }
+
+            if (current instanceof RemappingClassLoader) {
+                return false;
+            }
+
+            current = current.getParent();
+        }
+
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        for (StackTraceElement element : stackTrace) {
+            String callerClass = element.getClassName();
+            if (callerClass.startsWith("org.bukkit.plugin.") ||
+                    callerClass.contains(".plugin.") ||
+                    isKnownPluginClass(callerClass)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean isKnownPluginClass(String className) {
+        try {
+            ClassLoader systemClassLoader = ClassLoader.getSystemClassLoader();
+            Class<?> pluginClass = systemClassLoader.loadClass("org.bukkit.plugin.Plugin");
+            Class<?> callerClass = systemClassLoader.loadClass(className);
+            return pluginClass.isAssignableFrom(callerClass);
+        } catch (ClassNotFoundException | NoClassDefFoundError e) {
+            return false;
         }
     }
 
