@@ -1088,4 +1088,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
         return spigot;
     }
     // Spigot end
+
+    // Paper start
+    @Override
+    public float getYaw() {
+        return this.entity.getBukkitYaw();
+    }
+    // Paper end
 }

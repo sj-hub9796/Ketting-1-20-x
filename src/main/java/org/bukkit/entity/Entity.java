@@ -710,4 +710,14 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
     @Override
     Spigot spigot();
     // Spigot end
+
+    // Paper start
+    /**
+     * Gets this entity's yaw
+     *
+     * @see Location#getYaw()
+     * @return the entity's yaw
+     */
+    float getYaw();
+    // Paper end
 }
