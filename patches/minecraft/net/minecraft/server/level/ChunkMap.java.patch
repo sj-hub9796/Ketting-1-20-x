@@ -208,7 +208,7 @@
        }
     }
  
-@@ -1132,9 +_,12 @@
+@@ -1132,15 +_,19 @@
     }
  
     protected void addEntity(Entity p_140200_) {
@@ -222,6 +222,13 @@
           if (i != 0) {
              int j = entitytype.updateInterval();
              if (this.entityMap.containsKey(p_140200_.getId())) {
+                throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("Entity is already tracked!"));
+             } else {
+                ChunkMap.TrackedEntity chunkmap$trackedentity = new ChunkMap.TrackedEntity(p_140200_, i, j, entitytype.trackDeltas());
++               p_140200_.tracker = chunkmap$trackedentity; // Paper - Fast access to tracker
+                this.entityMap.put(p_140200_.getId(), chunkmap$trackedentity);
+                chunkmap$trackedentity.updatePlayers(this.level.players());
+                if (p_140200_ instanceof ServerPlayer) {
 @@ -1160,6 +_,7 @@
     }
  
@@ -230,6 +237,15 @@
        if (p_140332_ instanceof ServerPlayer serverplayer) {
           this.updatePlayerStatus(serverplayer, false);
  
+@@ -1172,7 +_,7 @@
+       if (chunkmap$trackedentity1 != null) {
+          chunkmap$trackedentity1.broadcastRemoved();
+       }
+-
++      p_140332_.tracker = null; // Paper - We're no longer tracked
+    }
+ 
+    protected void tick() {
 @@ -1282,6 +_,7 @@
           }
        }
@@ -238,7 +254,16 @@
     }
  
     protected PoiManager getPoiManager() {
-@@ -1324,6 +_,7 @@
+@@ -1317,13 +_,14 @@
+    }
+ 
+    public class TrackedEntity {
+-      final ServerEntity serverEntity;
+-      final Entity entity;
++      public final ServerEntity serverEntity; // Paper -> public
++      public final Entity entity; // Paper -> public
+       private final int range;
+       SectionPos lastSectionPos;
        public final Set<ServerPlayerConnection> seenBy = Sets.newIdentityHashSet();
  
        public TrackedEntity(Entity p_140478_, int p_140479_, int p_140480_, boolean p_140481_) {

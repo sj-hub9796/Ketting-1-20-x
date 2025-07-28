@@ -53,7 +53,7 @@
     public boolean isDirty() {
        return this.isDirty;
     }
-@@ -209,6 +_,33 @@
+@@ -209,6 +_,60 @@
     public boolean isEmpty() {
        return this.itemsById.isEmpty();
     }
@@ -70,6 +70,33 @@
 +   }
 +   // CraftBukkit end
 +   // Paper start
++   // We need to pack all as we cannot rely on "non default values" or "dirty" ones.
++   // Because these values can possibly be desynced on the client.
++   @Nullable
++   private List<SynchedEntityData.DataValue<?>> packAll() {
++      if (this.isEmpty()) {
++         return null;
++      }
++
++      List<SynchedEntityData.DataValue<?>> list = new ArrayList<>();
++      for (DataItem<?> dataItem : this.itemsById.values()) {
++         list.add(dataItem.value());
++      }
++
++      return list;
++   }
++   // This method should only be used if the data of an entity could have became desynced
++   // due to interactions on the client.
++   public void resendPossiblyDesyncedEntity(net.minecraft.server.level.ServerPlayer player) {
++      if (this.entity.tracker == null) {
++         return;
++      }
++
++      net.minecraft.server.level.ServerEntity serverEntity = this.entity.tracker.serverEntity;
++      if (player.getBukkitEntity().canSee(entity.getBukkitEntity())) {
++         serverEntity.sendPairingData(player, player.connection::send);
++      }
++   }
 +   // This method allows you to specifically resend certain data accessor keys to the client
 +   public void resendPossiblyDesyncedDataValues(List<EntityDataAccessor<?>> keys, net.minecraft.server.level.ServerPlayer to) {
 +      if (!to.getBukkitEntity().canSee(this.entity.getBukkitEntity())) {
