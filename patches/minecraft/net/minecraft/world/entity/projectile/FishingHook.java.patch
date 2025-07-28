@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
+@@ -55,7 +_,7 @@
+    private static final EntityDataAccessor<Boolean> DATA_BITING = SynchedEntityData.defineId(FishingHook.class, EntityDataSerializers.BOOLEAN);
+    private int life;
+    private int nibble;
+-   private int timeUntilLured;
++   public int timeUntilLured; // Paper -> public
+    private int timeUntilHooked;
+    private float fishAngle;
+    private boolean openWater = true;
 @@ -64,6 +_,17 @@
     public FishingHook.FishHookState currentState = FishingHook.FishHookState.FLYING;
     private final int luck;
