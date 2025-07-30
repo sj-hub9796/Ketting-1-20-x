@@ -7,7 +7,7 @@
 +   private final CommandDispatcher<CommandSourceStack> forgeDispatcher = new CommandDispatcher<>(); //Ketting
  
     public Commands(Commands.CommandSelection p_230943_, CommandBuildContext p_230944_) {
-+      // this(); // CraftBukkit // Ketting - mixin compat
++      this(); // CraftBukkit
        AdvancementCommands.register(this.dispatcher);
        AttributeCommand.register(this.dispatcher, p_230944_);
 -      ExecuteCommand.register(this.dispatcher, p_230944_);
@@ -24,13 +24,10 @@
           TestCommand.register(this.dispatcher);
           SpawnArmorTrimsCommand.register(this.dispatcher);
        }
-@@ -219,9 +_,35 @@
+@@ -219,9 +_,27 @@
           PublishCommand.register(this.dispatcher);
        }
  
--      this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
--         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
--      });
 +      //Ketting start - use forgeDispatcher for registering commands, then init routable dispatcher
 +      org.kettingpowered.ketting.command.RoutableCommandDispatcher.setFallback(this.dispatcher);
 +      net.minecraftforge.event.ForgeEventFactory.onCommandRegister(this.forgeDispatcher, p_230943_, p_230944_);
@@ -38,21 +35,13 @@
 +      //Ketting end
 +
 +      ExecuteCommand.register(org.kettingpowered.ketting.command.RoutableCommandDispatcher.INSTANCE, p_230944_); //Ketting - from above - use routable dispatcher
-+      // Ketting start - mixin compat
-+      this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
-+         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
-+      });
-+      this.forgeDispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
-+         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
-+      });
-+      // Ketting end - mixin compat
 +      // CraftBukkit start
 +   }
 +
 +   public Commands() {
-+      this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
-+         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
-+      });
+       this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
+          p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
+       });
 +      // CraftBukkit end
 +
 +      //Ketting start
