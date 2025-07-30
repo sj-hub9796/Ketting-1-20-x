@@ -11,7 +11,15 @@
        ProcessorHandle<Runnable> processorhandle = ProcessorHandle.of("player ticket throttler", p_140775_::execute);
        ChunkTaskPriorityQueueSorter chunktaskpriorityqueuesorter = new ChunkTaskPriorityQueueSorter(ImmutableList.of(processorhandle), p_140774_, 4);
        this.ticketThrottler = chunktaskpriorityqueuesorter;
-@@ -114,10 +_,26 @@
+@@ -104,6 +_,7 @@
+    @Nullable
+    protected abstract ChunkHolder updateChunkScheduling(long p_140780_, int p_140781_, @Nullable ChunkHolder p_140782_, int p_140783_);
+ 
++   private Set<Object> ketting$emptySet = ImmutableSet.of(); //Ketting - C2ME compat
+    public boolean runAllUpdates(ChunkMap p_140806_) {
+       this.naturalSpawnChunkCounter.runAllUpdates();
+       this.tickingTicketsTracker.runAllUpdates();
+@@ -114,10 +_,27 @@
        }
  
        if (!this.chunksToUpdateFutures.isEmpty()) {
@@ -19,6 +27,7 @@
 -            p_183908_.updateFutures(p_140806_, this.mainThreadExecutor);
 -         });
 -         this.chunksToUpdateFutures.clear();
++         ketting$emptySet.forEach($ -> {}); //Ketting - C2ME compat, the mixin just checks for a forEach
 +         // CraftBukkit start
 +         // Iterate pending chunk updates with protection against concurrent modification exceptions
 +

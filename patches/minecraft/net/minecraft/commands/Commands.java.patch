@@ -24,10 +24,18 @@
           TestCommand.register(this.dispatcher);
           SpawnArmorTrimsCommand.register(this.dispatcher);
        }
-@@ -219,9 +_,27 @@
+@@ -219,9 +_,32 @@
           PublishCommand.register(this.dispatcher);
        }
  
+-      this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
+-         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
+-      });
++      //Ketting - duplicated here to maintain mixin compat
++      this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
++         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
++      });
++
 +      //Ketting start - use forgeDispatcher for registering commands, then init routable dispatcher
 +      org.kettingpowered.ketting.command.RoutableCommandDispatcher.setFallback(this.dispatcher);
 +      net.minecraftforge.event.ForgeEventFactory.onCommandRegister(this.forgeDispatcher, p_230943_, p_230944_);
@@ -39,9 +47,9 @@
 +   }
 +
 +   public Commands() {
-       this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
-          p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
-       });
++      this.dispatcher.setConsumer((p_230954_, p_230955_, p_230956_) -> {
++         p_230954_.getSource().onCommandComplete(p_230954_, p_230955_, p_230956_);
++      });
 +      // CraftBukkit end
 +
 +      //Ketting start
