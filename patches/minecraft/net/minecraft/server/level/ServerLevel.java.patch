@@ -90,7 +90,7 @@
 +      }
 +      uuid = org.bukkit.craftbukkit.v1_20_R1.util.WorldUUID.getUUID(p_215001_.getDimensionPath(this.dimension()).toFile());
 +      //Ketting end
-+      ChunkGenerator chunkgenerator = bukkitInit(p_215004_.generator()); //Ketting
++      ChunkGenerator chunkgenerator = bukkitInit(p_215004_.generator(), p_215002_, p_215004_); //Ketting
        boolean flag = p_214999_.forceSynchronousWrites();
        DataFixer datafixer = p_214999_.getFixerUpper();
        EntityPersistentStorage<Entity> entitypersistentstorage = new EntityStorage(this, p_215001_.getDimensionPath(p_215003_).resolve("entities"), datafixer, flag, p_214999_);
@@ -114,7 +114,7 @@
        } else {
           this.dragonFight = null;
        }
-@@ -240,6 +_,40 @@
+@@ -240,6 +_,45 @@
              return new RandomSequences(i);
           }, "random_sequences");
        });
@@ -133,21 +133,26 @@
 +   }
 +   //Ketting end
 +
-+   private ChunkGenerator bukkitInit(ChunkGenerator chunkgenerator){
++   private ChunkGenerator bukkitInit(ChunkGenerator chunkgenerator, ServerLevelData data, LevelStem levelStem) {
 +      // CraftBukkit start
 +      getServerLevelData().setWorld(this); //Ketting - don't enforce PrimaryLevelData
 +
 +      if (this.biomeProvider != null) {
-+         net.minecraft.world.level.biome.BiomeSource worldChunkManager = new org.bukkit.craftbukkit.v1_20_R1.generator.CustomWorldChunkManager(getWorld(), biomeProvider, server.registryAccess().registryOrThrow(Registries.BIOME));
++         org.bukkit.generator.WorldInfo worldInfo = new org.bukkit.craftbukkit.v1_20_R1.generator.CraftWorldInfo(getServerLevelData(), this.convertable, this.environment, levelStem.type().value());
++         net.minecraft.world.level.biome.BiomeSource worldChunkManager = new org.bukkit.craftbukkit.v1_20_R1.generator.CustomWorldChunkManager(worldInfo, biomeProvider, server.registryAccess().registryOrThrow(Registries.BIOME));
 +         if (chunkgenerator instanceof net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator cga) {
 +            chunkgenerator = new net.minecraft.world.level.levelgen.NoiseBasedChunkGenerator(worldChunkManager, cga.settings);
 +         } else if (chunkgenerator instanceof net.minecraft.world.level.levelgen.FlatLevelSource cpf) {
 +            chunkgenerator = new net.minecraft.world.level.levelgen.FlatLevelSource(cpf.settings(), worldChunkManager);
 +         }
++      } else {
++         this.biomeProvider = getCraftServer().getBiomeProvider(data.getLevelName());
 +      }
 +
 +      if (this.generator != null) {
 +         chunkgenerator = new org.bukkit.craftbukkit.v1_20_R1.generator.CustomChunkGenerator(this, chunkgenerator, generator);
++      } else {
++         this.generator = getCraftServer().getGenerator(data.getLevelName());
 +      }
 +
 +      return chunkgenerator;
