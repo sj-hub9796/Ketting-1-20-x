@@ -1,9 +1,14 @@
 --- a/net/minecraft/world/item/trading/Merchant.java
 +++ b/net/minecraft/world/item/trading/Merchant.java
-@@ -49,4 +_,6 @@
+@@ -49,4 +_,11 @@
     }
  
     boolean isClientSide();
 +
-+   org.bukkit.craftbukkit.v1_20_R1.inventory.CraftMerchant getCraftMerchant(); // CraftBukkit
++   // Ketting start - modded merchant compat
++   java.util.Map<net.minecraft.world.item.trading.Merchant, org.bukkit.craftbukkit.v1_20_R1.inventory.CraftMerchant> ketting$merchantCache = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
++   default org.bukkit.craftbukkit.v1_20_R1.inventory.CraftMerchant getCraftMerchant() { // CraftBukkit
++      return ketting$merchantCache.computeIfAbsent(this, merchant -> new org.bukkit.craftbukkit.v1_20_R1.inventory.CraftMerchant(merchant));
++   }
++   // Ketting end - modded merchant compat
  }
