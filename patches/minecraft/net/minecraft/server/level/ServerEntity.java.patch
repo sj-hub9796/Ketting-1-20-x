@@ -46,7 +46,7 @@
                       mapitemsaveddata.tickCarriedBy(serverplayer, itemstack);
                       Packet<?> packet = mapitemsaveddata.getUpdatePacket(integer, serverplayer);
                       if (packet != null) {
-@@ -200,7 +_,27 @@
+@@ -200,7 +_,34 @@
  
        ++this.tickCount;
        if (this.entity.hurtMarked) {
@@ -64,7 +64,14 @@
 +            if (event.isCancelled()) {
 +               cancelled = true;
 +            } else if (!velocity.equals(event.getVelocity())) {
-+               player.setVelocity(event.getVelocity());
++               // Ketting start
++               try {
++                  player.setVelocity(event.getVelocity());
++               } catch (IllegalArgumentException e) {
++                  player.setVelocity(velocity);
++                  org.kettingpowered.ketting.core.Ketting.LOGGER.warn("discard finite velocity: {}", e.getMessage());
++               }
++               // Ketting end
 +            }
 +         }
 +
