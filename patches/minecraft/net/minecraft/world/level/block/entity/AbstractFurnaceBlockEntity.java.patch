@@ -86,7 +86,7 @@
        ContainerHelper.saveAllItems(p_187452_, this.items);
        CompoundTag compoundtag = new CompoundTag();
        this.recipesUsed.forEach((p_187449_, p_187450_) -> {
-@@ -249,28 +_,56 @@
+@@ -249,28 +_,57 @@
           }
  
           int i = p_155017_.getMaxStackSize();
@@ -129,12 +129,13 @@
 +            // CraftBukkit start
 +            if (recipe != null && p_155017_.cookingProgress == 0) {
 +               org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack source = org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack.asCraftMirror(p_155017_.items.get(0));
-+               org.bukkit.inventory.CookingRecipe<?> brecipe = (org.bukkit.inventory.CookingRecipe<?>) recipe.toBukkitRecipe();
++               // org.bukkit.inventory.CookingRecipe<?> brecipe = (org.bukkit.inventory.CookingRecipe<?>) recipe.toBukkitRecipe(); //Ketting
 +
-+               org.bukkit.event.inventory.FurnaceStartSmeltEvent event = new org.bukkit.event.inventory.FurnaceStartSmeltEvent(org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock.at(p_155014_, p_155015_), source, brecipe);
-+               p_155014_.getCraftServer().getPluginManager().callEvent(event);
-+
-+               p_155017_.cookingTotalTime = event.getTotalCookTime();
++               if (recipe.toBukkitRecipe() instanceof org.bukkit.inventory.CookingRecipe<?> cookingRecipe) { //Ketting - instanceof check
++                   org.bukkit.event.inventory.FurnaceStartSmeltEvent event = new org.bukkit.event.inventory.FurnaceStartSmeltEvent(org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock.at(p_155014_, p_155015_), source, cookingRecipe);
++                   p_155014_.getCraftServer().getPluginManager().callEvent(event);
++                   p_155017_.cookingTotalTime = event.getTotalCookTime();
++               }
 +            }
 +            // CraftBukkit end
              ++p_155017_.cookingProgress;
