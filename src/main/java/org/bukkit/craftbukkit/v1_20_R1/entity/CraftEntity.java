@@ -371,7 +371,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
     @Override
     public void setVelocity(Vector velocity) {
         Preconditions.checkArgument(velocity != null, "velocity");
-        velocity.checkFinite();
+        try {
+            velocity.checkFinite();
+        } catch (IllegalArgumentException e) {
+            velocity = new Vector(0, 0, 0);
+            org.kettingpowered.ketting.core.Ketting.LOGGER.warn("discard finite velocity: {}", e.getMessage());
+        }
         entity.setDeltaMovement(CraftVector.toNMS(velocity));
         entity.hurtMarked = true;
     }
