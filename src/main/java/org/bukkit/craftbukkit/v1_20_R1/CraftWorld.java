@@ -201,10 +201,31 @@ public class CraftWorld extends CraftRegionAccessor implements World {
     public boolean setSpawnLocation(int x, int y, int z) {
         return setSpawnLocation(x, y, z, 0.0F);
     }
+    // Paper start
+    private static void warnUnsafeChunk(String reason, int x, int z) {
+        // if any chunk coord is outside of 30 million blocks
+        if (x > 1875000 || z > 1875000 || x < -1875000 || z < -1875000) {
+            Plugin plugin = io.papermc.paper.util.StackWalkerUtil.getFirstPluginCaller();
+            if (plugin != null) {
+                plugin.getLogger().warning("Plugin is %s at (%s, %s), this might cause issues.".formatted(reason, x, z));
+            }
+            if (net.minecraft.server.MinecraftServer.getServer().isDebugging()) {
+                io.papermc.paper.util.TraceUtil.dumpTraceForThread("Dangerous chunk retrieval");
+            }
+        }
+    }
+    // Paper end
 
     @Override
     public Chunk getChunkAt(int x, int z) {
-        LevelChunk chunk = (LevelChunk) this.world.getChunk(x, z, ChunkStatus.FULL, true);
+        warnUnsafeChunk("getting a faraway chunk", x, z); // Paper
+        // Paper start - add ticket to hold chunk for a little while longer if plugin accesses it
+        net.minecraft.world.level.chunk.LevelChunk chunk = this.world.getChunkSource().getChunkAtIfLoadedImmediately(x, z);
+        if (chunk == null) {
+            this.addTicket(x, z);
+            chunk = this.world.getChunkSource().getChunk(x, z, true);
+        }
+        // Paper end
         return new CraftChunk(chunk);
     }
 
@@ -217,6 +238,12 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
         return new CraftChunk(getHandle(), x, z);
     }
+
+    // Paper start
+    private void addTicket(int x, int z) {
+        io.papermc.paper.util.MCUtil.MAIN_EXECUTOR.execute(() -> this.world.getChunkSource().addRegionTicket(TicketType.PLUGIN, new ChunkPos(x, z), 0, Unit.INSTANCE)); // Paper
+    }
+    // Paper end
 
     @Override
     public Chunk getChunkAt(Block block) {
@@ -292,6 +319,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
     @Override
     public boolean regenerateChunk(int x, int z) {
         org.spigotmc.AsyncCatcher.catchOp("chunk regenerate"); // Spigot
+        warnUnsafeChunk("regenerating a faraway chunk", x, z); // Paper
         throw new UnsupportedOperationException("Not supported in this Minecraft version! Unless you can fix it, this is not a bug :)");
         /*
         if (!unloadChunk0(x, z, false)) {
@@ -345,6 +373,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
     @Override
     public boolean loadChunk(int x, int z, boolean generate) {
         org.spigotmc.AsyncCatcher.catchOp("chunk load"); // Spigot
+        warnUnsafeChunk("loading a faraway chunk", x, z); // Paper
         ChunkAccess chunk = world.getChunkSource().getChunk(x, z, generate ? ChunkStatus.FULL : ChunkStatus.EMPTY, true);
 
         // If generate = false, but the chunk already exists, we will get this back.
@@ -377,6 +406,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public boolean addPluginChunkTicket(int x, int z, Plugin plugin) {
+        warnUnsafeChunk("adding a faraway chunk ticket", x, z); // Paper
         Preconditions.checkArgument(plugin != null, "null plugin");
         Preconditions.checkArgument(plugin.isEnabled(), "plugin is not enabled");
 
@@ -458,6 +488,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public void setChunkForceLoaded(int x, int z, boolean forced) {
+        warnUnsafeChunk("forceloading a faraway chunk", x, z); // Paper
         getHandle().setChunkForced(x, z, forced);
     }
 
@@ -740,6 +771,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
 
     @Override
     public int getHighestBlockYAt(int x, int z, org.bukkit.HeightMap heightMap) {
+        warnUnsafeChunk("getting a faraway chunk", x >> 4, z >> 4); // Paper
         // Transient load for this tick
         return world.getChunk(x >> 4, z >> 4).getHeight(CraftHeightMap.toNMS(heightMap), x, z);
     }

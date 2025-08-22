@@ -34,7 +34,7 @@ import org.kettingpowered.ketting.remapper.RemappingClassLoader;
 /**
  * A ClassLoader for plugins, to allow shared classes across multiple plugins
  */
-final class PluginClassLoader extends URLClassLoader implements RemappingClassLoader {
+public final class PluginClassLoader extends URLClassLoader implements RemappingClassLoader {
     private final JavaPluginLoader loader;
     private final Map<String, Class<?>> classes = new ConcurrentHashMap<String, Class<?>>();
     private final PluginDescriptionFile description;
@@ -120,6 +120,13 @@ final class PluginClassLoader extends URLClassLoader implements RemappingClassLo
         tmp[0] = findResources(name);
         return EnumerationHelper.merge(tmp[0], tmp[1]);
     }
+
+    // Paper start
+    //@Override
+    public JavaPlugin getPlugin() {
+        return this.plugin;
+    }
+    // Paper end
 
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
